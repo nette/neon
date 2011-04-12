@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Test: Nette\NeonParser simple values.
+ * Test: Nette\Utils\Neon::decode simple values.
  *
  * @author     David Grudl
- * @package    Nette
+ * @package    Nette\Utils
  * @subpackage UnitTests
  */
 
-use Nette\Neon;
+use Nette\Utils\Neon;
 
 
 

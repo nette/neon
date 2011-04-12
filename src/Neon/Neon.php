@@ -9,7 +9,7 @@
  * the file license.txt that was distributed with this source code.
  */
 
-namespace Nette;
+namespace Nette\Utils;
 
 use Nette;
 
@@ -20,7 +20,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class Neon extends Object
+class Neon extends Nette\Object
 {
 	const BLOCK = 1;
 
@@ -305,7 +305,7 @@ class Neon extends Object
 		if (isset($mapping[$sq[1]])) {
 			return $mapping[$sq[1]];
 		} elseif ($sq[1] === 'u' && strlen($sq) === 6) {
-			return String::chr(hexdec(substr($sq, 2)));
+			return Strings::chr(hexdec(substr($sq, 2)));
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 			return chr(hexdec(substr($sq, 2)));
 		} else {
@@ -319,7 +319,7 @@ class Neon extends Object
 	{
 		list(, $line, $col) = self::$tokenizer->getOffset($this->n);
 		$token = isset(self::$tokenizer->tokens[$this->n])
-			? str_replace("\n", '<new line>', Nette\String::truncate(self::$tokenizer->tokens[$this->n], 40))
+			? str_replace("\n", '<new line>', Strings::truncate(self::$tokenizer->tokens[$this->n], 40))
 			: 'end';
 		throw new NeonException(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
