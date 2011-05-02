@@ -107,7 +107,7 @@ class Tokenizer extends Nette\Object
 
 
 	/**
-	 * Returns position of token in input string
+	 * Returns position of token in input string.
 	 * @param  int token number
 	 * @return array [offset, line, column]
 	 */
