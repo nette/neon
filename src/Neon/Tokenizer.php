@@ -80,10 +80,10 @@ class Tokenizer extends Nette\Object
 			}
 
 		} else {
-			$this->tokens = Strings::split($input, $this->re, PREG_SPLIT_NO_EMPTY);
-			if ($this->tokens && !Strings::match(end($this->tokens), $this->re)) {
-				$tmp = Strings::split($this->input, $this->re, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
-				list(, $errorOffset) = end($tmp);
+			$this->tokens = Strings::split($input, $this->re, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+			$last = end($this->tokens);
+			if ($this->tokens && !Strings::match($last[0], $this->re)) {
+				$errorOffset = $last[1];
 			}
 		}
 
