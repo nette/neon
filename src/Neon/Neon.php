@@ -14,7 +14,6 @@ namespace Nette\Utils;
 use Nette;
 
 
-
 /**
  * Simple parser & generator for Nette Object Notation.
  *
@@ -94,7 +93,7 @@ class Neon extends Nette\Object
 			$isList = Arrays::isList($var);
 			$s = '';
 			if ($options & self::BLOCK) {
-				if (count($var) === 0){
+				if (count($var) === 0) {
 					return "[]";
 				}
 				foreach ($var as $k => $v) {
@@ -127,7 +126,6 @@ class Neon extends Nette\Object
 			return json_encode($var);
 		}
 	}
-
 
 
 	/**
@@ -163,7 +161,6 @@ class Neon extends Nette\Object
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -241,7 +238,9 @@ class Neon extends Nette\Object
 					}
 
 				} else {
-					while (isset($tokens[$n+1]) && $tokens[$n+1][0][0] === "\n") $n++; // skip to last indent
+					while (isset($tokens[$n+1]) && $tokens[$n+1][0][0] === "\n") {
+						$n++; // skip to last indent
+					}
 					if (!isset($tokens[$n+1])) {
 						break;
 					}
@@ -331,7 +330,6 @@ class Neon extends Nette\Object
 	}
 
 
-
 	private function addValue(& $result, $hasKey, $key, $value)
 	{
 		if ($hasKey) {
@@ -343,7 +341,6 @@ class Neon extends Nette\Object
 			$result[] = $value;
 		}
 	}
-
 
 
 	private function cbString($m)
@@ -360,7 +357,6 @@ class Neon extends Nette\Object
 			$this->error("Invalid escaping sequence $sq");
 		}
 	}
-
 
 
 	private function error($message = "Unexpected '%s'")
