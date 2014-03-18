@@ -1,0 +1,30 @@
+{
+	"name": "nette/neon",
+	"description": "Nette NEON: parser & generator for Nette Object Notation",
+	"homepage": "http://ne-on.org",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "http://davidgrudl.com"
+		},
+		{
+			"name": "Nette Community",
+			"homepage": "http://nette.org/contributors"
+		}
+	],
+	"require": {
+		"php": ">=5.3.1"
+	},
+	"require-dev": {
+		"nette/tester": "@dev"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.2-dev"
+		}
+	}
+}
