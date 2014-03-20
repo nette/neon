@@ -15,7 +15,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class Neon extends Nette\Object
+class Neon
 {
 	const BLOCK = 1;
 
@@ -43,7 +43,7 @@ class Neon extends Nette\Object
 		}
 
 		if (is_array($var)) {
-			$isList = Arrays::isList($var);
+			$isList = !$var || array_keys($var) === range(0, count($var) - 1);
 			$s = '';
 			if ($options & self::BLOCK) {
 				if (count($var) === 0) {
