@@ -16,7 +16,7 @@ use Nette;
  * @author     David Grudl
  * @internal
  */
-class NeonDecoder extends Nette\Object
+class NeonDecoder
 {
 	/** @var array */
 	public static $patterns = array(
@@ -68,18 +68,18 @@ class NeonDecoder extends Nette\Object
 	public function decode($input)
 	{
 		if (!is_string($input)) {
-			throw new Nette\InvalidArgumentException("Argument must be a string, " . gettype($input) . " given.");
+			throw new \InvalidArgumentException("Argument must be a string, " . gettype($input) . " given.");
 
 		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
 		}
-		$this->input = $input = str_replace("\r", '', $input);
+		$this->input = str_replace("\r", '', $input);
 
 		$pattern = '~(' . implode(')|(', self::$patterns) . ')~Amix';
-		$this->tokens = Strings::split($input, $pattern, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+		$this->tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
 
 		$last = end($this->tokens);
-		if ($this->tokens && !Strings::match($last[0], $pattern)) {
+		if ($this->tokens && !preg_match($pattern, $last[0])) {
 			$this->pos = count($this->tokens) - 1;
 			$this->error();
 		}
@@ -286,7 +286,7 @@ class NeonDecoder extends Nette\Object
 		if (isset($mapping[$sq[1]])) {
 			return $mapping[$sq[1]];
 		} elseif ($sq[1] === 'u' && strlen($sq) === 6) {
-			return Strings::chr(hexdec(substr($sq, 2)));
+			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', hexdec(substr($sq, 2))));
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 			return chr(hexdec(substr($sq, 2)));
 		} else {
@@ -302,7 +302,7 @@ class NeonDecoder extends Nette\Object
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n") + 1;
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
-		$token = $last ? str_replace("\n", '<new line>', Strings::truncate($last[0], 40)) : 'end';
+		$token = $last ? str_replace("\n", '<new line>',  substr($last[0], 0, 40)) : 'end';
 		throw new NeonException(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
 
