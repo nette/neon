@@ -87,3 +87,10 @@ Assert::same( array(
 two
 }
 ') );
+
+
+Assert::same( array(
+	'null' => 42
+), Neon::decode('
+{null: 42}
+') );

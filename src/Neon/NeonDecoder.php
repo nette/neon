@@ -234,7 +234,7 @@ class NeonDecoder
 					$value = substr($t, 1, -1);
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n+1][0]) || ($tokens[$n+1][0] !== ':' && $tokens[$n+1][0] !== '='))) {
 					$value = $consts[$t];
-				} elseif ($t === 'null' || $t === 'Null' || $t === 'NULL') {
+				} elseif (($t === 'null' || $t === 'Null' || $t === 'NULL') && (!isset($tokens[$n+1][0]) || ($tokens[$n+1][0] !== ':' && $tokens[$n+1][0] !== '='))) {
 					$value = NULL;
 				} elseif (is_numeric($t)) {
 					$value = $t * 1;
