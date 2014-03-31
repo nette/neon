@@ -140,3 +140,12 @@ x:
 y:
  \tb: 20
 ") );
+
+
+Assert::same( array(
+	array('null' => 42),
+	'null' => 42,
+), Neon::decode('
+- {null= 42}
+null : 42
+') );
