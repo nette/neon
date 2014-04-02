@@ -68,7 +68,7 @@ class NeonDecoder
 	public function decode($input)
 	{
 		if (!is_string($input)) {
-			throw new Nette\InvalidArgumentException("Argument must be a string, " . gettype($input) . " given.");
+			throw new Nette\NeonException("Argument must be a string, " . gettype($input) . " given.");
 
 		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
