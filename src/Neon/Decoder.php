@@ -275,6 +275,7 @@ class Decoder
 					$converted = constant(self::SIMPLE_TYPES[$t]);
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
+					$converted = (is_int($converted) || preg_match('#[.eE]#', $t)) ? $converted : $t;
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
 				} elseif (preg_match(self::PATTERN_OCTAL, $t)) {
