@@ -193,3 +193,12 @@ Assert::same(array(
 -
     a
 "));
+
+
+Assert::same( array(
+	'one' => NULL,
+	'two' => NULL,
+), Neon::decode('
+one:
+two:
+') );
