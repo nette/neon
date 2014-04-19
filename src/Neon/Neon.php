@@ -47,7 +47,7 @@ class Neon
 			$s = '';
 			if ($options & self::BLOCK) {
 				if (count($var) === 0) {
-					return "[]";
+					return '[]';
 				}
 				foreach ($var as $k => $v) {
 					$v = self::encode($v, self::BLOCK);

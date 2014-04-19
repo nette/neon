@@ -68,7 +68,7 @@ class NeonDecoder
 	public function decode($input)
 	{
 		if (!is_string($input)) {
-			throw new \InvalidArgumentException("Argument must be a string, " . gettype($input) . " given.");
+			throw new \InvalidArgumentException(sprintf('Argument must be a string, %s given.', gettype($input)));
 
 		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
@@ -281,7 +281,7 @@ class NeonDecoder
 
 	private function cbString($m)
 	{
-		static $mapping = array('t' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\',  '/' => '/', '_' => "\xc2\xa0");
+		static $mapping = array('t' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0");
 		$sq = $m[0];
 		if (isset($mapping[$sq[1]])) {
 			return $mapping[$sq[1]];
@@ -302,7 +302,7 @@ class NeonDecoder
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n") + 1;
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
-		$token = $last ? str_replace("\n", '<new line>',  substr($last[0], 0, 40)) : 'end';
+		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
 		throw new NeonException(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
 
