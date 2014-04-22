@@ -5,14 +5,14 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Utils;
+namespace Nette\Neon;
 
 use Nette;
 
 
 /**
- * The exception that indicates error of NEON decoding.
+ * The exception that indicates error of NEON processing.
  */
-class NeonException extends \Exception
+class Exception extends \Exception
 {
 }

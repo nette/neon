@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Test: Nette\Utils\Neon::decode block hash and array.
+ * Test: Nette\Neon\Neon::decode block hash and array.
  *
  * @author     David Grudl
  */
 
-use Nette\Utils\Neon,
+use Nette\Neon\Neon,
 	Tester\Assert;
 
 

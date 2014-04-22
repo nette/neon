@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Test: Nette\Utils\Neon::encode.
+ * Test: Nette\Neon\Neon::encode.
  *
  * @author     David Grudl
  */
 
-use Nette\Utils\Neon,
+use Nette\Neon\Neon,
 	Tester\Assert;
 
 

@@ -5,7 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Utils;
+namespace Nette\Neon;
 
 use Nette;
 
@@ -31,7 +31,7 @@ class Neon
 		if ($var instanceof \DateTime) {
 			return $var->format('Y-m-d H:i:s O');
 
-		} elseif ($var instanceof NeonEntity) {
+		} elseif ($var instanceof Entity) {
 			return self::encode($var->value) . '(' . substr(self::encode($var->attributes), 1, -1) . ')';
 		}
 
@@ -67,7 +67,7 @@ class Neon
 
 		} elseif (is_string($var) && !is_numeric($var)
 			&& !preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i', $var)
-			&& preg_match('~^' . NeonDecoder::$patterns[1] . '\z~x', $var) // 1 = literals
+			&& preg_match('~^' . Decoder::$patterns[1] . '\z~x', $var) // 1 = literals
 		) {
 			return $var;
 
@@ -88,7 +88,7 @@ class Neon
 	 */
 	public static function decode($input)
 	{
-		$decoder = new NeonDecoder;
+		$decoder = new Decoder;
 		return $decoder->decode($input);
 	}
 

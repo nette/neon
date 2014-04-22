@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Test: Nette\Utils\Neon::decode inline hash and array.
+ * Test: Nette\Neon\Neon::decode inline hash and array.
  *
  * @author     David Grudl
  */
 
-use Nette\Utils\Neon,
+use Nette\Neon\Neon,
 	Tester\Assert;
 
 
@@ -53,7 +53,7 @@ Assert::same( array(
 ), Neon::decode("{a,\nb\nc: 1,\nd: 1,\n\ne: 1\nf:\n}") );
 
 
-Assert::type( 'Nette\Utils\NeonEntity', Neon::decode('@item(a, b)') );
+Assert::type( 'Nette\Neon\Entity', Neon::decode('@item(a, b)') );
 
 
 Assert::same( array(
