@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Test: Nette\Utils\Neon::decode simple values.
+ * Test: Nette\Neon\Neon::decode simple values.
  *
  * @author     David Grudl
  */
 
-use Nette\Utils\Neon,
+use Nette\Neon\Neon,
 	Tester\Assert;
 
 

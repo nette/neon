@@ -5,7 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Utils;
+namespace Nette\Neon;
 
 use Nette;
 
@@ -16,7 +16,7 @@ use Nette;
  * @author     David Grudl
  * @internal
  */
-class NeonDecoder
+class Decoder
 {
 	/** @var array */
 	public static $patterns = array(
@@ -147,7 +147,7 @@ class NeonDecoder
 						$this->error();
 					}
 					$n++;
-					$entity = new NeonEntity;
+					$entity = new Entity;
 					$entity->value = $value;
 					$entity->attributes = $this->parse(NULL, array());
 					$value = $entity;
@@ -303,7 +303,7 @@ class NeonDecoder
 		$line = substr_count($text, "\n") + 1;
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
 		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
-		throw new NeonException(str_replace('%s', $token, $message) . " on line $line, column $col.");
+		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
 
 }

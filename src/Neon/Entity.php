@@ -5,7 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Utils;
+namespace Nette\Neon;
 
 use Nette;
 
@@ -13,7 +13,7 @@ use Nette;
 /**
  * Representation of 'foo(bar=1)' literal
  */
-class NeonEntity extends \stdClass
+class Entity extends \stdClass
 {
 	public $value;
 	public $attributes;
