@@ -1,6 +1,9 @@
 [NEON](http://ne-on.org): Nette Object Notation
 ===============================================
 
+[![Downloads this Month](https://img.shields.io/packagist/dm/nette/neon.svg)](https://packagist.org/packages/nette/neon)
+[![Build Status](https://travis-ci.org/nette/neon.svg?branch=master)](https://travis-ci.org/nette/neon)
+
 NEON is very similar to YAML.The main difference is that the NEON supports "entities"
 (so can be used e.g. to parse phpDoc annotations) and tab characters for indentation.
 NEON syntax is a little simpler and the parsing is faster.
@@ -24,7 +27,3 @@ users:
 	- Kryten
 	- Rimmer
 ```
-
------
-
-[![Build Status](https://secure.travis-ci.org/nette/application.png?branch=master)](http://travis-ci.org/nette/application)
