@@ -79,3 +79,21 @@ Assert::equal(
 	new Entity(array(), array()),
 	Neon::decode('[]()')
 );
+
+
+Assert::equal(
+	new Entity(Neon::CHAIN, array(
+		new Entity('first', array('a', 'b')),
+		new Entity('second'),
+	)),
+	Neon::decode('first(a, b)second')
+);
+
+
+Assert::equal(
+	new Entity(Neon::CHAIN, array(
+		new Entity('first', array('a', 'b')),
+		new Entity('second', array(1, 2)),
+	)),
+	Neon::decode('first(a, b)second(1, 2)')
+);
