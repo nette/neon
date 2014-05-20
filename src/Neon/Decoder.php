@@ -104,11 +104,11 @@ class Decoder
 	 * @param  mixed
 	 * @return array
 	 */
-	private function parse($indent, $result = NULL)
+	private function parse($indent, $result = NULL, $key = NULL, $hasKey = FALSE)
 	{
 		$inlineParser = $indent === FALSE;
-		$value = $key = $object = NULL;
-		$hasValue = $hasKey = FALSE;
+		$value = NULL;
+		$hasValue = FALSE;
 		$tokens = $this->tokens;
 		$n = & $this->pos;
 		$count = count($tokens);
@@ -124,15 +124,29 @@ class Decoder
 				$hasKey = $hasValue = FALSE;
 
 			} elseif ($t === ':' || $t === '=') { // KeyValuePair separator
-				if ($hasKey || !$hasValue) {
-					$this->error();
-				}
-				if (is_array($value) || is_object($value)) {
+				if ($hasValue && (is_array($value) || is_object($value))) {
 					$this->error('Unacceptable key');
+
+				} elseif ($hasKey && $key === NULL && $hasValue && !$inlineParser) {
+					$n++;
+					$result[] = $this->parse($indent + ($this->indentTabs ? 1 : 2), array(), $value, TRUE);
+					$newIndent = isset($tokens[$n], $tokens[$n+1]) ? strlen($tokens[$n][0]) - 1 : 0; // not last
+					if ($newIndent > $indent) {
+						$n++;
+						$this->error('Bad indentation');
+					} elseif ($newIndent < $indent) {
+						return $result; // block parser exit point
+					}
+					$hasKey = $hasValue = FALSE;
+
+				} elseif ($hasKey || !$hasValue) {
+					$this->error();
+
+				} else {
+					$key = (string) $value;
+					$hasKey = TRUE;
+					$hasValue = FALSE;
 				}
-				$key = (string) $value;
-				$hasKey = TRUE;
-				$hasValue = FALSE;
 
 			} elseif ($t === '-') { // BlockArray bullet
 				if ($hasKey || $hasValue || $inlineParser) {
@@ -195,9 +209,8 @@ class Decoder
 						if ($hasValue || !$hasKey) {
 							$n++;
 							$this->error('Bad indentation');
-						} else {
-							$this->addValue($result, $key !== NULL, $key, $this->parse($newIndent));
 						}
+						$this->addValue($result, $key !== NULL, $key, $this->parse($newIndent));
 						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? strlen($tokens[$n][0]) - 1 : 0; // not last
 						if ($newIndent > $indent) {
 							$n++;

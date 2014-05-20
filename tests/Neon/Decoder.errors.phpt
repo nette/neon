@@ -24,11 +24,6 @@ Assert::exception(function() {
 
 
 Assert::exception(function() {
-	Neon::decode("- first: Dave\n last: Lister\n gender: male\n");
-}, 'Nette\Neon\Exception', "Unexpected ':' on line 1, column 8." );
-
-
-Assert::exception(function() {
 	Neon::decode('item [a, b]');
 }, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 8." );
 
@@ -68,3 +63,32 @@ a: 1
   b:
 ');
 }, 'Nette\Neon\Exception', "Bad indentation on line 3, column 3." );
+
+
+Assert::exception(function() {
+	Neon::decode('
+- x:
+ a: 10
+');
+}, 'Nette\Neon\Exception', "Bad indentation on line 3, column 2." );
+
+
+Assert::exception(function() {
+	Neon::decode('
+- x: 20
+   a: 10
+');
+}, 'Nette\Neon\Exception', "Bad indentation on line 3, column 4." );
+
+
+Assert::exception(function() {
+	Neon::decode('
+- x: 20
+ a: 10
+');
+}, 'Nette\Neon\Exception', "Bad indentation on line 3, column 2." );
+
+
+Assert::exception(function() {
+	Neon::decode('- x: y:');
+}, 'Nette\Neon\Exception', "Unexpected ':' on line 1, column 7." );
