@@ -95,3 +95,46 @@ Assert::same( array(
 two
 }
 ') );
+
+
+Assert::same( array(
+	array(
+		'x' => 20,
+		array(
+			'a' => 10,
+			'b' => 10,
+		),
+	),
+	'y',
+), Neon::decode('
+- x: 20
+  - a: 10
+    b: 10
+- y
+') );
+
+
+Assert::same( array(
+	array(
+		'x' => NULL,
+		'a' => 10,
+	),
+	array(
+		'y' => array('b' => 20),
+	),
+), Neon::decode("
+- x:
+\ta: 10
+-\ty:
+\t\tb: 20
+") );
+
+
+Assert::same( array(
+	array(
+		'x' => array('a' => 10),
+	),
+), Neon::decode('
+- x:
+    a: 10
+') );
