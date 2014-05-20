@@ -147,10 +147,7 @@ class Decoder
 						$this->error();
 					}
 					$n++;
-					$entity = new Entity;
-					$entity->value = $value;
-					$entity->attributes = $this->parse(NULL, array());
-					$value = $entity;
+					$value = new Entity($value, $this->parse(NULL, array()));
 				} else {
 					$n++;
 					$value = $this->parse(NULL, array());

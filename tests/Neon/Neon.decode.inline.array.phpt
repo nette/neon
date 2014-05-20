@@ -7,6 +7,7 @@
  */
 
 use Nette\Neon\Neon,
+	Nette\Neon\Entity,
 	Tester\Assert;
 
 
@@ -56,25 +57,25 @@ Assert::same( array(
 Assert::type( 'Nette\Neon\Entity', Neon::decode('@item(a, b)') );
 
 
-Assert::same( array(
-	'value' => '@item',
-	'attributes' => array('a', 'b'),
-), (array) Neon::decode('@item(a, b)') );
+Assert::equal(
+	new Entity('@item', array('a', 'b')),
+	Neon::decode('@item(a, b)')
+);
 
 
-Assert::same( array(
-	'value' => '@item<item>',
-	'attributes' => array('a', 'b'),
-), (array) Neon::decode('@item<item>(a, b)') );
+Assert::equal(
+	new Entity('@item<item>', array('a', 'b')),
+	Neon::decode('@item<item>(a, b)')
+);
 
 
-Assert::same( array(
-	'value' => 'item',
-	'attributes' => array('a', 'b'),
-), (array) Neon::decode('item (a, b)') );
+Assert::equal(
+	new Entity('item', array('a', 'b')),
+	Neon::decode('item (a, b)')
+);
 
 
-Assert::same( array(
-	'value' => array(),
-	'attributes' => array(),
-), (array) Neon::decode('[]()') );
+Assert::equal(
+	new Entity(array(), array()),
+	Neon::decode('[]()')
+);
