@@ -32,7 +32,7 @@ class Encoder
 			return $var->format('Y-m-d H:i:s O');
 
 		} elseif ($var instanceof Entity) {
-			return self::encode($var->value) . '(' . substr(self::encode($var->attributes), 1, -1) . ')';
+			return self::encode($var->value) . '(' . (is_array($var->attributes) ? substr(self::encode($var->attributes), 1, -1) : '') . ')';
 		}
 
 		if (is_object($var)) {

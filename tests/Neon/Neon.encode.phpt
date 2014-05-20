@@ -7,6 +7,7 @@
  */
 
 use Nette\Neon\Neon,
+	Nette\Neon\Entity,
 	Tester\Assert;
 
 
@@ -65,4 +66,11 @@ Assert::same(
 Assert::same(
 	'[]()',
 	Neon::encode(Neon::decode('[]()'))
+);
+
+$entity = new Entity('ent');
+$entity->attributes = NULL;
+Assert::same(
+	'ent()',
+	Neon::encode($entity)
 );
