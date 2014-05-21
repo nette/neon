@@ -85,7 +85,7 @@ class Decoder
 		}
 
 		$this->pos = 0;
-		$this->indentTabs = NULL;
+		$this->indentTabs = preg_match('#^[\t\ ]+\S#m', $this->input, $m) && $m[0][0] === "\t";
 		$res = $this->parse();
 
 		while (isset($this->tokens[$this->pos])) {
@@ -186,14 +186,9 @@ class Decoder
 					if ($indent === NULL) { // first iteration
 						$indent = $newIndent;
 					}
-					if ($newIndent) {
-						if ($this->indentTabs === NULL) {
-							$this->indentTabs = $tokens[$n][0][1] === "\t";
-						}
-						if (strpos($tokens[$n][0], $this->indentTabs ? ' ' : "\t")) {
-							$n++;
-							$this->error('Either tabs or spaces may be used as indenting chars, but not both.');
-						}
+					if ($newIndent && strpos($tokens[$n][0], $this->indentTabs ? ' ' : "\t")) {
+						$n++;
+						$this->error('Either tabs or spaces may be used as indenting chars, but not both');
 					}
 
 					if ($newIndent > $indent) { // open new block-array or hash
