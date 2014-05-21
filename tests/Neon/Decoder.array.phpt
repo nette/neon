@@ -22,6 +22,14 @@ b: 1') );
 
 
 Assert::same( array(
+	'a' => 1,
+	'b' => 2,
+), Neon::decode('
+ a: 1
+ b: 2') );
+
+
+Assert::same( array(
 	'a' => 'x',
 	'x',
 ), Neon::decode('

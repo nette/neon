@@ -86,7 +86,7 @@ class Decoder
 
 		$this->pos = 0;
 		$this->indentTabs = NULL;
-		$res = $this->parse(0);
+		$res = $this->parse();
 
 		while (isset($this->tokens[$this->pos])) {
 			if ($this->tokens[$this->pos][0][0] === "\n") {
@@ -106,7 +106,7 @@ class Decoder
 	 */
 	private function parse($indent = NULL, $result = NULL)
 	{
-		$inlineParser = $indent === NULL;
+		$inlineParser = $indent === FALSE;
 		$value = $key = $object = NULL;
 		$hasValue = $hasKey = FALSE;
 		$tokens = $this->tokens;
@@ -147,10 +147,10 @@ class Decoder
 						$this->error();
 					}
 					$n++;
-					$value = new Entity($value, $this->parse(NULL, array()));
+						$value = new Entity($value, $this->parse(FALSE, array()));
 				} else {
 					$n++;
-					$value = $this->parse(NULL, array());
+					$value = $this->parse(FALSE, array());
 				}
 				$hasValue = TRUE;
 				if (!isset($tokens[$n]) || $tokens[$n][0] !== self::$brackets[$t]) { // unexpected type of bracket or block-parser
