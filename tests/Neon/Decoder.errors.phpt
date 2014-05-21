@@ -45,7 +45,7 @@ Assert::exception(function() {
 
 Assert::exception(function() {
 	Neon::decode("\ta:\n b:");
-}, 'Nette\Neon\Exception', "Either tabs or spaces may be used as indenting chars, but not both on line 2, column 2." );
+}, 'Nette\Neon\Exception', "Invalid combination of tabs and spaces on line 2, column 2." );
 
 
 Assert::exception(function() {

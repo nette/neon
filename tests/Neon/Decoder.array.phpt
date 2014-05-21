@@ -115,19 +115,12 @@ Assert::same( array(
 
 
 Assert::same( array(
-	array(
-		'x' => NULL,
-		'a' => 10,
-	),
-	array(
-		'y' => array('b' => 20),
-	),
+	'root' => array(array('key1' => NULL, 'key3' => 123))
 ), Neon::decode("
-- x:
-\ta: 10
--\ty:
-\t\tb: 20
-") );
+root:
+\t- key1: 
+\t  key3: 123
+\t") );
 
 
 Assert::same( array(
@@ -138,3 +131,14 @@ Assert::same( array(
 - x:
     a: 10
 ') );
+
+
+Assert::same( array(
+	'x' => array('a' => 10),
+	'y' => array('b' => 20),
+), Neon::decode("
+x:
+\t a: 10
+y:
+ \tb: 20
+") );
