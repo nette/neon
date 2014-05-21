@@ -24,8 +24,8 @@ b: 1') );
 Assert::same( array(
 	'a' => 1,
 	'b' => 2,
-), Neon::decode('
- a: 1
+), Neon::decode(
+' a: 1
  b: 2') );
 
 
@@ -63,13 +63,13 @@ Assert::same( array(
 		'y' => array(
 			NULL,
 		),
-		'a' => 'x',
 	),
-), Neon::decode('
-x:
+	'a' => 'x',
+), Neon::decode(
+'x:
 	y:
 		-
-	a: x
+a: x
 ') );
 
 

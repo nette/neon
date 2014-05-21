@@ -46,3 +46,25 @@ Assert::exception(function() {
 Assert::exception(function() {
 	Neon::decode('"');
 }, 'Nette\Neon\Exception', "Unexpected '\"' on line 1, column 1." );
+
+
+Assert::exception(function() {
+	Neon::decode("\ta:\n b:");
+}, 'Nette\Neon\Exception', "Either tabs or spaces may be used as indenting chars, but not both on line 2, column 2." );
+
+
+Assert::exception(function() {
+	Neon::decode('
+a:
+  b:
+ c: x
+');
+}, 'Nette\Neon\Exception', "Bad indentation on line 4, column 2." );
+
+
+Assert::exception(function() {
+	Neon::decode('
+a: 1
+  b:
+');
+}, 'Nette\Neon\Exception', "Bad indentation on line 3, column 3." );
