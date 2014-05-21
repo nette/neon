@@ -73,7 +73,7 @@ class Decoder
 		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
 		}
-		$this->input = str_replace("\r", '', $input);
+		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
 
 		$pattern = '~(' . implode(')|(', self::$patterns) . ')~Amix';
 		$this->tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
@@ -86,7 +86,7 @@ class Decoder
 
 		$this->pos = 0;
 		$this->indentTabs = preg_match('#^[\t\ ]+\S#m', $this->input, $m) && $m[0][0] === "\t";
-		$res = $this->parse();
+		$res = $this->parse(NULL);
 
 		while (isset($this->tokens[$this->pos])) {
 			if ($this->tokens[$this->pos][0][0] === "\n") {
@@ -104,7 +104,7 @@ class Decoder
 	 * @param  mixed
 	 * @return array
 	 */
-	private function parse($indent = NULL, $result = NULL)
+	private function parse($indent, $result = NULL)
 	{
 		$inlineParser = $indent === FALSE;
 		$value = $key = $object = NULL;
@@ -194,11 +194,15 @@ class Decoder
 					if ($newIndent > $indent) { // open new block-array or hash
 						if ($hasValue || !$hasKey) {
 							$n++;
-							$this->error('Unexpected indentation.');
+							$this->error('Bad indentation');
 						} else {
 							$this->addValue($result, $key !== NULL, $key, $this->parse($newIndent));
 						}
-						$newIndent = isset($tokens[$n]) ? strlen($tokens[$n][0]) - 1 : 0;
+						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? strlen($tokens[$n][0]) - 1 : 0; // not last
+						if ($newIndent > $indent) {
+							$n++;
+							$this->error('Bad indentation');
+						}
 						$hasKey = FALSE;
 
 					} else {
@@ -302,7 +306,7 @@ class Decoder
 		$last = isset($this->tokens[$this->pos]) ? $this->tokens[$this->pos] : NULL;
 		$offset = $last ? $last[1] : strlen($this->input);
 		$text = substr($this->input, 0, $offset);
-		$line = substr_count($text, "\n") + 1;
+		$line = substr_count($text, "\n");
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
 		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
 		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
