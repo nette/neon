@@ -55,9 +55,6 @@ class Decoder
 	/** @var int */
 	private $pos;
 
-	/** @var bool */
-	private $indentTabs;
-
 
 
 	/**
@@ -85,7 +82,6 @@ class Decoder
 		}
 
 		$this->pos = 0;
-		$this->indentTabs = preg_match('#^[\t\ ]+\S#m', $this->input, $m) && $m[0][0] === "\t";
 		$res = $this->parse(NULL);
 
 		while (isset($this->tokens[$this->pos])) {
@@ -100,7 +96,7 @@ class Decoder
 
 
 	/**
-	 * @param  int  indentation (for block-parser)
+	 * @param  string  indentation (for block-parser)
 	 * @param  mixed
 	 * @return array
 	 */
@@ -129,12 +125,12 @@ class Decoder
 
 				} elseif ($hasKey && $key === NULL && $hasValue && !$inlineParser) {
 					$n++;
-					$result[] = $this->parse($indent + ($this->indentTabs ? 1 : 2), array(), $value, TRUE);
-					$newIndent = isset($tokens[$n], $tokens[$n+1]) ? strlen($tokens[$n][0]) - 1 : 0; // not last
-					if ($newIndent > $indent) {
+					$result[] = $this->parse($indent . '  ', array(), $value, TRUE);
+					$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
 						$this->error('Bad indentation');
-					} elseif ($newIndent < $indent) {
+					} elseif (strlen($newIndent) < strlen($indent)) {
 						return $result; // block parser exit point
 					}
 					$hasKey = $hasValue = FALSE;
@@ -196,23 +192,24 @@ class Decoder
 						break;
 					}
 
-					$newIndent = strlen($tokens[$n][0]) - 1;
+					$newIndent = (string) substr($tokens[$n][0], 1);
 					if ($indent === NULL) { // first iteration
 						$indent = $newIndent;
 					}
-					if ($newIndent && strpos($tokens[$n][0], $this->indentTabs ? ' ' : "\t")) {
+					$minlen = min(strlen($newIndent), strlen($indent));
+					if ($minlen && (string) substr($newIndent, 0, $minlen) !== (string) substr($indent, 0, $minlen)) {
 						$n++;
-						$this->error('Either tabs or spaces may be used as indenting chars, but not both');
+						$this->error('Invalid combination of tabs and spaces');
 					}
 
-					if ($newIndent > $indent) { // open new block-array or hash
+					if (strlen($newIndent) > strlen($indent)) { // open new block-array or hash
 						if ($hasValue || !$hasKey) {
 							$n++;
 							$this->error('Bad indentation');
 						}
 						$this->addValue($result, $key !== NULL, $key, $this->parse($newIndent));
-						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? strlen($tokens[$n][0]) - 1 : 0; // not last
-						if ($newIndent > $indent) {
+						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+						if (strlen($newIndent) > strlen($indent)) {
 							$n++;
 							$this->error('Bad indentation');
 						}
@@ -228,7 +225,7 @@ class Decoder
 						}
 					}
 
-					if ($newIndent < $indent) { // close block
+					if (strlen($newIndent) < strlen($indent)) { // close block
 						return $result; // block parser exit point
 					}
 				}
