@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Neon\Neon::encode.
- *
- * @author     David Grudl
  */
 
 use Nette\Neon\Neon,
