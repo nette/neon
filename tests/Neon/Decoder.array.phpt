@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Neon\Neon::decode block hash and array.
- *
- * @author     David Grudl
  */
 
 use Nette\Neon\Neon,
@@ -118,7 +116,7 @@ Assert::same( array(
 	'root' => array(array('key1' => NULL, 'key3' => 123))
 ), Neon::decode("
 root:
-\t- key1: 
+\t- key1:
 \t  key3: 123
 \t") );
 

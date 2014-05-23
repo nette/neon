@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Neon\Neon::decode simple values.
- *
- * @author     David Grudl
  */
 
 use Nette\Neon\Neon,
