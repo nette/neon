@@ -116,7 +116,7 @@ class Decoder
 				if ((!$hasKey && !$hasValue) || !$inlineParser) {
 					$this->error();
 				}
-				$this->addValue($result, $hasKey, $key, $hasValue ? $value : NULL);
+				$this->addValue($result, $hasKey ? $key : NULL, $hasValue ? $value : NULL);
 				$hasKey = $hasValue = FALSE;
 
 			} elseif ($t === ':' || $t === '=') { // KeyValuePair separator
@@ -180,7 +180,7 @@ class Decoder
 			} elseif ($t[0] === "\n") { // Indent
 				if ($inlineParser) {
 					if ($hasKey || $hasValue) {
-						$this->addValue($result, $hasKey, $key, $hasValue ? $value : NULL);
+						$this->addValue($result, $hasKey ? $key : NULL, $hasValue ? $value : NULL);
 						$hasKey = $hasValue = FALSE;
 					}
 
@@ -207,7 +207,7 @@ class Decoder
 							$n++;
 							$this->error('Bad indentation');
 						}
-						$this->addValue($result, $key !== NULL, $key, $this->parse($newIndent));
+						$this->addValue($result, $key, $this->parse($newIndent));
 						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
 						if (strlen($newIndent) > strlen($indent)) {
 							$n++;
@@ -220,7 +220,7 @@ class Decoder
 							break;
 
 						} elseif ($hasKey) {
-							$this->addValue($result, $key !== NULL, $key, $hasValue ? $value : NULL);
+							$this->addValue($result, $key, $hasValue ? $value : NULL);
 							$hasKey = $hasValue = FALSE;
 						}
 					}
@@ -264,7 +264,7 @@ class Decoder
 
 		if ($inlineParser) {
 			if ($hasKey || $hasValue) {
-				$this->addValue($result, $hasKey, $key, $hasValue ? $value : NULL);
+				$this->addValue($result, $hasKey ? $key : NULL, $hasValue ? $value : NULL);
 			}
 		} else {
 			if ($hasValue && !$hasKey) { // block items must have "key"
@@ -274,22 +274,21 @@ class Decoder
 					$this->error();
 				}
 			} elseif ($hasKey) {
-				$this->addValue($result, $key !== NULL, $key, $hasValue ? $value : NULL);
+				$this->addValue($result, $key, $hasValue ? $value : NULL);
 			}
 		}
 		return $result;
 	}
 
 
-	private function addValue(& $result, $hasKey, $key, $value)
+	private function addValue(& $result, $key, $value)
 	{
-		if ($hasKey) {
-			if ($result && array_key_exists($key, $result)) {
-				$this->error("Duplicated key '$key'");
-			}
-			$result[$key] = $value;
-		} else {
+		if ($key === NULL) {
 			$result[] = $value;
+		} elseif ($result && array_key_exists($key, $result)) {
+			$this->error("Duplicated key '$key'");
+		} else {
+			$result[$key] = $value;
 		}
 	}
 
