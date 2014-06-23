@@ -108,6 +108,7 @@ class Decoder
 		$tokens = $this->tokens;
 		$n = & $this->pos;
 		$count = count($tokens);
+		$mainResult = & $result;
 
 		for (; $n < $count; $n++) {
 			$t = $tokens[$n][0];
@@ -131,7 +132,7 @@ class Decoder
 						$n++;
 						$this->error('Bad indentation');
 					} elseif (strlen($newIndent) < strlen($indent)) {
-						return $result; // block parser exit point
+						return $mainResult; // block parser exit point
 					}
 					$hasKey = $hasValue = FALSE;
 
@@ -142,6 +143,7 @@ class Decoder
 					$key = (string) $value;
 					$hasKey = TRUE;
 					$hasValue = FALSE;
+					$result = & $mainResult;
 				}
 
 			} elseif ($t === '-') { // BlockArray bullet
@@ -217,12 +219,15 @@ class Decoder
 
 						} elseif ($hasKey) {
 							$this->addValue($result, $key !== NULL, $key, $hasValue ? $value : NULL);
+							if ($key !== NULL && !$hasValue && $newIndent === $indent) {
+								$result = & $result[$key];
+							}
 							$hasKey = $hasValue = FALSE;
 						}
 					}
 
 					if (strlen($newIndent) < strlen($indent)) { // close block
-						return $result; // block parser exit point
+						return $mainResult; // block parser exit point
 					}
 				}
 
@@ -268,7 +273,7 @@ class Decoder
 				$this->addValue($result, $key !== NULL, $key, $hasValue ? $value : NULL);
 			}
 		}
-		return $result;
+		return $mainResult;
 	}
 
 
