@@ -32,7 +32,8 @@ class Encoder
 			return $var->format('Y-m-d H:i:s O');
 
 		} elseif ($var instanceof Entity) {
-			return self::encode($var->value) . '(' . (is_array($var->attributes) ? substr(self::encode($var->attributes), 1, -1) : '') . ')';
+			return $this->encode($var->value) . '('
+				. (is_array($var->attributes) ? substr($this->encode($var->attributes), 1, -1) : '') . ')';
 		}
 
 		if (is_object($var)) {
@@ -50,8 +51,8 @@ class Encoder
 					return '[]';
 				}
 				foreach ($var as $k => $v) {
-					$v = self::encode($v, self::BLOCK);
-					$s .= ($isList ? '-' : self::encode($k) . ':')
+					$v = $this->encode($v, self::BLOCK);
+					$s .= ($isList ? '-' : $this->encode($k) . ':')
 						. (strpos($v, "\n") === FALSE ? ' ' . $v : "\n\t" . str_replace("\n", "\n\t", $v))
 						. "\n";
 					continue;
@@ -60,7 +61,7 @@ class Encoder
 
 			} else {
 				foreach ($var as $k => $v) {
-					$s .= ($isList ? '' : self::encode($k) . ': ') . self::encode($v) . ', ';
+					$s .= ($isList ? '' : $this->encode($k) . ': ') . $this->encode($v) . ', ';
 				}
 				return ($isList ? '[' : '{') . substr($s, 0, -2) . ($isList ? ']' : '}');
 			}
