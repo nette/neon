@@ -17,6 +17,7 @@ namespace Nette\Neon;
 final class Neon
 {
 	public const BLOCK = Encoder::BLOCK;
+	const REVIVER = 'reviver';
 
 	public const CHAIN = '!!chain';
 
@@ -37,9 +38,10 @@ final class Neon
 	 * Returns scalars, arrays, DateTimeImmutable and Entity objects.
 	 * @return mixed
 	 */
-	public static function decode(string $input)
+	public static function decode(string $input, array $options = null)
 	{
 		$decoder = new Decoder;
+		$decoder->reviver = isset($options[self::REVIVER]) ? $options[self::REVIVER] : null;
 		return $decoder->decode($input);
 	}
 }
