@@ -24,9 +24,10 @@ final class Neon
 	/**
 	 * Returns value converted to NEON. The flag can be Neon::BLOCK, which will create multiline output.
 	 */
-	public static function encode($value, int $flags = 0): string
+	public static function encode($value, int $flags = 0, callable $replacer = null): string
 	{
 		$encoder = new Encoder;
+		$encoder->replacer = $replacer;
 		return $encoder->encode($value, $flags);
 	}
 
