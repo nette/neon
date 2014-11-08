@@ -90,3 +90,11 @@ Assert::exception(function() {
 Assert::exception(function() {
 	Neon::decode('- x: y:');
 }, 'Nette\Neon\Exception', "Unexpected ':' on line 1, column 7." );
+
+
+Assert::exception(function () {
+	Neon::decode('
+foo:
+bar
+');
+}, 'Nette\Neon\Exception', "Unexpected '<new line>' on line 3, column 4.");
