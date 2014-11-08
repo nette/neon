@@ -223,7 +223,7 @@ class Decoder
 
 						} elseif ($hasKey) {
 							$this->addValue($result, $key, $hasValue ? $value : NULL);
-							if ($key !== NULL && !$hasValue && $newIndent === $indent) {
+							if ($key !== NULL && !$hasValue && $newIndent === $indent && isset($tokens[$n + 1]) && $tokens[$n + 1][0] === '-') {
 								$result = & $result[$key];
 							}
 							$hasKey = $hasValue = FALSE;
