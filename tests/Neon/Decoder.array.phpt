@@ -169,3 +169,36 @@ Assert::same( array(
 - {null= 42}
 null : 42
 ') );
+
+
+Assert::same( array(
+	'x' => 'y'
+), Neon::decode("
+x:
+\ty
+") );
+
+
+Assert::same(array(
+	0 => array('x' => 'y'),
+), Neon::decode("
+-
+\tx:
+\t y
+"));
+
+
+Assert::same(array(
+	'x' => array(1, 2, 3),
+), Neon::decode("
+x:
+    [1, 2, 3]
+"));
+
+
+Assert::same(array(
+	'a'
+), Neon::decode("
+-
+    a
+"));
