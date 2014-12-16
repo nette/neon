@@ -17,6 +17,11 @@ Assert::exception(function() {
 
 
 Assert::exception(function() {
+	Neon::decode('"\uD801"');
+}, 'Nette\Neon\Exception', "Invalid UTF-8 (lone surrogate) \\uD801 on line 1, column 1." );
+
+
+Assert::exception(function() {
 	Neon::decode("- Dave,\n- Rimmer,\n- Kryten,\n");
 }, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 7." );
 
