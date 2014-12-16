@@ -25,6 +25,9 @@ Assert::same( 'the"string', Neon::decode('the"string #literal') );
 Assert::same( "the'string #literal", Neon::decode('"the\'string #literal"') );
 Assert::same( 'the"string #literal', Neon::decode("'the\"string #literal'") );
 Assert::same( 'the"string #literal', Neon::decode('"the\\"string #literal"') );
+Assert::same( '@', Neon::decode('"\u0040"') );
+Assert::same( "\xC4\x9B", Neon::decode('"\u011B"') );
+Assert::same( "\xf0\x90\x90\x81", Neon::decode('"\uD801\uDC01"') ); // U+10401 encoded as surrogate pair
 Assert::same( '<literal> <literal>', Neon::decode('<literal> <literal>') );
 Assert::same( "", Neon::decode("''") );
 Assert::same( "", Neon::decode('""') );
