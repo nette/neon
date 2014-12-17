@@ -251,7 +251,7 @@ class Decoder
 					'null' => 0, 'Null' => 0, 'NULL' => 0,
 				);
 				if ($t[0] === '"') {
-					$value = preg_replace_callback('#\\\\(?:u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', array($this, 'cbString'), substr($t, 1, -1));
+					$value = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', array($this, 'cbString'), substr($t, 1, -1));
 				} elseif ($t[0] === "'") {
 					$value = substr($t, 1, -1);
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n+1][0]) || ($tokens[$n+1][0] !== ':' && $tokens[$n+1][0] !== '='))) {
@@ -304,8 +304,14 @@ class Decoder
 		$sq = $m[0];
 		if (isset($mapping[$sq[1]])) {
 			return $mapping[$sq[1]];
-		} elseif ($sq[1] === 'u' && strlen($sq) === 6) {
-			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', hexdec(substr($sq, 2))));
+		} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
+			$lead = hexdec(substr($sq, 2, 4));
+			$tail = hexdec(substr($sq, 8, 4));
+			$code = $tail ? (0x2400 + (($lead - 0xD800) << 10) + $tail) : $lead;
+			if ($code >= 0xD800 && $code <= 0xDFFF) {
+				$this->error("Invalid UTF-8 (lone surrogate) $sq");
+			}
+			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code));
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 			return chr(hexdec(substr($sq, 2)));
 		} else {
