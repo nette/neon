@@ -72,3 +72,8 @@ Assert::same(
 	'ent()',
 	Neon::encode($entity)
 );
+
+Assert::same(
+	PHP_VERSION_ID >= 50400 ? '",žlu/ťoučký"' : '",\u017elu\/\u0165ou\u010dk\u00fd"',
+	Neon::encode(',žlu/ťoučký')
+);
