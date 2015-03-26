@@ -53,9 +53,9 @@ class Encoder
 				foreach ($var as $k => $v) {
 					$v = $this->encode($v, self::BLOCK);
 					$s .= ($isList ? '-' : $this->encode($k) . ':')
-						. (strpos($v, "\n") === FALSE ? ' ' . $v : "\n\t" . str_replace("\n", "\n\t", $v))
-						. "\n";
-					continue;
+						. (strpos($v, "\n") === FALSE
+							? ' ' . $v . "\n"
+							: "\n" . preg_replace('#^(?=.)#m', "\t", $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
 				}
 				return $s;
 
