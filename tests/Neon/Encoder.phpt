@@ -77,3 +77,8 @@ Assert::same(
 	PHP_VERSION_ID >= 50400 ? '",žlu/ťoučký"' : '",\u017elu\/\u0165ou\u010dk\u00fd"',
 	Neon::encode(',žlu/ťoučký')
 );
+
+Assert::same(
+	"foo: 1\nbar:\n\tx:\n\t\t- 1\n\t\t- 2\n\n\ty:\n\t\t- 3\n\t\t- 4\n\nbaz: null\n",
+	Neon::encode(array('foo' => 1, 'bar' => array('x' => array(1, 2), 'y' => array(3, 4)), 'baz' => NULL), Neon::BLOCK)
+);
