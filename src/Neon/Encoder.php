@@ -77,7 +77,7 @@ class Encoder
 			return strpos($var, '.') === FALSE ? $var . '.0' : $var;
 
 		} else {
-			return json_encode($var, PHP_VERSION_ID >= 50400 ? JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES : 0);
+			return json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		}
 	}
 
