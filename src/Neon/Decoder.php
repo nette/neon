@@ -19,7 +19,7 @@ use Nette;
 class Decoder
 {
 	/** @var array */
-	public static $patterns = array(
+	public static $patterns = [
 		'
 			\'[^\'\n]*\' |
 			"(?: \\\\. | [^"\\\\\n] )*"
@@ -38,13 +38,13 @@ class Decoder
 		'?:\#.*', // comment
 		'\n[\t\ ]*', // new line + indent
 		'?:[\t\ ]+', // whitespace
-	);
+	];
 
-	private static $brackets = array(
+	private static $brackets = [
 		'[' => ']',
 		'{' => '}',
 		'(' => ')',
-	);
+	];
 
 	/** @var string */
 	private $input;
@@ -126,7 +126,7 @@ class Decoder
 
 				} elseif ($hasKey && $key === NULL && $hasValue && !$inlineParser) {
 					$n++;
-					$result[] = $this->parse($indent . '  ', array(), $value, TRUE);
+					$result[] = $this->parse($indent . '  ', [], $value, TRUE);
 					$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
 					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
@@ -160,13 +160,13 @@ class Decoder
 					}
 					$n++;
 					if ($value instanceof Entity && $value->value === Neon::CHAIN) {
-						end($value->attributes)->attributes = $this->parse(FALSE, array());
+						end($value->attributes)->attributes = $this->parse(FALSE, []);
 					} else {
-						$value = new Entity($value, $this->parse(FALSE, array()));
+						$value = new Entity($value, $this->parse(FALSE, []));
 					}
 				} else {
 					$n++;
-					$value = $this->parse(FALSE, array());
+					$value = $this->parse(FALSE, []);
 				}
 				$hasValue = TRUE;
 				if (!isset($tokens[$n]) || $tokens[$n][0] !== self::$brackets[$t]) { // unexpected type of bracket or block-parser
@@ -238,20 +238,20 @@ class Decoder
 			} elseif ($hasValue) { // Value
 				if ($value instanceof Entity) { // Entity chaining
 					if ($value->value !== Neon::CHAIN) {
-						$value = new Entity(Neon::CHAIN, array($value));
+						$value = new Entity(Neon::CHAIN, [$value]);
 					}
 					$value->attributes[] = new Entity($t);
 				} else {
 					$this->error();
 				}
 			} else { // Value
-				static $consts = array(
+				static $consts = [
 					'true' => TRUE, 'True' => TRUE, 'TRUE' => TRUE, 'yes' => TRUE, 'Yes' => TRUE, 'YES' => TRUE, 'on' => TRUE, 'On' => TRUE, 'ON' => TRUE,
 					'false' => FALSE, 'False' => FALSE, 'FALSE' => FALSE, 'no' => FALSE, 'No' => FALSE, 'NO' => FALSE, 'off' => FALSE, 'Off' => FALSE, 'OFF' => FALSE,
 					'null' => 0, 'Null' => 0, 'NULL' => 0,
-				);
+				];
 				if ($t[0] === '"') {
-					$value = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', array($this, 'cbString'), substr($t, 1, -1));
+					$value = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], substr($t, 1, -1));
 				} elseif ($t[0] === "'") {
 					$value = substr($t, 1, -1);
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n+1][0]) || ($tokens[$n+1][0] !== ':' && $tokens[$n+1][0] !== '='))) {
@@ -300,7 +300,7 @@ class Decoder
 
 	private function cbString($m)
 	{
-		static $mapping = array('t' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0");
+		static $mapping = ['t' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0"];
 		$sq = $m[0];
 		if (isset($mapping[$sq[1]])) {
 			return $mapping[$sq[1]];
