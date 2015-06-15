@@ -249,6 +249,8 @@ class Decoder
 					$value = NULL;
 				} elseif (is_numeric($t)) {
 					$value = $t * 1;
+				} elseif (preg_match('#0x[0-9a-fA-F]+\z#A', $t)) {
+					$value = hexdec($t);
 				} elseif (preg_match('#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A', $t)) {
 					$value = new \DateTime($t);
 				} else { // literal
