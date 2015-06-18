@@ -4,9 +4,9 @@
  * Test: Nette\Neon\Neon::encode.
  */
 
-use Nette\Neon\Neon,
-	Nette\Neon\Entity,
-	Tester\Assert;
+use Nette\Neon\Neon;
+use Nette\Neon\Entity;
+use Tester\Assert;
 
 
 require __DIR__ . '/../bootstrap.php';
@@ -19,7 +19,7 @@ Assert::same(
 		FALSE, 'FALSE', 'fAlSe', 'false',
 		NULL, 'NULL', 'nUlL', 'null',
 		'yes', 'no', 'on', 'off',
-]) );
+]));
 
 Assert::same(
 	'[1, 1.0, 0, 0.0, -1, -1.2, "1", "1.0", "-1"]',

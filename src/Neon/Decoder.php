@@ -127,7 +127,7 @@ class Decoder
 				} elseif ($hasKey && $key === NULL && $hasValue && !$inlineParser) {
 					$n++;
 					$result[] = $this->parse($indent . '  ', [], $value, TRUE);
-					$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+					$newIndent = isset($tokens[$n], $tokens[$n + 1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
 					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
 						$this->error('Bad indentation');
@@ -187,10 +187,10 @@ class Decoder
 					}
 
 				} else {
-					while (isset($tokens[$n+1]) && $tokens[$n+1][0][0] === "\n") {
+					while (isset($tokens[$n + 1]) && $tokens[$n + 1][0][0] === "\n") {
 						$n++; // skip to last indent
 					}
-					if (!isset($tokens[$n+1])) {
+					if (!isset($tokens[$n + 1])) {
 						break;
 					}
 
@@ -210,7 +210,7 @@ class Decoder
 							$this->error('Bad indentation');
 						}
 						$this->addValue($result, $key, $this->parse($newIndent));
-						$newIndent = isset($tokens[$n], $tokens[$n+1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+						$newIndent = isset($tokens[$n], $tokens[$n + 1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
 						if (strlen($newIndent) > strlen($indent)) {
 							$n++;
 							$this->error('Bad indentation');
@@ -254,7 +254,7 @@ class Decoder
 					$value = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], substr($t, 1, -1));
 				} elseif ($t[0] === "'") {
 					$value = substr($t, 1, -1);
-				} elseif (isset($consts[$t]) && (!isset($tokens[$n+1][0]) || ($tokens[$n+1][0] !== ':' && $tokens[$n+1][0] !== '='))) {
+				} elseif (isset($consts[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$value = $consts[$t] === 0 ? NULL : $consts[$t];
 				} elseif (is_numeric($t)) {
 					$value = $t * 1;

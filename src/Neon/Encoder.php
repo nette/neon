@@ -37,7 +37,8 @@ class Encoder
 		}
 
 		if (is_object($var)) {
-			$obj = $var; $var = [];
+			$obj = $var;
+			$var = [];
 			foreach ($obj as $k => $v) {
 				$var[$k] = $v;
 			}
