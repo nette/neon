@@ -4,8 +4,8 @@
  * Test: Nette\Neon\Neon::decode simple values.
  */
 
-use Nette\Neon\Neon,
-	Tester\Assert;
+use Nette\Neon\Neon;
+use Tester\Assert;
 
 
 require __DIR__ . '/../bootstrap.php';
@@ -15,37 +15,37 @@ $dataSet = array(
 	// https://tools.ietf.org/html/rfc7159
 	'RFC JSON' => array(
 		// numbers
-		array("0", 0),
-		array("1", 1),
-		array("0.1", 0.1),
-		array("1.1", 1.1),
-		array("1.100000", 1.1),
-		array("1.111111", 1.111111),
-		array("-0", -0),
-		array("-1", -1),
-		array("-0.1", -0.1),
-		array("-1.1", -1.1),
-		array("-1.100000", -1.1),
-		array("-1.111111", -1.111111),
-		array("1.1e1", 11.0),
-		array("1.1e+1", 11.0),
-		array("1.1e-1", 0.11),
-		array("1.1E1", 11.0),
-		array("1.1E+1", 11.0),
-		array("1.1E-1", 0.11),
+		array('0', 0),
+		array('1', 1),
+		array('0.1', 0.1),
+		array('1.1', 1.1),
+		array('1.100000', 1.1),
+		array('1.111111', 1.111111),
+		array('-0', -0),
+		array('-1', -1),
+		array('-0.1', -0.1),
+		array('-1.1', -1.1),
+		array('-1.100000', -1.1),
+		array('-1.111111', -1.111111),
+		array('1.1e1', 11.0),
+		array('1.1e+1', 11.0),
+		array('1.1e-1', 0.11),
+		array('1.1E1', 11.0),
+		array('1.1E+1', 11.0),
+		array('1.1E-1', 0.11),
 
 		// literals
-		array("null", NULL),
-		array("true", TRUE),
-		array("false", FALSE),
+		array('null', NULL),
+		array('true', TRUE),
+		array('false', FALSE),
 
 		// strings
 		array("''", ''),
 		array('""', ''),
-		array('"foo"', "foo"),
+		array('"foo"', 'foo'),
 		array('"f\\no"', "f\no"),
 		array('"\\b\\f\\n\\r\\t\\"\\/\\\\"', "\x08\f\n\r\t\"/\\"),
-		array('"\u0040"', "@"),
+		array('"\u0040"', '@'),
 		array('"\u011B"', "\xC4\x9B"),
 		array('"\uD801\uDC01"', "\xf0\x90\x90\x81"), // U+10401 encoded as surrogate pair
 	),
@@ -101,7 +101,7 @@ $dataSet = array(
 
 		// extended string syntax
 		array('"\\x42 hex escape"', "\x42 hex escape"),
-		array("'single \\n quote'", "single \\n quote"),
+		array("'single \\n quote'", 'single \\n quote'),
 
 		// strings without quotes
 		array('a', 'a'),
@@ -130,16 +130,16 @@ $dataSet = array(
 		array('1e+-1', '1e+-1'),
 
 		// object keys without quotes
-		array("{true: 42}", array('true' => 42)),
-		array("{false: 42}", array('false' => 42)),
-		array("{null: 42}", array('' => 42)), // is changed in 2.3
-		array("{yes: 42}", array('yes' => 42)),
-		array("{on: 42}", array('on' => 42)),
-		array("{no: 42}", array('no' => 42)),
-		array("{off: 42}", array('off' => 42)),
-		array("{42: 42}", array(42 => 42)),
-		array("{0: 42}", array(0 => 42)),
-		array("{-1: 42}", array(-1 => 42)),
+		array('{true: 42}', array('true' => 42)),
+		array('{false: 42}', array('false' => 42)),
+		array('{null: 42}', array('' => 42)), // is changed in 2.3
+		array('{yes: 42}', array('yes' => 42)),
+		array('{on: 42}', array('on' => 42)),
+		array('{no: 42}', array('no' => 42)),
+		array('{off: 42}', array('off' => 42)),
+		array('{42: 42}', array(42 => 42)),
+		array('{0: 42}', array(0 => 42)),
+		array('{-1: 42}', array(-1 => 42)),
 
 		// edge
 		array('"the\'string #literal"', "the'string #literal"),
@@ -171,7 +171,7 @@ $dataSet = array(
 		array('{"x":true} ""'),
 		array('"Garbage""After string"'),
 		array('function () { return 0; }'),
-		array("[1, 2"),
+		array('[1, 2'),
 		array('{"x": 3'),
 		array('1e--1]'),
 	),
