@@ -3,6 +3,8 @@
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/neon.svg)](https://packagist.org/packages/nette/neon)
 [![Build Status](https://travis-ci.org/nette/neon.svg?branch=master)](https://travis-ci.org/nette/neon)
+[![Latest Stable Version](https://poser.pugx.org/nette/neon/v/stable)](https://github.com/nette/neon/releases)
+[![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/neon/blob/master/license.md)
 
 NEON is very similar to YAML.The main difference is that the NEON supports "entities"
 (so can be used e.g. to parse phpDoc annotations) and tab characters for indentation.
