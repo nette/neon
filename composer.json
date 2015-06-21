@@ -18,7 +18,7 @@
 		"ext-iconv": "*"
 	},
 	"require-dev": {
-		"nette/tester": "~1.0"
+		"nette/tester": "~1.4"
 	},
 	"autoload": {
 		"classmap": ["src/"]
