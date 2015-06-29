@@ -7,8 +7,6 @@
 
 namespace Nette\Neon;
 
-use Nette;
-
 
 /**
  * The exception that indicates error of NEON processing.
