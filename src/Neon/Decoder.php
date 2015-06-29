@@ -7,8 +7,6 @@
 
 namespace Nette\Neon;
 
-use Nette;
-
 
 /**
  * Parser for Nette Object Notation.

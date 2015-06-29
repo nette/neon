@@ -7,8 +7,6 @@
 
 namespace Nette\Neon;
 
-use Nette;
-
 
 /**
  * Simple generator for Nette Object Notation.
