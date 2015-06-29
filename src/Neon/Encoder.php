@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Simple generator for Nette Object Notation.
- *
- * @author     David Grudl
  */
 class Encoder
 {
