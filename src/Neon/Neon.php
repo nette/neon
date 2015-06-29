@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Simple parser & generator for Nette Object Notation.
- *
- * @author     David Grudl
  */
 class Neon
 {

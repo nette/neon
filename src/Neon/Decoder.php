@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Parser for Nette Object Notation.
- *
- * @author     David Grudl
  * @internal
  */
 class Decoder
