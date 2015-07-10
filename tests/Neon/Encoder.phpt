@@ -82,3 +82,12 @@ Assert::same(
 	"foo: 1\nbar:\n\tx:\n\t\t- 1\n\t\t- 2\n\n\ty:\n\t\t- 3\n\t\t- 4\n\nbaz: null\n",
 	Neon::encode(array('foo' => 1, 'bar' => array('x' => array(1, 2), 'y' => array(3, 4)), 'baz' => NULL), Neon::BLOCK)
 );
+
+Assert::same(
+	'ent(1)inner(2, 3)',
+	Neon::encode(Neon::decode('ent(1)inner(2, 3)'))
+);
+Assert::same(
+	'foo(1, 2)::bar(3)',
+	Neon::encode(Neon::decode('foo(1,2)::bar(3)'))
+);
