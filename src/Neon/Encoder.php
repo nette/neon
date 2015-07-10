@@ -29,11 +29,7 @@ class Encoder
 
 		} elseif ($var instanceof Entity) {
 			if($var->value === Neon::CHAIN) {
-				$s = '';
-				foreach($var->attributes as $attr) {
-					$s .= $this->encode($attr);
-				}
-				return $s;
+				return implode('', array_map([$this, 'encode'], $var->attributes));
 			}
 			return $this->encode($var->value) . '('
 				. (is_array($var->attributes) ? substr($this->encode($var->attributes), 1, -1) : '') . ')';
