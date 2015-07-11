@@ -28,7 +28,7 @@ class Encoder
 			return $var->format('Y-m-d H:i:s O');
 
 		} elseif ($var instanceof Entity) {
-			if($var->value === Neon::CHAIN) {
+			if ($var->value === Neon::CHAIN) {
 				return implode('', array_map([$this, 'encode'], $var->attributes));
 			}
 			return $this->encode($var->value) . '('
