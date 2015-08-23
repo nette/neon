@@ -13,42 +13,42 @@ require __DIR__ . '/../bootstrap.php';
 
 Assert::exception(function () {
 	Neon::decode("Hello\nWorld");
-}, 'Nette\Neon\Exception', "Unexpected 'World' on line 2, column 1.");
+}, Nette\Neon\Exception::class, "Unexpected 'World' on line 2, column 1.");
 
 
 Assert::exception(function () {
 	Neon::decode('"\uD801"');
-}, 'Nette\Neon\Exception', 'Invalid UTF-8 (lone surrogate) \\uD801 on line 1, column 1.');
+}, Nette\Neon\Exception::class, 'Invalid UTF-8 (lone surrogate) \\uD801 on line 1, column 1.');
 
 
 Assert::exception(function () {
 	Neon::decode("- Dave,\n- Rimmer,\n- Kryten,\n");
-}, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 7.");
+}, Nette\Neon\Exception::class, "Unexpected ',' on line 1, column 7.");
 
 
 Assert::exception(function () {
 	Neon::decode('item [a, b]');
-}, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 8.");
+}, Nette\Neon\Exception::class, "Unexpected ',' on line 1, column 8.");
 
 
 Assert::exception(function () {
 	Neon::decode('{,}');
-}, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 2.");
+}, Nette\Neon\Exception::class, "Unexpected ',' on line 1, column 2.");
 
 
 Assert::exception(function () {
 	Neon::decode('{a, ,}');
-}, 'Nette\Neon\Exception', "Unexpected ',' on line 1, column 5.");
+}, Nette\Neon\Exception::class, "Unexpected ',' on line 1, column 5.");
 
 
 Assert::exception(function () {
 	Neon::decode('"');
-}, 'Nette\Neon\Exception', "Unexpected '\"' on line 1, column 1.");
+}, Nette\Neon\Exception::class, "Unexpected '\"' on line 1, column 1.");
 
 
 Assert::exception(function () {
 	Neon::decode("\ta:\n b:");
-}, 'Nette\Neon\Exception', 'Invalid combination of tabs and spaces on line 2, column 2.');
+}, Nette\Neon\Exception::class, 'Invalid combination of tabs and spaces on line 2, column 2.');
 
 
 Assert::exception(function () {
@@ -57,7 +57,7 @@ a:
   b:
  c: x
 ');
-}, 'Nette\Neon\Exception', 'Bad indentation on line 4, column 2.');
+}, Nette\Neon\Exception::class, 'Bad indentation on line 4, column 2.');
 
 
 Assert::exception(function () {
@@ -65,7 +65,7 @@ Assert::exception(function () {
 a: 1
   b:
 ');
-}, 'Nette\Neon\Exception', 'Bad indentation on line 3, column 3.');
+}, Nette\Neon\Exception::class, 'Bad indentation on line 3, column 3.');
 
 
 Assert::exception(function () {
@@ -73,7 +73,7 @@ Assert::exception(function () {
 - x:
  a: 10
 ');
-}, 'Nette\Neon\Exception', 'Bad indentation on line 3, column 2.');
+}, Nette\Neon\Exception::class, 'Bad indentation on line 3, column 2.');
 
 
 Assert::exception(function () {
@@ -81,7 +81,7 @@ Assert::exception(function () {
 - x: 20
    a: 10
 ');
-}, 'Nette\Neon\Exception', 'Bad indentation on line 3, column 4.');
+}, Nette\Neon\Exception::class, 'Bad indentation on line 3, column 4.');
 
 
 Assert::exception(function () {
@@ -89,12 +89,12 @@ Assert::exception(function () {
 - x: 20
  a: 10
 ');
-}, 'Nette\Neon\Exception', 'Bad indentation on line 3, column 2.');
+}, Nette\Neon\Exception::class, 'Bad indentation on line 3, column 2.');
 
 
 Assert::exception(function () {
 	Neon::decode('- x: y:');
-}, 'Nette\Neon\Exception', "Unexpected ':' on line 1, column 7.");
+}, Nette\Neon\Exception::class, "Unexpected ':' on line 1, column 7.");
 
 
 Assert::exception(function () {
@@ -102,4 +102,4 @@ Assert::exception(function () {
 foo:
 bar
 ');
-}, 'Nette\Neon\Exception', "Unexpected '<new line>' on line 3, column 4.");
+}, Nette\Neon\Exception::class, "Unexpected '<new line>' on line 3, column 4.");

@@ -212,5 +212,5 @@ foreach ($dataSet['ignored invalid encoding'] as $set) {
 foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) as $set) {
 	Assert::exception(function () use ($set) {
 		Neon::decode($set[0]);
-	}, 'Nette\Neon\Exception');
+	}, Nette\Neon\Exception::class);
 }

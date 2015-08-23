@@ -52,7 +52,7 @@ Assert::same([
 ], Neon::decode("{a,\nb\nc: 1,\nd: 1,\n\ne: 1\nf:\n}"));
 
 
-Assert::type('Nette\Neon\Entity', Neon::decode('@item(a, b)'));
+Assert::type(Nette\Neon\Entity::class, Neon::decode('@item(a, b)'));
 
 
 Assert::equal(
