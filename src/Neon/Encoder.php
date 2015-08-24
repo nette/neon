@@ -5,6 +5,8 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
+declare(strict_types = 1);
+
 namespace Nette\Neon;
 
 
@@ -22,7 +24,7 @@ class Encoder
 	 * @param  int
 	 * @return string
 	 */
-	public function encode($var, $options = NULL)
+	public function encode($var, int $options = NULL): string
 	{
 		if ($var instanceof \DateTimeInterface) {
 			return $var->format('Y-m-d H:i:s O');

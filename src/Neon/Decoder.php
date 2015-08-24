@@ -5,6 +5,8 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
+declare(strict_types = 1);
+
 namespace Nette\Neon;
 
 
@@ -46,7 +48,7 @@ class Decoder
 	private $input;
 
 	/** @var array */
-	private $tokens;
+	private $tokens = [];
 
 	/** @var int */
 	private $pos;
@@ -58,12 +60,9 @@ class Decoder
 	 * @param  string
 	 * @return mixed
 	 */
-	public function decode($input)
+	public function decode(string $input)
 	{
-		if (!is_string($input)) {
-			throw new \InvalidArgumentException(sprintf('Argument must be a string, %s given.', gettype($input)));
-
-		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
+		if (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
 		}
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
@@ -92,11 +91,11 @@ class Decoder
 
 
 	/**
-	 * @param  string  indentation (for block-parser)
+	 * @param  mixed  indentation (for block-parser)
 	 * @param  mixed
 	 * @return array
 	 */
-	private function parse($indent, $result = NULL, $key = NULL, $hasKey = FALSE)
+	private function parse($indent, array $result = NULL, string $key = NULL, bool $hasKey = FALSE)
 	{
 		$inlineParser = $indent === FALSE;
 		$value = NULL;
@@ -318,7 +317,7 @@ class Decoder
 	}
 
 
-	private function error($message = "Unexpected '%s'")
+	private function error(string $message = "Unexpected '%s'")
 	{
 		$last = isset($this->tokens[$this->pos]) ? $this->tokens[$this->pos] : NULL;
 		$offset = $last ? $last[1] : strlen($this->input);

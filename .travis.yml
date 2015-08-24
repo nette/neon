@@ -1,16 +1,14 @@
 language: php
 php:
-    - 5.6
     - 7.0
     - hhvm
 
 matrix:
     allow_failures:
-        - php: 7.0
         - php: hhvm
 
     include:
-        - php: 5.6
+        - php: 7.0
           env: dependencies="--prefer-lowest --prefer-stable"
 
 script:
@@ -25,7 +23,7 @@ before_script:
     # Install Nette Tester & Code Checker
     - travis_retry composer update --no-interaction --prefer-dist $dependencies
     - travis_retry composer create-project nette/code-checker temp/code-checker ~2.5 --no-interaction
-  
+
 sudo: false
 
 cache:

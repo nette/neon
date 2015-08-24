@@ -5,6 +5,8 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
+declare(strict_types = 1);
+
 namespace Nette\Neon;
 
 
@@ -23,7 +25,7 @@ class Neon
 	 * @param  int
 	 * @return string
 	 */
-	public static function encode($var, $options = NULL)
+	public static function encode($var, int $options = NULL): string
 	{
 		$encoder = new Encoder;
 		return $encoder->encode($var, $options);
@@ -35,7 +37,7 @@ class Neon
 	 * @param  string
 	 * @return mixed
 	 */
-	public static function decode($input)
+	public static function decode(string $input)
 	{
 		$decoder = new Decoder;
 		return $decoder->decode($input);

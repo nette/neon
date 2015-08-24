@@ -5,6 +5,8 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
+declare(strict_types = 1);
+
 namespace Nette\Neon;
 
 

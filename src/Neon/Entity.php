@@ -5,6 +5,8 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
+declare(strict_types = 1);
+
 namespace Nette\Neon;
 
 
@@ -17,7 +19,7 @@ class Entity extends \stdClass
 	public $value;
 
 	/** @var array */
-	public $attributes;
+	public $attributes = [];
 
 
 	public function __construct($value = NULL, array $attrs = NULL)
