@@ -231,15 +231,6 @@ class Decoder
 					}
 				}
 
-			} elseif ($hasValue) { // Value
-				if ($value instanceof Entity) { // Entity chaining
-					if ($value->value !== Neon::CHAIN) {
-						$value = new Entity(Neon::CHAIN, [$value]);
-					}
-					$value->attributes[] = new Entity($t);
-				} else {
-					$this->error();
-				}
 			} else { // Value
 				static $consts = [
 					'true' => TRUE, 'True' => TRUE, 'TRUE' => TRUE, 'yes' => TRUE, 'Yes' => TRUE, 'YES' => TRUE, 'on' => TRUE, 'On' => TRUE, 'ON' => TRUE,
@@ -247,21 +238,33 @@ class Decoder
 					'null' => 0, 'Null' => 0, 'NULL' => 0,
 				];
 				if ($t[0] === '"') {
-					$value = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], substr($t, 1, -1));
+					$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], substr($t, 1, -1));
 				} elseif ($t[0] === "'") {
-					$value = substr($t, 1, -1);
+					$converted = substr($t, 1, -1);
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
-					$value = $consts[$t] === 0 ? NULL : $consts[$t];
+					$converted = $consts[$t] === 0 ? NULL : $consts[$t];
 				} elseif (is_numeric($t)) {
-					$value = $t * 1;
+					$converted = $t * 1;
 				} elseif (preg_match('#0x[0-9a-fA-F]+\z#A', $t)) {
-					$value = hexdec($t);
+					$converted = hexdec($t);
 				} elseif (preg_match('#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A', $t)) {
-					$value = new \DateTime($t);
+					$converted = new \DateTime($t);
 				} else { // literal
-					$value = $t;
+					$converted = $t;
 				}
-				$hasValue = TRUE;
+				if ($hasValue) {
+					if ($value instanceof Entity) { // Entity chaining
+						if ($value->value !== Neon::CHAIN) {
+							$value = new Entity(Neon::CHAIN, [$value]);
+						}
+						$value->attributes[] = new Entity($converted);
+					} else {
+						$this->error();
+					}
+				} else {
+					$value = $converted;
+					$hasValue = TRUE;
+				}
 			}
 		}
 

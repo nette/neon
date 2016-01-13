@@ -95,3 +95,11 @@ Assert::equal(
 	]),
 	Neon::decode('first(a, b)second(1, 2)')
 );
+
+Assert::equal(
+	new Entity(Neon::CHAIN, [
+		new Entity(1, []),
+		new Entity(2, []),
+	]),
+	Neon::decode('1() 2()')
+);
