@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Neon\Neon::decode simple values.
+ * Test: Nette\Neon\Neon::decode.
  */
 
 use Nette\Neon\Neon;
@@ -109,6 +109,10 @@ $dataSet = array(
 		array("\nabc\n", 'abc'),
 		array('  abc  ', 'abc'),
 		array(':abc', ':abc'),
+		array('a:bc', 'a:bc'),
+		array('-abc', '-abc'),
+		array('a-bc', 'a-bc'),
+		array('abc-', 'abc-'),
 
 		array('the"string#literal', 'the"string#literal'),
 		array('the"string #literal', 'the"string'),
@@ -140,6 +144,20 @@ $dataSet = array(
 		array('{42: 42}', array(42 => 42)),
 		array('{0: 42}', array(0 => 42)),
 		array('{-1: 42}', array(-1 => 42)),
+
+		// key value separator
+		array('{a: b}', array('a' => 'b')),
+		array('{a:b}', array('a:b')),
+		array('{:a : b}', array(':a' => 'b')),
+		array('{a= b}', array('a' => 'b')),
+		array('{a=b}', array('a' => 'b')),
+		array('{a =b}', array('a' => 'b')),
+
+		// comments
+		array('#abc', NULL),
+		array('a: #abc', array('a' => NULL)),
+		array('a:#abc', 'a:#abc'),
+		array('abc#', 'abc#'),
 
 		// edge
 		array('"the\'string #literal"', "the'string #literal"),
@@ -174,6 +192,9 @@ $dataSet = array(
 		array('[1, 2'),
 		array('{"x": 3'),
 		array('1e--1]'),
+		array('=abc'),
+		array('{a :b}'),
+		array('a :b'),
 	),
 
 	// RFC JSON with valid syntax which can not be encoded in UTF-8
