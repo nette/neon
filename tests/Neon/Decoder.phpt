@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Neon\Neon::decode simple values.
+ * Test: Nette\Neon\Neon::decode.
  */
 
 use Nette\Neon\Neon;
@@ -109,6 +109,10 @@ $dataSet = [
 		["\nabc\n", 'abc'],
 		['  abc  ', 'abc'],
 		[':abc', ':abc'],
+		['a:bc', 'a:bc'],
+		['-abc', '-abc'],
+		['a-bc', 'a-bc'],
+		['abc-', 'abc-'],
 
 		['the"string#literal', 'the"string#literal'],
 		['the"string #literal', 'the"string'],
@@ -140,6 +144,20 @@ $dataSet = [
 		['{42: 42}', [42 => 42]],
 		['{0: 42}', [0 => 42]],
 		['{-1: 42}', [-1 => 42]],
+
+		// key value separator
+		['{a: b}', ['a' => 'b']],
+		['{a:b}', ['a:b']],
+		['{:a : b}', [':a' => 'b']],
+		['{a= b}', ['a' => 'b']],
+		['{a=b}', ['a' => 'b']],
+		['{a =b}', ['a' => 'b']],
+
+		// comments
+		['#abc', NULL],
+		['a: #abc', ['a' => NULL]],
+		['a:#abc', 'a:#abc'],
+		['abc#', 'abc#'],
 
 		// edge
 		['"the\'string #literal"', "the'string #literal"],
@@ -174,6 +192,9 @@ $dataSet = [
 		['[1, 2'],
 		['{"x": 3'],
 		['1e--1]'],
+		['=abc'],
+		['{a :b}'],
+		['a :b'],
 	],
 
 	// RFC JSON with valid syntax which can not be encoded in UTF-8
