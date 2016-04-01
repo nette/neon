@@ -17,8 +17,10 @@ class Decoder
 	/** @var array */
 	public static $patterns = [
 		'
+			\'\'\'\n (?: [^\n] | \n(?![\t\ ]*\'\'\') )*+ \n[\t\ ]*\'\'\' |
+			"""\n (?: [^\n] | \n(?![\t\ ]*""") )*+ \n[\t\ ]*""" |
 			\'[^\'\n]*\' |
-			"(?: \\\\. | [^"\\\\\n] )*"
+			" (?: \\\\. | [^"\\\\\n] )* "
 		', // string
 		'
 			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | [:-][^"\',\]})\s] )
@@ -237,10 +239,17 @@ class Decoder
 					'false' => FALSE, 'False' => FALSE, 'FALSE' => FALSE, 'no' => FALSE, 'No' => FALSE, 'NO' => FALSE, 'off' => FALSE, 'Off' => FALSE, 'OFF' => FALSE,
 					'null' => 0, 'Null' => 0, 'NULL' => 0,
 				];
-				if ($t[0] === '"') {
-					$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], substr($t, 1, -1));
-				} elseif ($t[0] === "'") {
-					$converted = substr($t, 1, -1);
+				if ($t[0] === '"' || $t[0] === "'") {
+					if (preg_match('#^...\n+([\t ]*)#', $t, $m)) {
+						$converted = substr($t, 3, -3);
+						$converted = str_replace("\n" . $m[1], "\n", $converted);
+						$converted = preg_replace('#^\n|\n[\t ]*+\z#', '', $converted);
+					} else {
+						$converted = substr($t, 1, -1);
+					}
+					if ($t[0] === '"') {
+						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
+					}
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$converted = $consts[$t] === 0 ? NULL : $consts[$t];
 				} elseif (is_numeric($t)) {
