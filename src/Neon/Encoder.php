@@ -24,7 +24,7 @@ class Encoder
 	 */
 	public function encode($var, $options = NULL)
 	{
-		if ($var instanceof \DateTime) {
+		if ($var instanceof \DateTime || $var instanceof \DateTimeImmutable) {
 			return $var->format('Y-m-d H:i:s O');
 
 		} elseif ($var instanceof Entity) {
