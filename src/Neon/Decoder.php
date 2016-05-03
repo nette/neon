@@ -14,8 +14,10 @@ namespace Nette\Neon;
  */
 class Decoder
 {
-	/** @var array */
-	public static $patterns = [
+	/** @deprecated */
+	public static $patterns = self::PATTERNS;
+
+	const PATTERNS = [
 		'
 			\'\'\'\n (?: [^\n] | \n(?![\t\ ]*\'\'\') )*+ \n[\t\ ]*\'\'\' |
 			"""\n (?: [^\n] | \n(?![\t\ ]*""") )*+ \n[\t\ ]*""" |
@@ -42,7 +44,7 @@ class Decoder
 
 	const PATTERN_HEX = '#0x[0-9a-fA-F]+\z#A';
 
-	private static $brackets = [
+	const BRACKETS = [
 		'[' => ']',
 		'{' => '}',
 		'(' => ')',
@@ -74,7 +76,7 @@ class Decoder
 		}
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
 
-		$pattern = '~(' . implode(')|(', self::$patterns) . ')~Amix';
+		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amix';
 		$this->tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
 
 		$last = end($this->tokens);
@@ -155,7 +157,7 @@ class Decoder
 				$key = NULL;
 				$hasKey = TRUE;
 
-			} elseif (isset(self::$brackets[$t])) { // Opening bracket [ ( {
+			} elseif (($tmp = self::BRACKETS) && isset($tmp[$t])) { // Opening bracket [ ( {
 				if ($hasValue) {
 					if ($t !== '(') {
 						$this->error();
@@ -171,7 +173,7 @@ class Decoder
 					$value = $this->parse(FALSE, []);
 				}
 				$hasValue = TRUE;
-				if (!isset($tokens[$n]) || $tokens[$n][0] !== self::$brackets[$t]) { // unexpected type of bracket or block-parser
+				if (!isset($tokens[$n]) || $tokens[$n][0] !== self::BRACKETS[$t]) { // unexpected type of bracket or block-parser
 					$this->error();
 				}
 
