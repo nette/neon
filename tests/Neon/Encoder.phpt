@@ -91,3 +91,13 @@ Assert::same(
 	'foo(1, 2)::bar(3)',
 	Neon::encode(Neon::decode('foo(1,2)::bar(3)'))
 );
+
+Assert::same(
+	'2016-06-03 19:00:00 +0200',
+	Neon::encode(new DateTime('2016-06-03T19:00:00+02:00'))
+);
+
+Assert::same(
+	'2016-06-03 19:00:00 +0200',
+	Neon::encode(new DateTimeImmutable('2016-06-03T19:00:00+02:00'))
+);
