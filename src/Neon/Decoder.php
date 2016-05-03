@@ -18,7 +18,7 @@ class Decoder
 	public static $patterns = array(
 		'
 			\'[^\'\n]*\' |
-			"(?: \\\\. | [^"\\\\\n] )*"
+			" (?: \\\\. | [^"\\\\\n] )* "
 		', // string
 		'
 			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | [:-][^"\',\]})\s] )
@@ -35,6 +35,10 @@ class Decoder
 		'\n[\t\ ]*', // new line + indent
 		'?:[\t\ ]+', // whitespace
 	);
+
+	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A';
+
+	const PATTERN_HEX = '#0x[0-9a-fA-F]+\z#A';
 
 	private static $brackets = array(
 		'[' => ']',
@@ -240,14 +244,14 @@ class Decoder
 				if ($t[0] === '"') {
 					$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', array($this, 'cbString'), substr($t, 1, -1));
 				} elseif ($t[0] === "'") {
-					$converted = substr($t, 1, -1);
+						$converted = substr($t, 1, -1);
 				} elseif (isset($consts[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$converted = $consts[$t] === 0 ? NULL : $consts[$t];
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
-				} elseif (preg_match('#0x[0-9a-fA-F]+\z#A', $t)) {
+				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
-				} elseif (preg_match('#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A', $t)) {
+				} elseif (preg_match(self::PATTERN_DATETIME, $t)) {
 					$converted = new \DateTime($t);
 				} else { // literal
 					$converted = $t;
