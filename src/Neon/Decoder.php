@@ -38,6 +38,10 @@ class Decoder
 		'?:[\t\ ]+', // whitespace
 	];
 
+	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A';
+
+	const PATTERN_HEX = '#0x[0-9a-fA-F]+\z#A';
+
 	private static $brackets = [
 		'[' => ']',
 		'{' => '}',
@@ -254,9 +258,9 @@ class Decoder
 					$converted = $consts[$t] === 0 ? NULL : $consts[$t];
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
-				} elseif (preg_match('#0x[0-9a-fA-F]+\z#A', $t)) {
+				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
-				} elseif (preg_match('#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| +)\d\d?:\d\d:\d\d(?:\.\d*)? *(?:Z|[-+]\d\d?(?::\d\d)?)?)?\z#A', $t)) {
+				} elseif (preg_match(self::PATTERN_DATETIME, $t)) {
 					$converted = new \DateTime($t);
 				} else { // literal
 					$converted = $t;
