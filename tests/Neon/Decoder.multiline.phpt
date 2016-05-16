@@ -103,6 +103,17 @@ Assert::same(
 \t lines
 """'));
 
+//no content
+Assert::same(
+	'',
+	Neon::decode('"""
+"""'));
+
+Assert::same(
+	'',
+	Neon::decode("'''
+'''"));
+
 Assert::exception(function () {
 	Neon::decode('"""
 \t multi
