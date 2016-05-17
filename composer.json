@@ -18,7 +18,7 @@
 		"ext-iconv": "*"
 	},
 	"require-dev": {
-		"nette/tester": "~1.4",
+		"nette/tester": "~2.0",
 		"tracy/tracy": "^2.3"
 	},
 	"autoload": {
