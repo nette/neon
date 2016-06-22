@@ -263,7 +263,7 @@ class Decoder
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
 				} elseif (preg_match(self::PATTERN_DATETIME, $t)) {
-					$converted = new \DateTime($t);
+					$converted = new \DateTimeImmutable($t);
 				} else { // literal
 					$converted = $t;
 				}

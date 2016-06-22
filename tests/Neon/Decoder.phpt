@@ -238,10 +238,18 @@ foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) a
 
 // datetime
 Assert::equal(
-	new DateTime('2016-06-03T19:00:00+02:00'),
+	new DateTimeImmutable('2016-06-03T19:00:00+02:00'),
 	Neon::decode('2016-06-03 19:00:00 +0200')
 );
 Assert::equal(
-	new DateTime('2016-06-03T19:00:00+02:00'),
+	new DateTimeImmutable('2016-06-03T19:00:00+02:00'),
 	Neon::decode('2016-06-03 19:00:00 +02:00')
+);
+Assert::equal(
+	new DateTimeImmutable('2016-06-03T19:00:00'),
+	Neon::decode('2016-06-03 19:00:00')
+);
+Assert::equal(
+	new DateTimeImmutable('2016-06-03T00:00:00'),
+	Neon::decode('2016-06-03')
 );
