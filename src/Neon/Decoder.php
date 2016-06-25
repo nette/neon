@@ -44,6 +44,10 @@ class Decoder
 
 	const PATTERN_HEX = '#0x[0-9a-fA-F]+\z#A';
 
+	const PATTERN_OCTAL = '#0o[0-7]+\z#A';
+
+	const PATTERN_BINARY = '#0b[0-1]+\z#A';
+
 	const BRACKETS = [
 		'[' => ']',
 		'{' => '}',
@@ -262,6 +266,10 @@ class Decoder
 					$converted = $t * 1;
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
+				} elseif (preg_match(self::PATTERN_OCTAL, $t)) {
+					$converted = octdec($t);
+				} elseif (preg_match(self::PATTERN_BINARY, $t)) {
+					$converted = bindec($t);
 				} elseif (preg_match(self::PATTERN_DATETIME, $t)) {
 					$converted = new \DateTimeImmutable($t);
 				} else { // literal
