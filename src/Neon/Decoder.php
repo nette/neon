@@ -48,6 +48,16 @@ class Decoder
 
 	const PATTERN_BINARY = '#0b[0-1]+\z#A';
 
+	const SIMPLE_TYPES = [
+		'true' => 'TRUE', 'True' => 'TRUE', 'TRUE' => 'TRUE', 'yes' => 'TRUE', 'Yes' => 'TRUE', 'YES' => 'TRUE', 'on' => 'TRUE', 'On' => 'TRUE', 'ON' => 'TRUE',
+		'false' => 'FALSE', 'False' => 'FALSE', 'FALSE' => 'FALSE', 'no' => 'FALSE', 'No' => 'FALSE', 'NO' => 'FALSE', 'off' => 'FALSE', 'Off' => 'FALSE', 'OFF' => 'FALSE',
+		'null' => 'NULL', 'Null' => 'NULL', 'NULL' => 'NULL',
+	];
+
+	const ESCAPE_SEQUENCES = [
+		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0",
+	];
+
 	const BRACKETS = [
 		'[' => ']',
 		'{' => '}',
@@ -244,11 +254,6 @@ class Decoder
 				}
 
 			} else { // Value
-				static $consts = [
-					'true' => TRUE, 'True' => TRUE, 'TRUE' => TRUE, 'yes' => TRUE, 'Yes' => TRUE, 'YES' => TRUE, 'on' => TRUE, 'On' => TRUE, 'ON' => TRUE,
-					'false' => FALSE, 'False' => FALSE, 'FALSE' => FALSE, 'no' => FALSE, 'No' => FALSE, 'NO' => FALSE, 'off' => FALSE, 'Off' => FALSE, 'OFF' => FALSE,
-					'null' => 0, 'Null' => 0, 'NULL' => 0,
-				];
 				if ($t[0] === '"' || $t[0] === "'") {
 					if (preg_match('#^...\n+([\t ]*)#', $t, $m)) {
 						$converted = substr($t, 3, -3);
@@ -260,8 +265,8 @@ class Decoder
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
 					}
-				} elseif (isset($consts[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
-					$converted = $consts[$t] === 0 ? NULL : $consts[$t];
+				} elseif (($fix56 = self::SIMPLE_TYPES) && isset($fix56[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
+					$converted = constant(self::SIMPLE_TYPES[$t]);
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
@@ -324,10 +329,9 @@ class Decoder
 
 	private function cbString($m)
 	{
-		static $mapping = ['t' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0"];
 		$sq = $m[0];
-		if (isset($mapping[$sq[1]])) {
-			return $mapping[$sq[1]];
+		if (($fix56 = self::ESCAPE_SEQUENCES) && isset($fix56[$sq[1]])) { // workaround for PHP 5.6
+			return self::ESCAPE_SEQUENCES[$sq[1]];
 		} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
 			$lead = hexdec(substr($sq, 2, 4));
 			$tail = hexdec(substr($sq, 8, 4));
