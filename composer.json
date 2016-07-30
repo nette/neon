@@ -15,7 +15,8 @@
 	],
 	"require": {
 		"php": ">=5.6.0",
-		"ext-iconv": "*"
+		"ext-iconv": "*",
+		"ext-json": "*"
 	},
 	"require-dev": {
 		"nette/tester": "~2.0",
