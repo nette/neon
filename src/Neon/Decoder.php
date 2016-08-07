@@ -199,9 +199,15 @@ class Decoder
 
 			} elseif ($t[0] === "\n") { // Indent
 				if ($inlineParser) {
-					if ($hasKey || $hasValue) {
-						$this->addValue($result, $hasKey ? $key : NULL, $hasValue ? $value : NULL);
-						$hasKey = $hasValue = FALSE;
+					if ($hasValue) {
+						for ($i = $n + 1; $i < $count; $i++) {
+							if (ctype_space($tokens[$i][0])) continue; // skip whitespace
+							if ($tokens[$i][0] !== ',' && $tokens[$i][0] !== ':') {
+								$this->addValue($result, $hasKey ? $key : NULL, $value);
+								$hasKey = $hasValue = FALSE;
+							}
+							break;
+						}
 					}
 
 				} else {
