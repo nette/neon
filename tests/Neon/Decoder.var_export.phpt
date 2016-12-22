@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Test: Nette\Neon\Neon::decode var_export() support.
+ */
+
+use Nette\Neon\Neon;
+use Tester\Assert;
+
+require __DIR__ . '/../bootstrap.php';
+
+$parsed = Neon::decode('
+person:
+    id:   	100
+    data:   Andares(gender=male, married=yes)
+');
+
+$serialized = var_export($parsed, TRUE);
+$unserialized = eval("return $serialized;");
+
+Assert::equal($parsed, $unserialized);
