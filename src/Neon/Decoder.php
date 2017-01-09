@@ -124,9 +124,9 @@ class Decoder
 		$value = NULL;
 		$hasValue = FALSE;
 		$tokens = $this->tokens;
-		$n = & $this->pos;
+		$n = &$this->pos;
 		$count = count($tokens);
-		$mainResult = & $result;
+		$mainResult = &$result;
 
 		for (; $n < $count; $n++) {
 			$t = $tokens[$n][0];
@@ -161,7 +161,7 @@ class Decoder
 					$key = (string) $value;
 					$hasKey = TRUE;
 					$hasValue = FALSE;
-					$result = & $mainResult;
+					$result = &$mainResult;
 				}
 
 			} elseif ($t === '-') { // BlockArray bullet
@@ -242,7 +242,7 @@ class Decoder
 						} elseif ($hasKey) {
 							$this->addValue($result, $key, $hasValue ? $value : NULL);
 							if ($key !== NULL && !$hasValue && $newIndent === $indent && isset($tokens[$n + 1]) && $tokens[$n + 1][0] === '-') {
-								$result = & $result[$key];
+								$result = &$result[$key];
 							}
 							$hasKey = $hasValue = FALSE;
 						}
@@ -315,7 +315,7 @@ class Decoder
 	}
 
 
-	private function addValue(& $result, $key, $value)
+	private function addValue(&$result, $key, $value)
 	{
 		if ($key === NULL) {
 			$result[] = $value;
