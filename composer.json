@@ -14,12 +14,12 @@
 		}
 	],
 	"require": {
-		"php": ">=5.6.0",
+		"php": ">=7.0",
 		"ext-iconv": "*",
 		"ext-json": "*"
 	},
 	"require-dev": {
-		"nette/tester": "~2.0",
+		"nette/tester": "^2.0",
 		"tracy/tracy": "^2.3"
 	},
 	"autoload": {
