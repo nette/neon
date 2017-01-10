@@ -4,6 +4,8 @@
  * Test: Nette\Neon\Neon::encode.
  */
 
+declare(strict_types=1);
+
 use Nette\Neon\Neon;
 use Nette\Neon\Entity;
 use Tester\Assert;

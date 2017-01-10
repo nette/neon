@@ -4,6 +4,8 @@
  * Test: Nette\Neon\Neon::decode errors.
  */
 
+declare(strict_types=1);
+
 use Nette\Neon\Neon;
 use Tester\Assert;
 
