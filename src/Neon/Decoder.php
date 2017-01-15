@@ -16,9 +16,6 @@ namespace Nette\Neon;
  */
 class Decoder
 {
-	/** @deprecated */
-	public static $patterns = self::PATTERNS;
-
 	const PATTERNS = [
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
