@@ -76,10 +76,9 @@ class Decoder
 
 	/**
 	 * Decodes a NEON string.
-	 * @param  string
 	 * @return mixed
 	 */
-	public function decode($input)
+	public function decode(string $input)
 	{
 		if (!is_string($input)) {
 			throw new \InvalidArgumentException(sprintf('Argument must be a string, %s given.', gettype($input)));
@@ -114,10 +113,9 @@ class Decoder
 
 	/**
 	 * @param  string  indentation (for block-parser)
-	 * @param  mixed
-	 * @return array
+	 * @return array|\stdClass
 	 */
-	private function parse($indent, $result = NULL, $key = NULL, $hasKey = FALSE)
+	private function parse($indent, $result = NULL, $key = NULL, bool $hasKey = FALSE)
 	{
 		$inlineParser = $indent === FALSE;
 		$value = NULL;
@@ -347,7 +345,7 @@ class Decoder
 	}
 
 
-	private function error($message = "Unexpected '%s'")
+	private function error(string $message = "Unexpected '%s'")
 	{
 		$last = isset($this->tokens[$this->pos]) ? $this->tokens[$this->pos] : NULL;
 		$offset = $last ? $last[1] : strlen($this->input);

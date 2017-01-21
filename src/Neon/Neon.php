@@ -21,11 +21,8 @@ class Neon
 
 	/**
 	 * Returns the NEON representation of a value.
-	 * @param  mixed
-	 * @param  int
-	 * @return string
 	 */
-	public static function encode($var, $flags = 0)
+	public static function encode($var, int $flags = 0): string
 	{
 		$encoder = new Encoder;
 		return $encoder->encode($var, $flags);
@@ -34,10 +31,9 @@ class Neon
 
 	/**
 	 * Decodes a NEON string.
-	 * @param  string
 	 * @return mixed
 	 */
-	public static function decode($input)
+	public static function decode(string $input)
 	{
 		$decoder = new Decoder;
 		return $decoder->decode($input);

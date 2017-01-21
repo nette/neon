@@ -20,11 +20,8 @@ class Encoder
 
 	/**
 	 * Returns the NEON representation of a value.
-	 * @param  mixed
-	 * @param  int
-	 * @return string
 	 */
-	public function encode($var, $flags = 0)
+	public function encode($var, int $flags = 0): string
 	{
 		if ($var instanceof \DateTimeInterface) {
 			return $var->format('Y-m-d H:i:s O');
