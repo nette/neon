@@ -24,7 +24,7 @@ class Encoder
 	 * @param  int
 	 * @return string
 	 */
-	public function encode($var, $options = NULL)
+	public function encode($var, $flags = 0)
 	{
 		if ($var instanceof \DateTimeInterface) {
 			return $var->format('Y-m-d H:i:s O');
@@ -48,7 +48,7 @@ class Encoder
 		if (is_array($var)) {
 			$isList = !$var || array_keys($var) === range(0, count($var) - 1);
 			$s = '';
-			if ($options & self::BLOCK) {
+			if ($flags & self::BLOCK) {
 				if (count($var) === 0) {
 					return '[]';
 				}

@@ -25,10 +25,10 @@ class Neon
 	 * @param  int
 	 * @return string
 	 */
-	public static function encode($var, $options = NULL)
+	public static function encode($var, $flags = 0)
 	{
 		$encoder = new Encoder;
-		return $encoder->encode($var, $options);
+		return $encoder->encode($var, $flags);
 	}
 
 
