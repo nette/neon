@@ -13,7 +13,7 @@ namespace Nette\Neon;
 /**
  * Representation of 'foo(bar=1)' literal
  */
-class Entity extends \stdClass
+final class Entity extends \stdClass
 {
 	/** @var mixed */
 	public $value;

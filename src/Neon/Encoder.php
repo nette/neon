@@ -13,7 +13,7 @@ namespace Nette\Neon;
 /**
  * Simple generator for Nette Object Notation.
  */
-class Encoder
+final class Encoder
 {
 	const BLOCK = 1;
 

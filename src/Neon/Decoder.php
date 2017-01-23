@@ -14,7 +14,7 @@ namespace Nette\Neon;
  * Parser for Nette Object Notation.
  * @internal
  */
-class Decoder
+final class Decoder
 {
 	const PATTERNS = [
 		'
