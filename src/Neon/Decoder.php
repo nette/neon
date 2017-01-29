@@ -55,7 +55,7 @@ class Decoder
 	];
 
 	const ESCAPE_SEQUENCES = [
-		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\xc2\xa0",
+		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
 	];
 
 	const BRACKETS = [
@@ -85,7 +85,7 @@ class Decoder
 		if (!is_string($input)) {
 			throw new \InvalidArgumentException(sprintf('Argument must be a string, %s given.', gettype($input)));
 
-		} elseif (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
+		} elseif (substr($input, 0, 3) === "\u{FEFF}") { // BOM
 			$input = substr($input, 3);
 		}
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
@@ -171,7 +171,7 @@ class Decoder
 				$key = NULL;
 				$hasKey = TRUE;
 
-			} elseif (($tmp = self::BRACKETS) && isset($tmp[$t])) { // Opening bracket [ ( {
+			} elseif (isset(self::BRACKETS[$t])) { // Opening bracket [ ( {
 				if ($hasValue) {
 					if ($t !== '(') {
 						$this->error();

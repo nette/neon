@@ -46,8 +46,8 @@ $dataSet = [
 		['"f\\no"', "f\no"],
 		['"\\b\\f\\n\\r\\t\\"\\/\\\\"', "\x08\f\n\r\t\"/\\"],
 		['"\u0040"', '@'],
-		['"\u011B"', "\xC4\x9B"],
-		['"\uD801\uDC01"', "\xf0\x90\x90\x81"], // U+10401 encoded as surrogate pair
+		['"\u011B"', "\u{11B}"],
+		['"\uD801\uDC01"', "\u{10401}"], // U+10401 encoded as surrogate pair
 	],
 
 	// JSON parser implementation in PHP (json_decode); extends RFC JSON
@@ -169,7 +169,7 @@ $dataSet = [
 		['a                                     ', 'a'], // backtrack limit
 
 		// BOM
-		["\xEF\xBB\xBFa", 'a'],
+		["\u{FEFF}a", 'a'],
 	],
 
 	// inputs with invalid syntax, but still valid UTF-8
