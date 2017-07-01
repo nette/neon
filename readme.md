@@ -11,6 +11,9 @@ NEON is very similar to YAML.The main difference is that the NEON supports "enti
 (so can be used e.g. to parse phpDoc annotations) and tab characters for indentation.
 NEON syntax is a little simpler and the parsing is faster.
 
+[Try NEON in sandbox](https://ne-on.org)
+--------------
+
 Example of Neon code:
 
 ```
@@ -31,6 +34,38 @@ users:
 	- Rimmer
 ```
 
-Links:
-- [Neon sandbox](http://ne-on.org)
+Usage
+-----
+
+`Nette\Neon\Neon` is a static class for encoding and decoding NEON files.
+
+`Neon::encode()` returns $value encoded into NEON. Flags accepts Neon::BLOCK which formats NEON in multiline format.
+
+```php
+use Nette\Neon\Neon;
+$neon = Neon::encode($value); // Returns $value encoded in NEON
+$neon = Neon::encode($value, Neon::BLOCK); // Returns formatted $value encoded in NEON
+```
+
+`Neon::decode()` converts given NEON to PHP value:
+
+```php
+$value = Neon::decode('hello: world'); // Returns an array ['hello' => 'world']
+```
+
+Both methods throw `Nette\Neon\Exception` on error.
+
+
+Editors plugins
+---------------
+
+- NetBeans IDE has built-in support
+- [PhpStorm](https://plugins.jetbrains.com/plugin/7060?pr)
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=Kasik96.latte)
+- [Emacs](https://github.com/Fuco1/neon-mode)
+
+Other languages
+---------------
+
 - [Neon for Javascript](https://github.com/matej21/neon-js)
+- [Neon for Python](https://github.com/paveldedik/neon-py)
