@@ -24,7 +24,7 @@ final class Decoder
 			" (?: \\\\. | [^"\\\\\n] )*+ "
 		', // string
 		'
-			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | [:-][^"\',\]})\s] )
+			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | -[^"\',\]})\s] )
 			(?:
 				[^,:=\]})(\x00-\x20]++ |
 				:(?! [\s,\]})] | $ ) |
@@ -196,9 +196,15 @@ final class Decoder
 
 			} elseif ($t[0] === "\n") { // Indent
 				if ($inlineParser) {
-					if ($hasKey || $hasValue) {
-						$this->addValue($result, $hasKey ? $key : NULL, $hasValue ? $value : NULL);
-						$hasKey = $hasValue = FALSE;
+					if ($hasValue) {
+						for ($i = $n + 1; $i < $count; $i++) {
+							if (ctype_space($tokens[$i][0])) continue; // skip whitespace
+							if ($tokens[$i][0] !== ',' && $tokens[$i][0] !== ':') {
+								$this->addValue($result, $hasKey ? $key : NULL, $value);
+								$hasKey = $hasValue = FALSE;
+							}
+							break;
+						}
 					}
 
 				} else {
@@ -266,6 +272,7 @@ final class Decoder
 					$converted = constant(self::SIMPLE_TYPES[$t]);
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
+					$converted = (is_int($converted) || preg_match('#[.eE]#', $t)) ? $converted : $t;
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
 					$converted = hexdec($t);
 				} elseif (preg_match(self::PATTERN_OCTAL, $t)) {
