@@ -37,6 +37,14 @@ users:
 Usage
 -----
 
+Install it using Composer:
+
+```
+composer require nette/neon
+```
+
+The last stable release requires PHP version 5.6 or newer (is compatible with PHP 7.0 and 7.1). The dev-master version requires PHP 7.0.
+
 `Nette\Neon\Neon` is a static class for encoding and decoding NEON files.
 
 `Neon::encode()` returns $value encoded into NEON. Flags accepts Neon::BLOCK which formats NEON in multiline format.
