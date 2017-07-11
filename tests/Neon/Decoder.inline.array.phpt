@@ -4,8 +4,8 @@
  * Test: Nette\Neon\Neon::decode inline hash and array.
  */
 
-use Nette\Neon\Neon;
 use Nette\Neon\Entity;
+use Nette\Neon\Neon;
 use Tester\Assert;
 
 

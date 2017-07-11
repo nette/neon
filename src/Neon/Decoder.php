@@ -14,9 +14,6 @@ namespace Nette\Neon;
  */
 class Decoder
 {
-	/** @deprecated */
-	public static $patterns = self::PATTERNS;
-
 	const PATTERNS = [
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
@@ -64,6 +61,9 @@ class Decoder
 		'(' => ')',
 	];
 
+	/** @deprecated */
+	public static $patterns = self::PATTERNS;
+
 	/** @var string */
 	private $input;
 
@@ -72,7 +72,6 @@ class Decoder
 
 	/** @var int */
 	private $pos;
-
 
 
 	/**
@@ -358,5 +357,4 @@ class Decoder
 		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
 		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
-
 }
