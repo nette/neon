@@ -22,7 +22,7 @@ class Encoder
 	 * @param  int
 	 * @return string
 	 */
-	public function encode($var, $options = NULL)
+	public function encode($var, $options = null)
 	{
 		if ($var instanceof \DateTimeInterface) {
 			return $var->format('Y-m-d H:i:s O');
@@ -53,7 +53,7 @@ class Encoder
 				foreach ($var as $k => $v) {
 					$v = $this->encode($v, self::BLOCK);
 					$s .= ($isList ? '-' : $this->encode($k) . ':')
-						. (strpos($v, "\n") === FALSE
+						. (strpos($v, "\n") === false
 							? ' ' . $v . "\n"
 							: "\n" . preg_replace('#^(?=.)#m', "\t", $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
 				}
@@ -74,7 +74,7 @@ class Encoder
 
 		} elseif (is_float($var)) {
 			$var = json_encode($var);
-			return strpos($var, '.') === FALSE ? $var . '.0' : $var;
+			return strpos($var, '.') === false ? $var . '.0' : $var;
 
 		} else {
 			return json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

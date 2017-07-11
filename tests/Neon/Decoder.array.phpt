@@ -47,7 +47,7 @@ a: x
 Assert::same([
 	'a' => [1, [2]],
 	'b' => [3],
-	'c' => NULL,
+	'c' => null,
 	4,
 ], Neon::decode('
 a:
@@ -75,7 +75,7 @@ x:
 Assert::same([
 	'x' => [
 		'y' => [
-			NULL,
+			null,
 		],
 	],
 	'a' => 'x',
@@ -133,7 +133,7 @@ Assert::same([
 
 
 Assert::same([
-	'root' => [['key1' => NULL, 'key3' => 123]],
+	'root' => [['key1' => null, 'key3' => 123]],
 ], Neon::decode("
 root:
 \t- key1:
@@ -205,8 +205,8 @@ Assert::same([
 
 
 Assert::same([
-	'one' => NULL,
-	'two' => NULL,
+	'one' => null,
+	'two' => null,
 ], Neon::decode('
 one:
 two:

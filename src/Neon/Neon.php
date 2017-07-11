@@ -23,7 +23,7 @@ class Neon
 	 * @param  int
 	 * @return string
 	 */
-	public static function encode($var, $options = NULL)
+	public static function encode($var, $options = null)
 	{
 		$encoder = new Encoder;
 		return $encoder->encode($var, $options);
