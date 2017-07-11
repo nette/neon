@@ -20,13 +20,13 @@ Assert::same([
 
 
 Assert::same([
-	TRUE, 'tRuE', TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, NULL, NULL,
+	true, 'tRuE', true, false, false, true, true, false, false, null, null,
 ], Neon::decode('[true, tRuE, TRUE, false, FALSE, yes, YES, no, NO, null, NULL,]'));
 
 
 Assert::same([
-	'false' => FALSE,
-	'on' => TRUE,
+	'false' => false,
+	'on' => true,
 	-5 => 1,
 	'5.3' => 1,
 ], Neon::decode('{false: off, "on": true, -5: 1, 5.3: 1}'));
@@ -39,8 +39,8 @@ Assert::same([
 		'c' => 'd',
 	],
 	'e' => 'f',
-	'g' => NULL,
-	'h' => NULL,
+	'g' => null,
+	'h' => null,
 ], Neon::decode('{a, b, {c: d}, e: f, g:,h:}'));
 
 
@@ -50,7 +50,7 @@ Assert::same([
 	'c' => 1,
 	'd' => 1,
 	'e' => 1,
-	'f' => NULL,
+	'f' => null,
 ], Neon::decode("{a,\nb\nc: 1,\nd: 1,\n\ne: 1\nf:\n}"));
 
 

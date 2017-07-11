@@ -37,9 +37,9 @@ $dataSet = [
 		['1.1E-1', 0.11],
 
 		// literals
-		['null', NULL],
-		['true', TRUE],
-		['false', FALSE],
+		['null', null],
+		['true', true],
+		['false', false],
 
 		// strings
 		["''", ''],
@@ -69,8 +69,8 @@ $dataSet = [
 		['[-1.e-1]', [-0.1]],
 
 		// empty input
-		['', NULL],
-		['  ', NULL],
+		['', null],
+		['  ', null],
 	],
 
 	// Nette Object Notation; extends PHP JSON
@@ -85,24 +85,24 @@ $dataSet = [
 		['[-.1]', [-0.1]],
 
 		// more literals
-		['Null', NULL],
-		['NULL', NULL],
-		['True', TRUE],
-		['TRUE', TRUE],
-		['yes', TRUE],
-		['Yes', TRUE],
-		['YES', TRUE],
-		['on', TRUE],
-		['On', TRUE],
-		['ON', TRUE],
-		['False', FALSE],
-		['FALSE', FALSE],
-		['no', FALSE],
-		['No', FALSE],
-		['NO', FALSE],
-		['off', FALSE],
-		['Off', FALSE],
-		['OFF', FALSE],
+		['Null', null],
+		['NULL', null],
+		['True', true],
+		['TRUE', true],
+		['yes', true],
+		['Yes', true],
+		['YES', true],
+		['on', true],
+		['On', true],
+		['ON', true],
+		['False', false],
+		['FALSE', false],
+		['no', false],
+		['No', false],
+		['NO', false],
+		['off', false],
+		['Off', false],
+		['OFF', false],
 
 		// extended string syntax
 		['"\\x42 hex escape"', "\x42 hex escape"],
@@ -159,8 +159,8 @@ $dataSet = [
 		['{a =b}', ['a' => 'b']],
 
 		// comments
-		['#abc', NULL],
-		['a: #abc', ['a' => NULL]],
+		['#abc', null],
+		['a: #abc', ['a' => null]],
 		['a:#abc', 'a:#abc'],
 		['abc#', 'abc#'],
 

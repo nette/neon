@@ -17,9 +17,9 @@ require __DIR__ . '/../bootstrap.php';
 Assert::same(
 	'[true, "TRUE", "tRuE", "true", false, "FALSE", "fAlSe", "false", null, "NULL", "nUlL", "null", "yes", "no", "on", "off"]',
 	Neon::encode([
-		TRUE, 'TRUE', 'tRuE', 'true',
-		FALSE, 'FALSE', 'fAlSe', 'false',
-		NULL, 'NULL', 'nUlL', 'null',
+		true, 'TRUE', 'tRuE', 'true',
+		false, 'FALSE', 'fAlSe', 'false',
+		null, 'NULL', 'nUlL', 'null',
 		'yes', 'no', 'on', 'off',
 ]));
 
@@ -69,7 +69,7 @@ Assert::same(
 );
 
 $entity = new Entity('ent');
-$entity->attributes = NULL;
+$entity->attributes = null;
 Assert::same(
 	'ent()',
 	Neon::encode($entity)
@@ -82,7 +82,7 @@ Assert::same(
 
 Assert::same(
 	"foo: 1\nbar:\n\tx:\n\t\t- 1\n\t\t- 2\n\n\ty:\n\t\t- 3\n\t\t- 4\n\nbaz: null\n",
-	Neon::encode(['foo' => 1, 'bar' => ['x' => [1, 2], 'y' => [3, 4]], 'baz' => NULL], Neon::BLOCK)
+	Neon::encode(['foo' => 1, 'bar' => ['x' => [1, 2], 'y' => [3, 4]], 'baz' => null], Neon::BLOCK)
 );
 
 Assert::same(

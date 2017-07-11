@@ -17,7 +17,7 @@ person:
     data:   Andares(gender=male, married=yes)
 ');
 
-$serialized = var_export($parsed, TRUE);
+$serialized = var_export($parsed, true);
 $unserialized = eval("return $serialized;");
 
 Assert::equal($parsed, $unserialized);
