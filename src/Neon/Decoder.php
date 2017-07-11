@@ -73,7 +73,6 @@ final class Decoder
 	private $pos;
 
 
-
 	/**
 	 * Decodes a NEON string.
 	 * @return mixed
@@ -355,5 +354,4 @@ final class Decoder
 		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
 		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
-
 }

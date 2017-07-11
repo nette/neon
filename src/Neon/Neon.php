@@ -38,5 +38,4 @@ final class Neon
 		$decoder = new Decoder;
 		return $decoder->decode($input);
 	}
-
 }

@@ -199,7 +199,7 @@ x:
 
 
 Assert::same([
-	'a'
+	'a',
 ], Neon::decode('
 -
     a

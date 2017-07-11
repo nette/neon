@@ -6,8 +6,8 @@
 
 declare(strict_types=1);
 
-use Nette\Neon\Neon;
 use Nette\Neon\Entity;
+use Nette\Neon\Neon;
 use Tester\Assert;
 
 

@@ -28,9 +28,9 @@ final class Entity extends \stdClass
 		$this->attributes = $attrs;
 	}
 
+
 	public static function __set_state(array $properties)
 	{
 		return new self($properties['value'], $properties['attributes']);
 	}
-
 }

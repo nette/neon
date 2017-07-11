@@ -79,5 +79,4 @@ final class Encoder
 			return json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		}
 	}
-
 }
