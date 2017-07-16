@@ -1,6 +1,7 @@
 {
 	"name": "nette/neon",
-	"description": "Nette NEON: parser & generator for Nette Object Notation",
+	"description": "🍸 Nette NEON: encodes and decodes NEON file format.",
+	"keywords": ["nette", "neon", "import", "export", "yaml"],
 	"homepage": "http://ne-on.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
