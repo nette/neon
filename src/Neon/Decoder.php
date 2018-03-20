@@ -111,7 +111,7 @@ final class Decoder
 
 
 	/**
-	 * @param  string  indentation (for block-parser)
+	 * @param  string  $indent  indentation (for block-parser)
 	 * @return array|\stdClass
 	 */
 	private function parse($indent, $result = null, $key = null, bool $hasKey = false)
