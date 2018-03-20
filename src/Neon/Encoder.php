@@ -18,8 +18,8 @@ class Encoder
 
 	/**
 	 * Returns the NEON representation of a value.
-	 * @param  mixed
-	 * @param  int
+	 * @param  mixed  $var
+	 * @param  int  $options
 	 * @return string
 	 */
 	public function encode($var, $options = null)

@@ -20,8 +20,8 @@ class Neon
 
 	/**
 	 * Returns the NEON representation of a value.
-	 * @param  mixed
-	 * @param  int
+	 * @param  mixed  $var
+	 * @param  int  $options
 	 * @return string
 	 */
 	public static function encode($var, $options = null)
@@ -33,7 +33,7 @@ class Neon
 
 	/**
 	 * Decodes a NEON string.
-	 * @param  string
+	 * @param  string  $input
 	 * @return mixed
 	 */
 	public static function decode($input)
