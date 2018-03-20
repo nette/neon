@@ -111,10 +111,10 @@ final class Decoder
 
 
 	/**
-	 * @param  string  $indent  indentation (for block-parser)
-	 * @return array|\stdClass
+	 * @param  string|bool|null  $indent  indentation (for block-parser)
+	 * @return mixed
 	 */
-	private function parse($indent, $result = null, $key = null, bool $hasKey = false)
+	private function parse($indent, array $result = null, $key = null, bool $hasKey = false)
 	{
 		$inlineParser = $indent === false;
 		$value = null;
@@ -323,7 +323,7 @@ final class Decoder
 	}
 
 
-	private function cbString($m)
+	private function cbString(array $m): string
 	{
 		$sq = $m[0];
 		if (($fix56 = self::ESCAPE_SEQUENCES) && isset($fix56[$sq[1]])) { // workaround for PHP 5.6
@@ -340,6 +340,7 @@ final class Decoder
 			return chr(hexdec(substr($sq, 2)));
 		} else {
 			$this->error("Invalid escaping sequence $sq");
+			return '';
 		}
 	}
 
