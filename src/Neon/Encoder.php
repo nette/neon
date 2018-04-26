@@ -65,7 +65,9 @@ final class Encoder
 				return ($isList ? '[' : '{') . substr($s, 0, -2) . ($isList ? ']' : '}');
 			}
 
-		} elseif (is_string($var) && !is_numeric($var)
+		} elseif (
+			is_string($var)
+			&& !is_numeric($var)
 			&& !preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i', $var)
 			&& preg_match('~^' . Decoder::PATTERNS[1] . '\z~x', $var) // 1 = literals
 		) {
