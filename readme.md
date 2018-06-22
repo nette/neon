@@ -18,6 +18,8 @@ NEON syntax is a little simpler and the parsing is faster.
 
 Documentation can be found on the [website](https://doc.nette.org/neon).
 
+If you like Nette, **[please make a donation now](https://nette.org/donate)**. Thank you!
+
 
 NEON language
 -------------
