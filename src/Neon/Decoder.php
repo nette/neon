@@ -261,7 +261,7 @@ final class Decoder
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
 					}
-				} elseif (($fix56 = self::SIMPLE_TYPES) && isset($fix56[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
+				} elseif (isset(self::SIMPLE_TYPES[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$converted = constant(self::SIMPLE_TYPES[$t]);
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
@@ -326,7 +326,7 @@ final class Decoder
 	private function cbString(array $m): string
 	{
 		$sq = $m[0];
-		if (($fix56 = self::ESCAPE_SEQUENCES) && isset($fix56[$sq[1]])) { // workaround for PHP 5.6
+		if (isset(self::ESCAPE_SEQUENCES[$sq[1]])) {
 			return self::ESCAPE_SEQUENCES[$sq[1]];
 		} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
 			$lead = hexdec(substr($sq, 2, 4));
