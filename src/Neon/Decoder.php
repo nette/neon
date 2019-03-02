@@ -326,7 +326,7 @@ final class Decoder
 	private function cbString(array $m): string
 	{
 		$sq = $m[0];
-		if (($fix56 = self::ESCAPE_SEQUENCES) && isset($fix56[$sq[1]])) { // workaround for PHP 5.6
+		if (isset(self::ESCAPE_SEQUENCES[$sq[1]])) {
 			return self::ESCAPE_SEQUENCES[$sq[1]];
 		} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
 			$lead = hexdec(substr($sq, 2, 4));
