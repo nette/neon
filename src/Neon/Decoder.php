@@ -62,6 +62,8 @@ final class Decoder
 		'null' => 'NULL', 'Null' => 'NULL', 'NULL' => 'NULL',
 	];
 
+	private const DEPRECATED_TYPES = ['on' => 1, 'On' => 1, 'ON' => 1, 'off' => 1, 'Off' => 1, 'OFF' => 1];
+
 	private const ESCAPE_SEQUENCES = [
 		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
 	];
@@ -272,6 +274,9 @@ final class Decoder
 					}
 				} elseif (isset(self::SIMPLE_TYPES[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$converted = constant(self::SIMPLE_TYPES[$t]);
+					if (isset(self::DEPRECATED_TYPES[$t])) {
+						trigger_error("Neon: keyword '$t' is deprecated, use true/yes or false/no.", E_USER_DEPRECATED);
+					}
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
 				} elseif (preg_match(self::PATTERN_HEX, $t)) {
