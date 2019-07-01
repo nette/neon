@@ -65,6 +65,9 @@ final class Decoder
 		'(' => ')',
 	];
 
+	/** @var callable */
+	public $reviver;
+
 	/** @var string */
 	private $input;
 
@@ -142,7 +145,7 @@ final class Decoder
 
 				} elseif ($hasKey && $key === null && $hasValue && !$inlineParser) {
 					$n++;
-					$result[] = $this->parse($indent . '  ', [], $value, true);
+					$this->addValue($result, null, $this->parse($indent . '  ', [], $value, true));
 					$newIndent = isset($tokens[$n], $tokens[$n + 1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
 					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
@@ -318,6 +321,15 @@ final class Decoder
 
 	private function addValue(&$result, $key, $value)
 	{
+		if ($this->reviver) {
+			if ($key === null) {
+				$result[] = null;
+				end($result);
+				$key = key($result);
+				unset($result[$key]);
+			}
+			call_user_func_array($this->reviver, [&$key, &$value]);
+		}
 		if ($key === null) {
 			$result[] = $value;
 		} elseif ($result && array_key_exists($key, $result)) {

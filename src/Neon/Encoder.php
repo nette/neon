@@ -17,12 +17,21 @@ final class Encoder
 {
 	const BLOCK = 1;
 
+	/** @var callable */
+	public $replacer;
+
 
 	/**
 	 * Returns the NEON representation of a value.
 	 */
-	public function encode($var, int $flags = 0): string
+	public function encode($var, int $flags = 0, int $depth = 0): string
 	{
+		if ($this->replacer && !$depth) {
+			$key = null;
+			call_user_func_array($this->replacer, [&$key, &$var, $depth]);
+		}
+		$depth++;
+
 		if ($var instanceof \DateTimeInterface) {
 			return $var->format('Y-m-d H:i:s O');
 
@@ -30,8 +39,8 @@ final class Encoder
 			if ($var->value === Neon::CHAIN) {
 				return implode('', array_map([$this, 'encode'], $var->attributes));
 			}
-			return $this->encode($var->value) . '('
-				. (is_array($var->attributes) ? substr($this->encode($var->attributes), 1, -1) : '') . ')';
+			return $this->encode($var->value, null, $depth) . '('
+				. (is_array($var->attributes) ? substr($this->encode($var->attributes, null, $depth), 1, -1) : '') . ')';
 		}
 
 		if (is_object($var)) {
@@ -50,8 +59,11 @@ final class Encoder
 					return '[]';
 				}
 				foreach ($var as $k => $v) {
-					$v = $this->encode($v, self::BLOCK);
-					$s .= ($isList ? '-' : $this->encode($k) . ':')
+					if ($this->replacer) {
+						call_user_func_array($this->replacer, [&$k, &$v, $depth]);
+					}
+					$v = $this->encode($v, self::BLOCK, $depth);
+					$s .= ($isList ? '-' : $this->encode($k, null, $depth) . ':')
 						. (strpos($v, "\n") === false
 							? ' ' . $v . "\n"
 							: "\n" . preg_replace('#^(?=.)#m', "\t", $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
@@ -60,7 +72,11 @@ final class Encoder
 
 			} else {
 				foreach ($var as $k => $v) {
-					$s .= ($isList ? '' : $this->encode($k) . ': ') . $this->encode($v) . ', ';
+					if ($this->replacer) {
+						call_user_func_array($this->replacer, [&$k, &$v, $depth]);
+					}
+					$s .= ($isList ? '' : $this->encode($k, null, $depth) . ': ')
+						. $this->encode($v, null, $depth) . ', ';
 				}
 				return ($isList ? '[' : '{') . substr($s, 0, -2) . ($isList ? ']' : '}');
 			}
