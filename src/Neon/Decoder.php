@@ -16,7 +16,7 @@ namespace Nette\Neon;
  */
 final class Decoder
 {
-	const PATTERNS = [
+	public const PATTERNS = [
 		// strings
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
@@ -48,25 +48,25 @@ final class Decoder
 		'?:[\t\ ]++',
 	];
 
-	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?\z#A';
+	private const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?\z#A';
 
-	const PATTERN_HEX = '#0x[0-9a-fA-F]++\z#A';
+	private const PATTERN_HEX = '#0x[0-9a-fA-F]++\z#A';
 
-	const PATTERN_OCTAL = '#0o[0-7]++\z#A';
+	private const PATTERN_OCTAL = '#0o[0-7]++\z#A';
 
-	const PATTERN_BINARY = '#0b[0-1]++\z#A';
+	private const PATTERN_BINARY = '#0b[0-1]++\z#A';
 
-	const SIMPLE_TYPES = [
+	private const SIMPLE_TYPES = [
 		'true' => 'TRUE', 'True' => 'TRUE', 'TRUE' => 'TRUE', 'yes' => 'TRUE', 'Yes' => 'TRUE', 'YES' => 'TRUE', 'on' => 'TRUE', 'On' => 'TRUE', 'ON' => 'TRUE',
 		'false' => 'FALSE', 'False' => 'FALSE', 'FALSE' => 'FALSE', 'no' => 'FALSE', 'No' => 'FALSE', 'NO' => 'FALSE', 'off' => 'FALSE', 'Off' => 'FALSE', 'OFF' => 'FALSE',
 		'null' => 'NULL', 'Null' => 'NULL', 'NULL' => 'NULL',
 	];
 
-	const ESCAPE_SEQUENCES = [
+	private const ESCAPE_SEQUENCES = [
 		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
 	];
 
-	const BRACKETS = [
+	private const BRACKETS = [
 		'[' => ']',
 		'{' => '}',
 		'(' => ')',
