@@ -55,7 +55,7 @@ The recommended way to install is via Composer:
 composer require nette/neon
 ```
 
-It requires PHP version 7.0 and supports PHP up to 7.4.
+It requires PHP version 7.1 and supports PHP up to 7.4.
 
 
 Usage
