@@ -48,13 +48,13 @@ final class Decoder
 		'?:[\t\ ]++',
 	];
 
-	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?\z#A';
+	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$#DA';
 
-	const PATTERN_HEX = '#0x[0-9a-fA-F]++\z#A';
+	const PATTERN_HEX = '#0x[0-9a-fA-F]++$#DA';
 
-	const PATTERN_OCTAL = '#0o[0-7]++\z#A';
+	const PATTERN_OCTAL = '#0o[0-7]++$#DA';
 
-	const PATTERN_BINARY = '#0b[0-1]++\z#A';
+	const PATTERN_BINARY = '#0b[0-1]++$#DA';
 
 	const SIMPLE_TYPES = [
 		'true' => 'TRUE', 'True' => 'TRUE', 'TRUE' => 'TRUE', 'yes' => 'TRUE', 'Yes' => 'TRUE', 'YES' => 'TRUE', 'on' => 'TRUE', 'On' => 'TRUE', 'ON' => 'TRUE',
@@ -263,7 +263,7 @@ final class Decoder
 					if (preg_match('#^...\n++([\t ]*+)#', $t, $m)) {
 						$converted = substr($t, 3, -3);
 						$converted = str_replace("\n" . $m[1], "\n", $converted);
-						$converted = preg_replace('#^\n|\n[\t ]*+\z#', '', $converted);
+						$converted = preg_replace('#^\n|\n[\t ]*+$#D', '', $converted);
 					} else {
 						$converted = substr($t, 1, -1);
 					}
