@@ -17,12 +17,15 @@ namespace Nette\Neon;
 final class Decoder
 {
 	const PATTERNS = [
+		// strings
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
 			\'[^\'\n]*+\' |
 			" (?: \\\\. | [^"\\\\\n] )*+ "
-		', // string
+		',
+
+		// literal / boolean / integer / float
 		'
 			(?: [^#"\',:=[\]{}()\x00-\x20!`-] | [:-][^"\',\]})\s] )
 			(?:
@@ -30,13 +33,19 @@ final class Decoder
 				:(?! [\s,\]})] | $ ) |
 				[\ \t]++ [^#,:=\]})(\x00-\x20]
 			)*+
-		', // literal / boolean / integer / float
-		'
-			[,:=[\]{}()-]
-		', // symbol
-		'?:\#.*+', // comment
-		'\n[\t\ ]*+', // new line + indent
-		'?:[\t\ ]++', // whitespace
+		',
+
+		// punctuation
+		'[,:=[\]{}()-]',
+
+		// comment
+		'?:\#.*+',
+
+		// new line + indent
+		'\n[\t\ ]*+',
+
+		// whitespace
+		'?:[\t\ ]++',
 	];
 
 	const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?\z#A';
