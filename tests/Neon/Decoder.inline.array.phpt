@@ -105,3 +105,6 @@ Assert::equal(
 	]),
 	Neon::decode('1() 2()')
 );
+
+// JSON compatibility
+Assert::same(['a' => true], Neon::decode('{"a":true}'));
