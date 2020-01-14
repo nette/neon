@@ -21,7 +21,7 @@ final class Decoder
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
-			\'[^\'\n]*+\' |
+			\' (?: \'\' | [^\'\n] )*+ \' |
 			" (?: \\\\. | [^"\\\\\n] )*+ "
 		',
 
@@ -268,6 +268,9 @@ final class Decoder
 						$converted = preg_replace('#^\n|\n[\t ]*+$#D', '', $converted);
 					} else {
 						$converted = substr($t, 1, -1);
+						if ($t[0] === "'") {
+							$converted = str_replace("''", "'", $converted);
+						}
 					}
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);

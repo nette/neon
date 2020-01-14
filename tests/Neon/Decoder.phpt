@@ -43,6 +43,8 @@ $dataSet = [
 
 		// strings
 		["''", ''],
+		["'foo'", 'foo'],
+		["'fo''o'", "fo'o"],
 		['""', ''],
 		['"foo"', 'foo'],
 		['"f\\no"', "f\no"],
