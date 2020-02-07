@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Neon;
 
+use LogicException;
 
 /**
  * Simple generator for Nette Object Notation.
@@ -78,7 +79,12 @@ final class Encoder
 			return strpos($var, '.') === false ? $var . '.0' : $var;
 
 		} else {
-			return json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			$json = json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			if ($json === false) {
+				// explicitly throw exception, instead of returning 'false' which would hard-error because of strict-types
+				throw new LogicException('Unable to json_encode() value:'. $var);
+			}
+			return $json;
 		}
 	}
 }
