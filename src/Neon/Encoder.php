@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Nette\Neon;
 
-use LogicException;
-
 /**
  * Simple generator for Nette Object Notation.
  */
