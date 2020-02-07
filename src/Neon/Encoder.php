@@ -80,7 +80,7 @@ final class Encoder
 			$json = json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 			if ($json === false) {
 				// explicitly throw exception, instead of returning 'false' which would hard-error because of strict-types
-				throw new Exception('Unable to json_encode() value:'. $var);
+				throw new Exception('Unable to json_encode() value:' . $var);
 			}
 			return $json;
 		}
