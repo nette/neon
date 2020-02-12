@@ -1,5 +1,5 @@
-[NEON](http://ne-on.org): Nette Object Notation
-===============================================
+[NEON](https://ne-on.org): Nette Object Notation
+================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/neon.svg)](https://packagist.org/packages/nette/neon)
 [![Build Status](https://travis-ci.org/nette/neon.svg?branch=master)](https://travis-ci.org/nette/neon)
