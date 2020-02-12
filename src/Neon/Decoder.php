@@ -17,26 +17,35 @@ namespace Nette\Neon;
 final class Decoder
 {
 	public const PATTERNS = [
+		// strings
 		'
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
-			\'[^\'\n]*+\' |
+			\' (?: \'\' | [^\'\n] )*+ \' |
 			" (?: \\\\. | [^"\\\\\n] )*+ "
-		', // string
+		',
+
+		// literal / boolean / integer / float
 		'
-			(?: [^#"\',:=[\]{}()\x00-\x20`-] | [:-][^"\',\]})\s] )
+			(?: [^#"\',:=[\]{}()\s`-] | (?<!["\']) [:-] [^"\',=[\]{}()\s] )
 			(?:
-				[^,:=\]})(\x00-\x20]++ |
+				[^,:=\]})(\s]++ |
 				:(?! [\s,\]})] | $ ) |
-				[\ \t]++ [^#,:=\]})(\x00-\x20]
+				[\ \t]++ [^#,:=\]})(\s]
 			)*+
-		', // literal / boolean / integer / float
-		'
-			[,:=[\]{}()-]
-		', // symbol
-		'?:\#.*+', // comment
-		'\n[\t\ ]*+', // new line + indent
-		'?:[\t\ ]++', // whitespace
+		',
+
+		// punctuation
+		'[,:=[\]{}()-]',
+
+		// comment
+		'?:\#.*+',
+
+		// new line + indent
+		'\n[\t\ ]*+',
+
+		// whitespace
+		'?:[\t\ ]++',
 	];
 
 	private const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$#DA';
@@ -259,11 +268,14 @@ final class Decoder
 						$converted = preg_replace('#^\n|\n[\t ]*+$#D', '', $converted);
 					} else {
 						$converted = substr($t, 1, -1);
+						if ($t[0] === "'") {
+							$converted = str_replace("''", "'", $converted);
+						}
 					}
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
 					}
-				} elseif (($fix56 = self::SIMPLE_TYPES) && isset($fix56[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
+				} elseif (isset(self::SIMPLE_TYPES[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
 					$converted = constant(self::SIMPLE_TYPES[$t]);
 					if (isset(self::DEPRECATED_TYPES[$t])) {
 						trigger_error("Neon: keyword '$t' is deprecated, use true/yes or false/no.", E_USER_DEPRECATED);

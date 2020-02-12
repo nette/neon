@@ -78,7 +78,11 @@ final class Encoder
 			return strpos($var, '.') === false ? $var . '.0' : $var;
 
 		} else {
-			return json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			$res = json_encode($var, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			if ($res === false) {
+				throw new Exception('Invalid UTF-8 sequence: ' . $var);
+			}
+			return $res;
 		}
 	}
 }

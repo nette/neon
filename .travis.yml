@@ -3,6 +3,7 @@ php:
     - 7.1
     - 7.2
     - 7.3
+    - 7.4
 
 before_install:
     # turn off XDebug
@@ -38,16 +39,12 @@ jobs:
             install:
                 - travis_retry composer create-project nette/coding-standard temp/coding-standard ^2 --no-progress
             script:
-                - php temp/coding-standard/ecs check src tests --config temp/coding-standard/coding-standard-php70.yml
+                - php temp/coding-standard/ecs check src tests --config temp/coding-standard/coding-standard-php71.yml
 
 
         -   stage: Static Analysis (informative)
-            install:
-                # Install PHPStan
-                - travis_retry composer create-project phpstan/phpstan-shim temp/phpstan --no-progress
-                - travis_retry composer install --no-progress --prefer-dist
             script:
-                - php temp/phpstan/phpstan.phar analyse --autoload-file vendor/autoload.php --level 5 src
+                - composer run-script phpstan
 
 
         -   stage: Code Coverage

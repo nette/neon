@@ -213,3 +213,8 @@ Assert::same([
 one:
 two:
 '));
+
+
+Assert::same([null, null], Neon::decode('
+-
+-'));

@@ -43,6 +43,8 @@ $dataSet = [
 
 		// strings
 		["''", ''],
+		["'foo'", 'foo'],
+		["'fo''o'", "fo'o"],
 		['""', ''],
 		['"foo"', 'foo'],
 		['"f\\no"', "f\no"],
@@ -126,6 +128,17 @@ $dataSet = [
 
 		['!hello', '!hello'],
 
+		['::', '::'],
+		[':0', ':0'],
+		[':-1', ':-1'],
+		[':true', ':true'],
+		[':false', ':false'],
+		[':null', ':null'],
+		[':NULL', ':NULL'],
+		['-:', '-:'],
+		['-0', -0],
+		['-true', '-true'],
+
 		['42 px', '42 px'],
 		['42 .2', '42 .2'],
 		['42 2', '42 2'],
@@ -194,6 +207,13 @@ $dataSet = [
 		['=abc'],
 		['{a :b}'],
 		['a :b'],
+
+		['-['],
+		['-{'],
+		['-('],
+		[':['],
+		[':{'],
+		[':('],
 	],
 
 	// RFC JSON with valid syntax which can not be encoded in UTF-8
