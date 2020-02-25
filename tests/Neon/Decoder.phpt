@@ -228,13 +228,9 @@ $dataSet = [
 
 	// RFC JSON with valid syntax which can not be encoded in UTF-8
 	'invalid encoding' => [
-		['"XXX\uD801YYY\uDC01ZZZ"', 'XXXYYYZZZ'], // lead and tail surrogates alone
-		['"XXX\uD801\uD801YYY"', 'XXXYYY'], // two lead surrogates
-		['"XXX\uDC01\uDC01YYY"', 'XXXYYY'], // two tail surrogates
-	],
-
-	// inputs which are not valid UTF-8, but silently ignored
-	'ignored invalid encoding' => [
+		['"XXX\uD801YYY\uDC01ZZZ"'], // lead and tail surrogates alone
+		['"XXX\uD801\uD801YYY"'], // two lead surrogates
+		['"XXX\uDC01\uDC01YYY"'], // two tail surrogates
 		["'\xc3\x28'"], // Invalid 2 Octet Sequence
 		["'\xa0\xa1'"], // Invalid Sequence Identifier
 		["'\xe2\x28\xa1'"], // Invalid 3 Octet Sequence (in 2nd Octet)
@@ -253,10 +249,6 @@ $dataSet = [
 foreach (array_merge($dataSet['RFC JSON'], $dataSet['PHP JSON'], $dataSet['NEON']) as $set) {
 	echo "$set[0]\n";
 	Assert::same($set[1], Neon::decode($set[0]));
-}
-
-foreach ($dataSet['ignored invalid encoding'] as $set) {
-	Assert::same(substr($set[0], 1, -1), Neon::decode($set[0]));
 }
 
 foreach ($dataSet['deprecated syntax'] as $set) {
