@@ -218,3 +218,14 @@ two:
 Assert::same([null, null], Neon::decode('
 -
 -'));
+
+
+Assert::equal(
+	[
+		new DateTimeImmutable('2016-06-03 00:00:00'),
+		'2016-06-03' => 'b',
+	],
+	Neon::decode('
+- 2016-06-03
+2016-06-03: b
+'));
