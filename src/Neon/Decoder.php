@@ -259,6 +259,8 @@ final class Decoder
 				}
 
 			} else { // Value
+				$isKey = ($tmp = $tokens[$n + 1][0] ?? null) && ($tmp === ':' || $tmp === '=');
+
 				if ($t[0] === '"' || $t[0] === "'") {
 					if (preg_match('#^...\n++([\t ]*+)#', $t, $m)) {
 						$converted = substr($t, 3, -3);
@@ -270,7 +272,7 @@ final class Decoder
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
 					}
-				} elseif (isset(self::SIMPLE_TYPES[$t]) && (!isset($tokens[$n + 1][0]) || ($tokens[$n + 1][0] !== ':' && $tokens[$n + 1][0] !== '='))) {
+				} elseif (!$isKey && isset(self::SIMPLE_TYPES[$t])) {
 					$converted = constant(self::SIMPLE_TYPES[$t]);
 				} elseif (is_numeric($t)) {
 					$converted = $t * 1;
@@ -280,7 +282,7 @@ final class Decoder
 					$converted = octdec($t);
 				} elseif (preg_match(self::PATTERN_BINARY, $t)) {
 					$converted = bindec($t);
-				} elseif (preg_match(self::PATTERN_DATETIME, $t)) {
+				} elseif (!$isKey && preg_match(self::PATTERN_DATETIME, $t)) {
 					$converted = new \DateTimeImmutable($t);
 				} else { // literal
 					$converted = $t;
