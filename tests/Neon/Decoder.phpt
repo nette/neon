@@ -101,7 +101,6 @@ $dataSet = [
 		['NO', false],
 
 		// extended string syntax
-		['"\\x42 hex escape"', "\x42 hex escape"],
 		["'single \\n quote'", 'single \\n quote'],
 
 		// strings without quotes
@@ -189,6 +188,7 @@ $dataSet = [
 		['off', false],
 		['Off', false],
 		['OFF', false],
+		['"\\x42 hex escape"', "\x42 hex escape"],
 	],
 
 	// inputs with invalid syntax, but still valid UTF-8
