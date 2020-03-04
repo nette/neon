@@ -356,6 +356,7 @@ final class Decoder
 			}
 			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code));
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
+			trigger_error("Neon: '$sq' is deprecated, use '\uXXXX' instead.", E_USER_DEPRECATED);
 			return chr(hexdec(substr($sq, 2)));
 		} else {
 			$this->error("Invalid escaping sequence $sq");
