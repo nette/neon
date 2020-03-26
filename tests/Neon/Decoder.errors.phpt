@@ -105,3 +105,11 @@ foo:
 bar
 ');
 }, Nette\Neon\Exception::class, "Unexpected '<new line>' on line 3, column 4.");
+
+
+Assert::exception(function () {
+	Neon::decode('
+a: 1
+a: 2
+');
+}, Nette\Neon\Exception::class, "Duplicated key 'a' on line 3, column 5.");
