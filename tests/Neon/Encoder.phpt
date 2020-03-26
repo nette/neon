@@ -114,6 +114,21 @@ Assert::same(
 	Neon::encode(new DateTimeImmutable('2016-06-03T19:00:00+02:00'))
 );
 
+Assert::same(
+	'{foo: bar}',
+	Neon::encode((object)['foo' => 'bar'])
+);
+
+Assert::same(
+	'[]',
+	Neon::encode((object)[])
+);
+
+Assert::same(
+	'[]',
+	Neon::encode(new stdClass())
+);
+
 Assert::exception(function () {
 	Neon::encode("a invalid utf8 char sequence: \xc2\x82\x28\xfc\xa1\xa1\xa1\xa1\xa1\xe2\x80\x82");
 }, Nette\Neon\Exception::class);
