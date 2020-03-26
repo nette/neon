@@ -129,6 +129,11 @@ Assert::same(
 	Neon::encode(new stdClass())
 );
 
+Assert::same(
+	'[]',
+	Neon::encode([], Neon::BLOCK)
+);
+
 Assert::exception(function () {
 	Neon::encode("a invalid utf8 char sequence: \xc2\x82\x28\xfc\xa1\xa1\xa1\xa1\xa1\xe2\x80\x82");
 }, Nette\Neon\Exception::class);
