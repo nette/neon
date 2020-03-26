@@ -113,3 +113,8 @@ a: 1
 a: 2
 ');
 }, Nette\Neon\Exception::class, "Duplicated key 'a' on line 3, column 5.");
+
+
+Assert::exception(function () {
+	Neon::decode('{ []: foo }');
+}, Nette\Neon\Exception::class, "Unacceptable key on line 1, column 5.");
