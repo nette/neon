@@ -90,10 +90,7 @@ final class Decoder
 	 */
 	public function decode(string $input)
 	{
-		if (!is_string($input)) {
-			throw new \InvalidArgumentException(sprintf('Argument must be a string, %s given.', gettype($input)));
-
-		} elseif (substr($input, 0, 3) === "\u{FEFF}") { // BOM
+		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
 			$input = substr($input, 3);
 		}
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
@@ -359,7 +356,6 @@ final class Decoder
 			return chr(hexdec(substr($sq, 2)));
 		} else {
 			$this->error("Invalid escaping sequence $sq");
-			return '';
 		}
 	}
 
