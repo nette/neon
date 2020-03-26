@@ -116,12 +116,12 @@ Assert::same(
 
 Assert::same(
 	'{foo: bar}',
-	Neon::encode((object)['foo' => 'bar'])
+	Neon::encode((object) ['foo' => 'bar'])
 );
 
 Assert::same(
 	'[]',
-	Neon::encode((object)[])
+	Neon::encode((object) [])
 );
 
 Assert::same(
