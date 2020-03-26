@@ -181,6 +181,16 @@ $dataSet = [
 		["\u{FEFF}a", 'a'],
 	],
 
+	// deprecated NEON syntax
+	'deprecated syntax' => [
+		['on', true],
+		['On', true],
+		['ON', true],
+		['off', false],
+		['Off', false],
+		['OFF', false],
+	],
+
 	// inputs with invalid syntax, but still valid UTF-8
 	'invalid syntax' => [
 		['"\\a invalid escape"'],
@@ -247,6 +257,11 @@ foreach (array_merge($dataSet['RFC JSON'], $dataSet['PHP JSON'], $dataSet['NEON'
 
 foreach ($dataSet['ignored invalid encoding'] as $set) {
 	Assert::same(substr($set[0], 1, -1), Neon::decode($set[0]));
+}
+
+foreach ($dataSet['deprecated syntax'] as $set) {
+	echo "$set[0]\n";
+	Assert::same($set[1], @Neon::decode($set[0])); // @ is deprecated
 }
 
 foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) as $set) {
