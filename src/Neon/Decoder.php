@@ -360,7 +360,6 @@ final class Decoder
 			return chr(hexdec(substr($sq, 2)));
 		} else {
 			$this->error("Invalid escaping sequence $sq");
-			return '';
 		}
 	}
 
