@@ -118,3 +118,8 @@ a: 2
 Assert::exception(function () {
 	Neon::decode('{ []: foo }');
 }, Nette\Neon\Exception::class, "Unacceptable key on line 1, column 5.");
+
+
+Assert::exception(function () {
+	Neon::decode('{ - 1}');
+}, Nette\Neon\Exception::class, "Unexpected '-' on line 1, column 3.");
