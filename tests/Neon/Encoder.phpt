@@ -39,6 +39,11 @@ Assert::same(
 );
 
 Assert::same(
+	"{multi: [\"\"\"\n\tone\n\ttwo\n\tthree\\\\ne \"'\t\n\"\"\"]}",
+	Neon::encode(['multi' => ["one\ntwo\nthree\\ne \"'\t"]])
+);
+
+Assert::same(
 	'["[", "]", "{", "}", ":", ": ", "=", "#"]',
 	Neon::encode(['[', ']', '{', '}', ':', ': ', '=', '#'])
 );
