@@ -44,6 +44,18 @@ Assert::same(
 );
 
 Assert::same(
+	"multi:
+	\"\"\"
+		line string
+			with tabs
+			and \"quotation marks\"
+	\"\"\"",
+	Neon::encode([
+		'multi' => "line string\n\twith tabs\n\tand \"quotation marks\""
+	])
+);
+
+Assert::same(
 	'["[", "]", "{", "}", ":", ": ", "=", "#"]',
 	Neon::encode(['[', ']', '{', '}', ':', ': ', '=', '#'])
 );
