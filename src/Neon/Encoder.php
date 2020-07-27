@@ -65,13 +65,6 @@ final class Encoder
 				return ($isList ? '[' : '{') . substr($s, 0, -2) . ($isList ? ']' : '}');
 			}
 
-		} elseif (
-			is_string($var)
-			&& !preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $var)
-			&& preg_match('~^' . Decoder::PATTERNS[1] . '$~Dx', $var) // 1 = literals
-		) {
-			return $var;
-
 		} elseif (is_string($var)) {
 			if (!preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $var)
 				&& preg_match('~^' . Decoder::PATTERNS[1] . '$~Dx', $var) // 1 = literals
