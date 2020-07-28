@@ -229,3 +229,6 @@ Assert::equal(
 - 2016-06-03
 2016-06-03: b
 '));
+
+
+Assert::same(['a' => "a\u{A0}b"], Neon::decode("a: a\u{A0}b"));
