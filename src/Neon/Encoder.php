@@ -11,7 +11,8 @@ namespace Nette\Neon;
 
 
 /**
- * Simple generator for Nette Object Notation.
+ * Converts value to NEON format.
+ * @internal
  */
 final class Encoder
 {

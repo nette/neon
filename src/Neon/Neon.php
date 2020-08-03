@@ -12,6 +12,7 @@ namespace Nette\Neon;
 
 /**
  * Simple parser & generator for Nette Object Notation.
+ * @see https://ne-on.org
  */
 final class Neon
 {
@@ -21,17 +22,18 @@ final class Neon
 
 
 	/**
-	 * Returns the NEON representation of a value.
+	 * Returns value converted to NEON. The flag can be Neon::BLOCK, which will create multiline output.
 	 */
-	public static function encode($var, int $flags = 0): string
+	public static function encode($value, int $flags = 0): string
 	{
 		$encoder = new Encoder;
-		return $encoder->encode($var, $flags);
+		return $encoder->encode($value, $flags);
 	}
 
 
 	/**
-	 * Decodes a NEON string.
+	 * Converts given NEON to PHP value.
+	 * Returns scalars, arrays, DateTimeImmutable and Entity objects.
 	 * @return mixed
 	 */
 	public static function decode(string $input)
