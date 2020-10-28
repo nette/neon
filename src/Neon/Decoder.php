@@ -152,7 +152,9 @@ final class Decoder
 				} elseif ($hasKey && $key === null && $hasValue && !$inlineParser) {
 					$n++;
 					$result[] = $this->parse($indent . '  ', [], $value, true);
-					$newIndent = isset($tokens[$n], $tokens[$n + 1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+					$newIndent = isset($tokens[$n], $tokens[$n + 1]) // not last
+						? (string) substr($tokens[$n][0], 1)
+						: '';
 					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
 						$this->error('Bad indentation');
@@ -194,7 +196,10 @@ final class Decoder
 					$value = $this->parse(false, []);
 				}
 				$hasValue = true;
-				if (!isset($tokens[$n]) || $tokens[$n][0] !== self::BRACKETS[$t]) { // unexpected type of bracket or block-parser
+				if ( // unexpected type of bracket or block-parser
+					!isset($tokens[$n])
+					|| $tokens[$n][0] !== self::BRACKETS[$t]
+				) {
 					$this->error();
 				}
 
@@ -235,7 +240,9 @@ final class Decoder
 							$this->error('Bad indentation');
 						}
 						$this->addValue($result, $key, $this->parse($newIndent));
-						$newIndent = isset($tokens[$n], $tokens[$n + 1]) ? (string) substr($tokens[$n][0], 1) : ''; // not last
+						$newIndent = isset($tokens[$n], $tokens[$n + 1]) // not last
+							? (string) substr($tokens[$n][0], 1)
+							: '';
 						if (strlen($newIndent) > strlen($indent)) {
 							$n++;
 							$this->error('Bad indentation');
@@ -248,7 +255,13 @@ final class Decoder
 
 						} elseif ($hasKey) {
 							$this->addValue($result, $key, $hasValue ? $value : null);
-							if ($key !== null && !$hasValue && $newIndent === $indent && isset($tokens[$n + 1]) && $tokens[$n + 1][0] === '-') {
+							if (
+								$key !== null
+								&& !$hasValue
+								&& $newIndent === $indent
+								&& isset($tokens[$n + 1])
+								&& $tokens[$n + 1][0] === '-'
+							) {
 								$result = &$result[$key];
 							}
 							$hasKey = $hasValue = false;
@@ -356,7 +369,7 @@ final class Decoder
 			}
 			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code));
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
-			trigger_error("Neon: '$sq' is deprecated, use '\uXXXX' instead.", E_USER_DEPRECATED);
+			trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
 			return chr(hexdec(substr($sq, 2)));
 		} else {
 			$this->error("Invalid escaping sequence $sq");
@@ -366,12 +379,14 @@ final class Decoder
 
 	private function error(string $message = "Unexpected '%s'")
 	{
-		$last = isset($this->tokens[$this->pos]) ? $this->tokens[$this->pos] : null;
+		$last = $this->tokens[$this->pos] ?? null;
 		$offset = $last ? $last[1] : strlen($this->input);
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n");
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
-		$token = $last ? str_replace("\n", '<new line>', substr($last[0], 0, 40)) : 'end';
+		$token = $last
+			? str_replace("\n", '<new line>', substr($last[0], 0, 40))
+			: 'end';
 		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
 	}
 }

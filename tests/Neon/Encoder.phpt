@@ -21,7 +21,8 @@ Assert::same(
 		false, 'FALSE', 'fAlSe', 'false',
 		null, 'NULL', 'nUlL', 'null',
 		'yes', 'no', 'on', 'off',
-]));
+	])
+);
 
 Assert::same(
 	'[1, 1.0, 0, 0.0, -1, -1.2, "1", "1.0", "-1"]',
@@ -131,7 +132,7 @@ Assert::same(
 
 Assert::same(
 	'[]',
-	Neon::encode(new stdClass())
+	Neon::encode(new stdClass)
 );
 
 Assert::same(
