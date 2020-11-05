@@ -362,7 +362,7 @@ final class Decoder
 
 	private function error(string $message = "Unexpected '%s'")
 	{
-		$last = isset($this->tokens[$this->pos]) ? $this->tokens[$this->pos] : null;
+		$last = $this->tokens[$this->pos] ?? null;
 		$offset = $last ? $last[1] : strlen($this->input);
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n");
