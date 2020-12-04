@@ -12,7 +12,6 @@ namespace Nette\Neon;
 
 /**
  * Parser for Nette Object Notation.
- * @internal
  */
 final class Decoder
 {
