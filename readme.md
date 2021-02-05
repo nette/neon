@@ -9,13 +9,23 @@
 
 
 Introduction
-------------
+============
 
 NEON is a human-readable structured data format. In Nette, it is used for configuration files. It is also used for structured data such as settings, language translations, etc. [Try it on the sandbox](https://ne-on.org).
 
 NEON stands for *Nette Object Notation*. It is less complex and ungainly than XML or JSON, but provides similar capabilities. It is very similar to YAML. The main advantage is that NEON has so-called [entities](#entities), thanks to which the configuration of DI services is so sexy. And allowes tabs for indentation.
 
 NEON is built from the ground up to be simple to use.
+
+
+[Support Neon](https://github.com/sponsors/dg)
+----------------------------------------------
+
+Do you like NEON? Are you looking forward to the new features?
+
+[![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
+
+Thank you!
 
 
 Usage
