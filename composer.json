@@ -16,7 +16,6 @@
 	],
 	"require": {
 		"php": ">=7.1",
-		"ext-iconv": "*",
 		"ext-json": "*"
 	},
 	"require-dev": {

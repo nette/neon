@@ -367,10 +367,14 @@ final class Decoder
 			if ($code >= 0xD800 && $code <= 0xDFFF) {
 				$this->error("Invalid UTF-8 (lone surrogate) $sq");
 			}
-			return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code));
+			return function_exists('iconv')
+				? iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code))
+				: mb_convert_encoding(pack('N', $code), 'UTF-8', 'UTF-32BE');
+
 		} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 			trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
 			return chr(hexdec(substr($sq, 2)));
+
 		} else {
 			$this->error("Invalid escaping sequence $sq");
 		}
