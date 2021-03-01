@@ -19,9 +19,9 @@
 		"ext-json": "*"
 	},
 	"require-dev": {
-		"nette/tester": "^2.0",
+		"nette/tester": "^2.4",
 		"tracy/tracy": "^2.7",
-		"phpstan/phpstan": "^0.12"
+		"phpstan/phpstan": "^1.0"
 	},
 	"autoload": {
 		"classmap": ["src/"]
