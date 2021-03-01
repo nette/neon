@@ -19,7 +19,7 @@
 		"ext-json": "*"
 	},
 	"require-dev": {
-		"nette/tester": "^2.0",
+		"nette/tester": "^2.4",
 		"tracy/tracy": "^2.8.8",
 		"phpstan/phpstan": "^0.12"
 	},
