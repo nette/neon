@@ -18,22 +18,22 @@ final class Decoder
 {
 	public const PATTERNS = [
 		// strings
-		'
-			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
+		<<<'XX'
+			'''\n (?:(?: [^\n] | \n(?![\t\ ]*+''') )*+ \n)?[\t\ ]*+''' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
-			\' (?: \'\' | [^\'\n] )*+ \' |
-			" (?: \\\\. | [^"\\\\\n] )*+ "
-		',
+			' (?: '' | [^'\n] )*+ ' |
+			" (?: \\. | [^"\\\n] )*+ "
+			XX,
 
 		// literal / boolean / integer / float
-		'
-			(?: [^#"\',:=[\]{}()\n\t\ `-] | (?<!["\']) [:-] [^"\',=[\]{}()\n\t\ ] )
+		<<<'XX'
+			(?: [^#"',:=[\]{}()\n\t\ `-] | (?<!["']) [:-] [^"',=[\]{}()\n\t\ ] )
 			(?:
 				[^,:=\]})(\n\t\ ]++ |
 				:(?! [\n\t\ ,\]})] | $ ) |
 				[\ \t]++ [^#,:=\]})(\n\t\ ]
 			)*+
-		',
+			XX,
 
 		// punctuation
 		'[,:=[\]{}()-]',
@@ -288,7 +288,11 @@ final class Decoder
 						}
 					}
 					if ($t[0] === '"') {
-						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
+						$converted = preg_replace_callback(
+							'#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i',
+							[$this, 'cbString'],
+							$converted,
+						);
 					}
 				} elseif (!$isKey && isset(self::SIMPLE_TYPES[$t])) {
 					$converted = constant(self::SIMPLE_TYPES[$t]);

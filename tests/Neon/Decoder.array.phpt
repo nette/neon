@@ -26,7 +26,7 @@ Assert::same([
 	'b' => 2,
 ], Neon::decode(
 	' a: 1
- b: 2'
+ b: 2',
 ));
 
 
@@ -87,7 +87,7 @@ Assert::same([
 	y:
 		-
 a: x
-'
+',
 ));
 
 
@@ -230,7 +230,7 @@ Assert::equal(
 	Neon::decode('
 - 2016-06-03
 2016-06-03: b
-')
+'),
 );
 
 

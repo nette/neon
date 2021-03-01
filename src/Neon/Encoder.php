@@ -78,9 +78,11 @@ final class Encoder
 				throw new Exception('Invalid UTF-8 sequence: ' . $var);
 			}
 			if (strpos($var, "\n") !== false) {
-				$res = preg_replace_callback('#[^\\\\]|\\\\(.)#s', function ($m) {
-					return ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
-				}, $res);
+				$res = preg_replace_callback(
+					'#[^\\\\]|\\\\(.)#s',
+					fn($m) => ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0],
+					$res,
+				);
 				$res = '"""' . "\n\t" . substr($res, 1, -1) . "\n" . '"""';
 			}
 			return $res;

@@ -19,7 +19,7 @@ Assert::same(
 	Neon::decode('"""
 multi
 lines
-"""')
+"""'),
 );
 
 Assert::same(
@@ -27,7 +27,7 @@ Assert::same(
 	Neon::decode('"""
 multi"""
 lines\'\'\'
-"""')
+"""'),
 );
 
 // single quoted
@@ -36,7 +36,7 @@ Assert::same(
 	Neon::decode("'''
 multi\"\"\"
 lines'''
-'''")
+'''"),
 );
 
 // ignore space before end
@@ -45,7 +45,7 @@ Assert::same(
 	Neon::decode("'''
 multi
 lines
-\t '''")
+\t '''"),
 );
 
 // require new line after start
@@ -73,7 +73,7 @@ Assert::same(
 \tmulti
 lines
 \t\tstring
-'''")
+'''"),
 );
 
 Assert::same(
@@ -82,7 +82,7 @@ Assert::same(
 \t multi
 \t lines
 \t\t string
-\t\t'''")
+\t\t'''"),
 );
 
 // first empty line
@@ -92,7 +92,7 @@ Assert::same(
 
 \t multi
 \t lines
-\t\t'''")
+\t\t'''"),
 );
 
 // last empty line
@@ -102,7 +102,7 @@ Assert::same(
 \t multi
 \t lines
 
-\t\t'''")
+\t\t'''"),
 );
 
 // escaping
@@ -111,20 +111,20 @@ Assert::same(
 	Neon::decode('"""
 \t multi
 \t lines
-"""')
+"""'),
 );
 
 //no content
 Assert::same(
 	'',
 	Neon::decode('"""
-"""')
+"""'),
 );
 
 Assert::same(
 	'',
 	Neon::decode("'''
-'''")
+'''"),
 );
 
 Assert::exception(function () {
@@ -142,7 +142,7 @@ a: '''
 	multi
 	lines
 	'''
-")
+"),
 );
 
 Assert::same(
@@ -152,7 +152,7 @@ a: '''
 	multi
 	lines
 	'''
-")
+"),
 );
 
 Assert::same(
@@ -165,5 +165,5 @@ Assert::same(
 	multi
 	lines
 	'''
-")
+"),
 );
