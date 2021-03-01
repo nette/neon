@@ -34,9 +34,8 @@ final class Neon
 	/**
 	 * Converts given NEON to PHP value.
 	 * Returns scalars, arrays, DateTimeImmutable and Entity objects.
-	 * @return mixed
 	 */
-	public static function decode(string $input)
+	public static function decode(string $input): mixed
 	{
 		$decoder = new Decoder;
 		return $decoder->decode($input);

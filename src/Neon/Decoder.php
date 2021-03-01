@@ -83,9 +83,8 @@ final class Decoder
 
 	/**
 	 * Decodes a NEON string.
-	 * @return mixed
 	 */
-	public function decode(string $input)
+	public function decode(string $input): mixed
 	{
 		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
 			$input = substr($input, 3);
@@ -121,9 +120,8 @@ final class Decoder
 
 	/**
 	 * @param  string|bool|null  $indent  indentation (for block-parser)
-	 * @return mixed
 	 */
-	private function parse($indent, array $result = null, $key = null, bool $hasKey = false)
+	private function parse(string|bool|null $indent, array $result = null, $key = null, bool $hasKey = false): mixed
 	{
 		$inlineParser = $indent === false;
 		$value = null;
