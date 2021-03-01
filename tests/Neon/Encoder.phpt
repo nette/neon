@@ -85,7 +85,7 @@ Assert::same(
 );
 
 $entity = new Entity('ent');
-$entity->attributes = null;
+$entity->attributes = [];
 Assert::same(
 	'ent()',
 	Neon::encode($entity),

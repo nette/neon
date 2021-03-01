@@ -74,14 +74,11 @@ final class Decoder
 		'(' => ')',
 	];
 
-	/** @var string */
-	private $input;
+	private string $input;
 
-	/** @var array */
-	private $tokens;
+	private array $tokens;
 
-	/** @var int */
-	private $pos;
+	private int $pos;
 
 
 	/**
@@ -96,10 +93,11 @@ final class Decoder
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
 
 		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
-		$this->tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
-		if ($this->tokens === false) {
+		$res = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
+		if ($res === false) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
+		$this->tokens = $res;
 
 		$last = end($this->tokens);
 		if ($this->tokens && !preg_match($pattern, $last[0])) {
