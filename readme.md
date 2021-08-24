@@ -37,7 +37,7 @@ Install via Composer:
 composer require nette/neon
 ```
 
-It requires PHP version 7.1 and supports PHP up to 8.0. Documentation can be found on the [website](https://doc.nette.org/neon).
+It requires PHP version 7.1 and supports PHP up to 8.1. Documentation can be found on the [website](https://doc.nette.org/neon).
 
 `Neon::encode()` returns `$value` converted to NEON. As the second parameter you can use `Neon::BLOCK`, which will create multiline output.
 
