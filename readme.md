@@ -243,7 +243,7 @@ If the string contains characters that can be confused with NEON syntax (hyphens
 Double quotes allow you to use escape sequences to write special characters using backslashes `\`. All escape sequences as in the JSON format are supported, plus `\_`, which is an non-breaking space, ie `\u00A0`.
 
 ```neon
-- "\t \n \r \f \b \" \' \\ \/ \_"
+- "\t \n \r \f \b \" \\ \/ \_"
 - "\u00A9"
 ```
 

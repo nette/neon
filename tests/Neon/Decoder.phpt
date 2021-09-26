@@ -257,6 +257,7 @@ foreach ($dataSet['deprecated syntax'] as $set) {
 }
 
 foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) as $set) {
+	echo "$set[0]\n";
 	Assert::exception(function () use ($set) {
 		Neon::decode($set[0]);
 	}, Nette\Neon\Exception::class);

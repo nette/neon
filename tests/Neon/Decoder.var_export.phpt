@@ -13,8 +13,8 @@ require __DIR__ . '/../bootstrap.php';
 
 $parsed = Neon::decode('
 person:
-    id:   	100
-    data:   Andares(gender=male, married=yes)
+	id:   	100
+	data:   Andares(gender=male, married=yes)
 ');
 
 $serialized = var_export($parsed, true);

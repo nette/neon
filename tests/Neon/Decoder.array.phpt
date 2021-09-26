@@ -196,7 +196,7 @@ Assert::same([
 	'x' => [1, 2, 3],
 ], Neon::decode('
 x:
-    [1, 2, 3]
+	[1, 2, 3]
 '));
 
 
@@ -204,7 +204,7 @@ Assert::same([
 	'a',
 ], Neon::decode('
 -
-    a
+	a
 '));
 
 
