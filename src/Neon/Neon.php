@@ -64,4 +64,11 @@ final class Neon
 
 		return self::decode($input);
 	}
+
+
+	public static function update(string $input, $newValue): string
+	{
+		$updater = new Updater($input);
+		return $updater->updateValue($newValue);
+	}
 }
