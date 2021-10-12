@@ -54,6 +54,11 @@ Assert::exception(function () {
 
 
 Assert::exception(function () {
+	Neon::decode("- x: 20\n  - a: 10\n\tb: 10");
+}, Nette\Neon\Exception::class, 'Invalid combination of tabs and spaces on line 3, column 2.');
+
+
+Assert::exception(function () {
 	Neon::decode('
 a:
   b:
@@ -118,6 +123,11 @@ a: 2
 Assert::exception(function () {
 	Neon::decode('{ []: foo }');
 }, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 5.');
+
+
+Assert::exception(function () {
+	Neon::decode('[]: foo');
+}, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 3.');
 
 
 Assert::exception(function () {
