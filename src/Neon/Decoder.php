@@ -57,9 +57,9 @@ final class Decoder
 	private const PATTERN_BINARY = '#0b[0-1]++$#DA';
 
 	private const SIMPLE_TYPES = [
-		'true' => 'TRUE', 'True' => 'TRUE', 'TRUE' => 'TRUE', 'yes' => 'TRUE', 'Yes' => 'TRUE', 'YES' => 'TRUE', 'on' => 'TRUE', 'On' => 'TRUE', 'ON' => 'TRUE',
-		'false' => 'FALSE', 'False' => 'FALSE', 'FALSE' => 'FALSE', 'no' => 'FALSE', 'No' => 'FALSE', 'NO' => 'FALSE', 'off' => 'FALSE', 'Off' => 'FALSE', 'OFF' => 'FALSE',
-		'null' => 'NULL', 'Null' => 'NULL', 'NULL' => 'NULL',
+		'true' => true, 'True' => true, 'TRUE' => true, 'yes' => true, 'Yes' => true, 'YES' => true, 'on' => true, 'On' => true, 'ON' => true,
+		'false' => false, 'False' => false, 'FALSE' => false, 'no' => false, 'No' => false, 'NO' => false, 'off' => false, 'Off' => false, 'OFF' => false,
+		'null' => null, 'Null' => null, 'NULL' => null,
 	];
 
 	private const DEPRECATED_TYPES = ['on' => 1, 'On' => 1, 'ON' => 1, 'off' => 1, 'Off' => 1, 'OFF' => 1];
@@ -287,8 +287,8 @@ final class Decoder
 					if ($t[0] === '"') {
 						$converted = preg_replace_callback('#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i', [$this, 'cbString'], $converted);
 					}
-				} elseif (!$isKey && isset(self::SIMPLE_TYPES[$t])) {
-					$converted = constant(self::SIMPLE_TYPES[$t]);
+				} elseif (!$isKey && array_key_exists($t, self::SIMPLE_TYPES)) {
+					$converted = self::SIMPLE_TYPES[$t];
 					if (isset(self::DEPRECATED_TYPES[$t])) {
 						trigger_error("Neon: keyword '$t' is deprecated, use true/yes or false/no.", E_USER_DEPRECATED);
 					}
