@@ -90,9 +90,6 @@ final class Decoder
 	 */
 	public function decode(string $input)
 	{
-		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
-			$input = substr($input, 3);
-		}
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
 
 		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';

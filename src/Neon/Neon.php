@@ -38,6 +38,9 @@ final class Neon
 	 */
 	public static function decode(string $input)
 	{
+		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
+			$input = substr($input, 3);
+		}
 		$decoder = new Decoder;
 		return $decoder->decode($input);
 	}
