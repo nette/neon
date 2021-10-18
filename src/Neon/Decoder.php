@@ -77,7 +77,7 @@ final class Decoder
 	/** @var string */
 	private $input;
 
-	/** @var array */
+	/** @var Token[] */
 	private $tokens;
 
 	/** @var int */
@@ -93,13 +93,18 @@ final class Decoder
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
 
 		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
-		$this->tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
-		if ($this->tokens === false) {
+		$tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
+		if ($tokens === false) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
 
+		$this->tokens = [];
+		foreach ($tokens as $token) {
+			$this->tokens[] = new Token($token[0], $token[1]);
+		}
+
 		$last = end($this->tokens);
-		if ($this->tokens && !preg_match($pattern, $last[0])) {
+		if ($this->tokens && !preg_match($pattern, $last->value)) {
 			$this->pos = count($this->tokens) - 1;
 			$this->error();
 		}
@@ -108,7 +113,7 @@ final class Decoder
 		$res = $this->parse(null);
 
 		while (isset($this->tokens[$this->pos])) {
-			if ($this->tokens[$this->pos][0][0] === "\n") {
+			if ($this->tokens[$this->pos]->value[0] === "\n") {
 				$this->pos++;
 			} else {
 				$this->error();
@@ -133,7 +138,7 @@ final class Decoder
 		$mainResult = &$result;
 
 		for (; $n < $count; $n++) {
-			$t = $tokens[$n][0];
+			$t = $tokens[$n]->value;
 
 			if ($t === ',') { // ArrayEntry separator
 				if ((!$hasKey && !$hasValue) || !$inlineParser) {
@@ -150,7 +155,7 @@ final class Decoder
 					$n++;
 					$result[] = $this->parse($indent . '  ', [], $value, true);
 					$newIndent = isset($tokens[$n], $tokens[$n + 1]) // not last
-						? (string) substr($tokens[$n][0], 1)
+						? (string) substr($tokens[$n]->value, 1)
 						: '';
 					if (strlen($newIndent) > strlen($indent)) {
 						$n++;
@@ -195,7 +200,7 @@ final class Decoder
 				$hasValue = true;
 				if ( // unexpected type of bracket or block-parser
 					!isset($tokens[$n])
-					|| $tokens[$n][0] !== self::BRACKETS[$t]
+					|| $tokens[$n]->value !== self::BRACKETS[$t]
 				) {
 					$this->error();
 				}
@@ -214,14 +219,14 @@ final class Decoder
 					}
 
 				} else {
-					while (isset($tokens[$n + 1]) && $tokens[$n + 1][0][0] === "\n") {
+					while (isset($tokens[$n + 1]) && $tokens[$n + 1]->value[0] === "\n") {
 						$n++; // skip to last indent
 					}
 					if (!isset($tokens[$n + 1])) {
 						break;
 					}
 
-					$newIndent = (string) substr($tokens[$n][0], 1);
+					$newIndent = (string) substr($tokens[$n]->value, 1);
 					if ($indent === null) { // first iteration
 						$indent = $newIndent;
 					}
@@ -238,7 +243,7 @@ final class Decoder
 						}
 						$this->addValue($result, $key, $this->parse($newIndent));
 						$newIndent = isset($tokens[$n], $tokens[$n + 1]) // not last
-							? (string) substr($tokens[$n][0], 1)
+							? (string) substr($tokens[$n]->value, 1)
 							: '';
 						if (strlen($newIndent) > strlen($indent)) {
 							$n++;
@@ -257,7 +262,7 @@ final class Decoder
 								&& !$hasValue
 								&& $newIndent === $indent
 								&& isset($tokens[$n + 1])
-								&& $tokens[$n + 1][0] === '-'
+								&& $tokens[$n + 1]->value === '-'
 							) {
 								$result = &$result[$key];
 							}
@@ -271,7 +276,7 @@ final class Decoder
 				}
 
 			} else { // Value
-				$isKey = ($tmp = $tokens[$n + 1][0] ?? null) && ($tmp === ':' || $tmp === '=');
+				$isKey = ($tmp = $tokens[$n + 1]->value ?? null) && ($tmp === ':' || $tmp === '=');
 
 				if ($t[0] === '"' || $t[0] === "'") {
 					if (preg_match('#^...\n++([\t ]*+)#', $t, $m)) {
@@ -381,12 +386,12 @@ final class Decoder
 	private function error(string $message = null)
 	{
 		$last = $this->tokens[$this->pos] ?? null;
-		$offset = $last ? $last[1] : strlen($this->input);
+		$offset = $last ? $last->offset : strlen($this->input);
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n");
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
 		$message = $message ?? 'Unexpected ' . ($last
-			? "'" . str_replace("\n", '<new line>', substr($last[0], 0, 40)) . "'"
+			? "'" . str_replace("\n", '<new line>', substr($last->value, 0, 40)) . "'"
 			: 'end');
 		throw new Exception("$message on line $line, column $col.");
 	}
