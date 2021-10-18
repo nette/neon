@@ -381,16 +381,16 @@ final class Decoder
 	}
 
 
-	private function error(string $message = "Unexpected '%s'")
+	private function error(string $message = null)
 	{
 		$last = $this->tokens[$this->pos] ?? null;
 		$offset = $last ? $last[1] : strlen($this->input);
 		$text = substr($this->input, 0, $offset);
 		$line = substr_count($text, "\n");
 		$col = $offset - strrpos("\n" . $text, "\n") + 1;
-		$token = $last
-			? str_replace("\n", '<new line>', substr($last[0], 0, 40))
-			: 'end';
-		throw new Exception(str_replace('%s', $token, $message) . " on line $line, column $col.");
+		$message = $message ?? 'Unexpected ' . ($last
+			? "'" . str_replace("\n", '<new line>', substr($last[0], 0, 40)) . "'"
+			: 'end');
+		throw new Exception("$message on line $line, column $col.");
 	}
 }
