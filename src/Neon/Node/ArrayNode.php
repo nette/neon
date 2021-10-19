@@ -17,12 +17,12 @@ final class ArrayNode extends Node
 {
 	/** @var ArrayItemNode[] */
 	public array $items = [];
-	public ?string $indentation;
 
 
-	public function __construct(?string $indentation = null, int $pos = null)
-	{
-		$this->indentation = $indentation;
+	public function __construct(
+		public ?string $indentation = null,
+		int $pos = null,
+	) {
 		$this->startPos = $this->endPos = $pos;
 	}
 

@@ -16,13 +16,12 @@ use Nette\Neon\Node;
 /** @internal */
 final class EntityChainNode extends Node
 {
-	/** @var EntityNode[] */
-	public array $chain = [];
-
-
-	public function __construct(array $chain = [], int $startPos = null, int $endPos = null)
-	{
-		$this->chain = $chain;
+	public function __construct(
+		/** @var EntityNode[] */
+		public array $chain = [],
+		int $startPos = null,
+		int $endPos = null,
+	) {
 		$this->startPos = $startPos;
 		$this->endPos = $endPos ?? $startPos;
 	}
