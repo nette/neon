@@ -17,7 +17,7 @@ final class Token
 	public const LITERAL = 2;
 	public const CHAR = 0;
 	public const COMMENT = 3;
-	public const INDENT = 4;
+	public const NEWLINE = 4;
 	public const WHITESPACE = 5;
 
 	/** @var string */

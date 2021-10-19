@@ -22,7 +22,6 @@ final class Decoder
 	 */
 	public function decode(string $input)
 	{
-		$input = "\n" . $input; // \n forces indent detection
 		$lexer = new Lexer;
 		$parser = new Parser;
 		$tokens = $lexer->tokenize($input);

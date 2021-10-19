@@ -38,8 +38,8 @@ final class Lexer
 		// comment
 		Token::COMMENT => '\#.*+',
 
-		// new line + indent
-		Token::INDENT => '\n[\t\ ]*+',
+		// new line
+		Token::NEWLINE => '\n++',
 
 		// whitespace
 		Token::WHITESPACE => '[\t\ ]++',

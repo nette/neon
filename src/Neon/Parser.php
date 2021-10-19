@@ -37,10 +37,10 @@ final class Parser
 	public function parse(TokenStream $tokens)
 	{
 		$this->tokens = $tokens;
-		while ($this->tokens->consume(Token::INDENT));
+		while ($this->tokens->consume(Token::NEWLINE));
 		$res = $this->parseBlock($this->tokens->getIndentation());
 
-		while ($this->tokens->consume(Token::INDENT));
+		while ($this->tokens->consume(Token::NEWLINE));
 		if ($this->tokens->isNext()) {
 			$this->tokens->error();
 		}
@@ -74,8 +74,8 @@ final class Parser
 
 		$value = null;
 
-		if ($this->tokens->consume(Token::INDENT)) {
-			while ($this->tokens->consume(Token::INDENT));
+		if ($this->tokens->consume(Token::NEWLINE)) {
+			while ($this->tokens->consume(Token::NEWLINE));
 			$nextIndent = $this->tokens->getIndentation();
 
 			if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
@@ -94,7 +94,7 @@ final class Parser
 
 		} elseif ($this->tokens->isNext()) {
 			$value = $this->parseValue();
-			if ($this->tokens->isNext() && !$this->tokens->isNext(Token::INDENT)) {
+			if ($this->tokens->isNext() && !$this->tokens->isNext(Token::NEWLINE)) {
 				$this->tokens->error();
 			}
 		}
@@ -105,7 +105,7 @@ final class Parser
 			$res[$key] = $value;
 		}
 
-		while ($this->tokens->consume(Token::INDENT));
+		while ($this->tokens->consume(Token::NEWLINE));
 		if (!$this->tokens->isNext()) {
 			return $res;
 		}
@@ -171,7 +171,7 @@ final class Parser
 		$res = [];
 
 		loop:
-		while ($this->tokens->consume(Token::INDENT));
+		while ($this->tokens->consume(Token::NEWLINE));
 		if ($this->tokens->consume($endBrace)) {
 			return $res;
 		}
@@ -181,17 +181,17 @@ final class Parser
 
 		if ($this->tokens->consume(':', '=')) {
 			$key = $this->checkArrayKey($value, $res, $valuePos);
-			$res[$key] = $this->tokens->isNext(Token::INDENT, ',', $endBrace)
+			$res[$key] = $this->tokens->isNext(Token::NEWLINE, ',', $endBrace)
 				? null
 				: $this->parseValue();
 		} else {
 			$res[] = $value;
 		}
 
-		if ($this->tokens->consume(',', Token::INDENT)) {
+		if ($this->tokens->consume(',', Token::NEWLINE)) {
 			goto loop;
 		}
-		while ($this->tokens->consume(Token::INDENT));
+		while ($this->tokens->consume(Token::NEWLINE));
 		if (!$this->tokens->isNext($endBrace)) {
 			$this->tokens->error();
 		}

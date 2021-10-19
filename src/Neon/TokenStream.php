@@ -60,8 +60,9 @@ final class TokenStream
 
 	public function getIndentation(): string
 	{
-		return ($this->tokens[$this->pos - 1]->type ?? null) === Token::INDENT
-			? substr($this->tokens[$this->pos - 1]->value, 1)
+		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::NEWLINE, null], true)
+			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::WHITESPACE
+			? $this->tokens[$this->pos - 1]->value
 			: '';
 	}
 
@@ -77,7 +78,7 @@ final class TokenStream
 			}
 			$input .= $token->value;
 		}
-		$line = substr_count($input, "\n");
+		$line = substr_count($input, "\n") + 1;
 		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
 		$token = $this->tokens[$pos] ?? null;
 		$message = $message ?? 'Unexpected ' . ($token === null
