@@ -47,4 +47,10 @@ final class ArrayItemNode extends Node
 	{
 		throw new \LogicException;
 	}
+
+
+	public function getSubNodes(): array
+	{
+		return $this->key ? [$this->key, $this->value] : [$this->value];
+	}
 }

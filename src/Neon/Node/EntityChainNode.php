@@ -36,4 +36,10 @@ final class EntityChainNode extends Node
 		}
 		return new Neon\Entity(Neon\Neon::CHAIN, $entities);
 	}
+
+
+	public function getSubNodes(): array
+	{
+		return $this->chain;
+	}
 }

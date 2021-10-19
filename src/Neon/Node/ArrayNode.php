@@ -33,4 +33,10 @@ final class ArrayNode extends Node
 	{
 		return ArrayItemNode::itemsToArray($this->items);
 	}
+
+
+	public function getSubNodes(): array
+	{
+		return $this->items;
+	}
 }

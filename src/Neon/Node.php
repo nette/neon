@@ -22,4 +22,11 @@ abstract class Node
 
 	/** @return mixed */
 	abstract public function toValue();
+
+
+	/** @return self[] */
+	public function getSubNodes(): array
+	{
+		return [];
+	}
 }
