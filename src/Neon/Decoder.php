@@ -63,14 +63,15 @@ final class Decoder
 		$this->tokens = $lexer->tokenize($this->input, $error);
 		if ($error) {
 			$this->pos = count($this->tokens) - 1;
-			$this->error();
+			$this->error($error);
 		}
+		$this->tokens = array_values(array_filter($this->tokens, function ($token) { return !in_array($token->type, [Token::COMMENT, Token::WHITESPACE], true); }));
 
 		$this->pos = 0;
 		$res = $this->parse(null);
 
 		while (isset($this->tokens[$this->pos])) {
-			if ($this->tokens[$this->pos]->value[0] === "\n") {
+			if ($this->tokens[$this->pos]->type === Token::INDENT) {
 				$this->pos++;
 			} else {
 				$this->error();
@@ -168,7 +169,7 @@ final class Decoder
 				}
 				break;
 
-			} elseif ($t[0] === "\n") { // Indent
+			} elseif ($tokens[$n]->type === Token::INDENT) { // Indent
 				if ($inlineParser) {
 					if ($hasKey || $hasValue) {
 						$this->addValue($result, $hasKey ? $key : null, $hasValue ? $value : null);
@@ -176,7 +177,7 @@ final class Decoder
 					}
 
 				} else {
-					while (isset($tokens[$n + 1]) && $tokens[$n + 1]->value[0] === "\n") {
+					while (isset($tokens[$n + 1]) && $tokens[$n + 1]->type === Token::INDENT) {
 						$n++; // skip to last indent
 					}
 					if (!isset($tokens[$n + 1])) {
@@ -235,7 +236,7 @@ final class Decoder
 			} else { // Value
 				$isKey = ($tmp = $tokens[$n + 1]->value ?? null) && ($tmp === ':' || $tmp === '=');
 
-				if ($t[0] === '"' || $t[0] === "'") {
+				if ($tokens[$n]->type === Token::STRING) {
 					if (preg_match('#^...\n++([\t ]*+)#', $t, $m)) {
 						$converted = substr($t, 3, -3);
 						$converted = str_replace("\n" . $m[1], "\n", $converted);

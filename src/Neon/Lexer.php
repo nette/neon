@@ -15,7 +15,7 @@ final class Lexer
 {
 	public const PATTERNS = [
 		// strings
-		'
+		Token::STRING => '
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
 			\' (?: \'\' | [^\'\n] )*+ \' |
@@ -23,7 +23,7 @@ final class Lexer
 		',
 
 		// literal / boolean / integer / float
-		'
+		Token::LITERAL => '
 			(?: [^#"\',:=[\]{}()\n\t\ `-] | (?<!["\']) [:-] [^"\',=[\]{}()\n\t\ ] )
 			(?:
 				[^,:=\]})(\n\t\ ]++ |
@@ -33,16 +33,16 @@ final class Lexer
 		',
 
 		// punctuation
-		'[,:=[\]{}()-]',
+		Token::CHAR => '[,:=[\]{}()-]',
 
 		// comment
-		'?:\#.*+',
+		Token::COMMENT => '\#.*+',
 
 		// new line + indent
-		'\n[\t\ ]*+',
+		Token::INDENT => '\n[\t\ ]*+',
 
 		// whitespace
-		'?:[\t\ ]++',
+		Token::WHITESPACE => '[\t\ ]++',
 	];
 
 
@@ -50,16 +50,34 @@ final class Lexer
 	public function tokenize(string $input, &$error): array
 	{
 		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
-		$tokens = preg_split($pattern, $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
-		if ($tokens === false) {
+		$res = preg_match_all($pattern, $input, $tokens, PREG_SET_ORDER);
+		if ($res === false) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
 
+		$types = array_keys(self::PATTERNS);
+		$offset = 0;
 		foreach ($tokens as &$token) {
-			$token = new Token($token[0], $token[1]);
+			$type = null;
+			for ($i = 1; $i <= count($types); $i++) {
+				if (!isset($token[$i])) {
+					break;
+				} elseif ($token[$i] !== '') {
+					$type = $types[$i - 1];
+					if ($type === Token::CHAR) {
+						$type = $token[0];
+					}
+					break;
+				}
+			}
+			$token = new Token($token[0], $offset, $type);
+			$offset += strlen($token->value);
 		}
 
-		$error = $tokens && !preg_match($pattern, end($tokens)->value);
+		if ($offset !== strlen($input)) {
+			$s = str_replace("\n", '\n', substr($input, $offset, 40));
+			$error = "Unexpected '$s'";
+		}
 		return $tokens;
 	}
 
@@ -67,6 +85,6 @@ final class Lexer
 	public static function requiresDelimiters(string $s): bool
 	{
 		return preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $s)
-			|| !preg_match('~^' . self::PATTERNS[1] . '$~Dx', $s);
+			|| !preg_match('~^' . self::PATTERNS[Token::LITERAL] . '$~Dx', $s);
 	}
 }

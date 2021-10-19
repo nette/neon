@@ -45,7 +45,7 @@ Assert::exception(function () {
 
 Assert::exception(function () {
 	Neon::decode('"');
-}, Nette\Neon\Exception::class, "Unexpected '\"' on line 1, column 1.");
+}, Nette\Neon\Exception::class, "Unexpected '\"' on line 0, column 1.");
 
 
 Assert::exception(function () {
