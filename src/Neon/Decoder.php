@@ -22,6 +22,13 @@ final class Decoder
 	 */
 	public function decode(string $input)
 	{
+		$node = $this->parseToNode($input);
+		return $node->toValue();
+	}
+
+
+	public function parseToNode(string $input): Node
+	{
 		$lexer = new Lexer;
 		$parser = new Parser;
 		$tokens = $lexer->tokenize($input);

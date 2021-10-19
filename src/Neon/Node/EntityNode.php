@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
+ */
+
+declare(strict_types=1);
+
+namespace Nette\Neon\Node;
+
+use Nette\Neon\Entity;
+use Nette\Neon\Node;
+
+
+/** @internal */
+final class EntityNode extends Node
+{
+	/** @var Node */
+	public $value;
+
+	/** @var ArrayItemNode[] */
+	public $attributes = [];
+
+
+	public function __construct(Node $value, array $attributes, int $startPos = null, int $endPos = null)
+	{
+		$this->value = $value;
+		$this->attributes = $attributes;
+		$this->startPos = $startPos;
+		$this->endPos = $endPos ?? $startPos;
+	}
+
+
+	public function toValue(): Entity
+	{
+		return new Entity(
+			$this->value->toValue(),
+			ArrayItemNode::itemsToArray($this->attributes)
+		);
+	}
+
+
+	public function getSubNodes(): array
+	{
+		return array_merge([$this->value], $this->attributes);
+	}
+}
