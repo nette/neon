@@ -35,6 +35,22 @@ final class ArrayNode extends Node
 	}
 
 
+	public function toString(): string
+	{
+		if ($this->indent === null) {
+			$isList = !array_filter($this->items, function ($item) { return $item->key; });
+			$res = ArrayItemNode::itemsToInlineString($this->items);
+			return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
+
+		} elseif (count($this->items) === 0) {
+			return '[]';
+
+		} else {
+			return ArrayItemNode::itemsToBlockString($this->items);
+		}
+	}
+
+
 	public function getSubNodes(): array
 	{
 		return $this->items;

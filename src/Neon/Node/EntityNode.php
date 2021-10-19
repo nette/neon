@@ -41,6 +41,15 @@ final class EntityNode extends Node
 	}
 
 
+	public function toString(): string
+	{
+		return $this->value->toString()
+			. '('
+			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes) : '')
+			. ')';
+	}
+
+
 	public function getSubNodes(): array
 	{
 		return array_merge([$this->value], $this->attributes);

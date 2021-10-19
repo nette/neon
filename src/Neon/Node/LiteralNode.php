@@ -30,4 +30,25 @@ final class LiteralNode extends Node
 	{
 		return $this->value;
 	}
+
+
+	public function toString(): string
+	{
+		if ($this->value instanceof \DateTimeInterface) {
+			return $this->value->format('Y-m-d H:i:s O');
+
+		} elseif (is_string($this->value)) {
+			return $this->value;
+
+		} elseif (is_float($this->value)) {
+			$res = json_encode($this->value);
+			return strpos($res, '.') === false ? $res . '.0' : $res;
+
+		} elseif (is_int($this->value) || is_bool($this->value) || $this->value === null) {
+			return json_encode($this->value);
+
+		} else {
+			throw new \LogicException;
+		}
+	}
 }

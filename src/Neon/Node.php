@@ -24,6 +24,9 @@ abstract class Node
 	abstract public function toValue();
 
 
+	abstract public function toString(): string;
+
+
 	/** @return self[] */
 	public function getSubNodes(): array
 	{

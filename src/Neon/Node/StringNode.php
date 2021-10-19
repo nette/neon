@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Neon\Node;
 
+use Nette;
 use Nette\Neon\Node;
 
 
@@ -29,5 +30,21 @@ final class StringNode extends Node
 	public function toValue(): string
 	{
 		return $this->value;
+	}
+
+
+	public function toString(): string
+	{
+		$res = json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		if ($res === false) {
+			throw new Nette\Neon\Exception('Invalid UTF-8 sequence: ' . $this->value);
+		}
+		if (strpos($this->value, "\n") !== false) {
+			$res = preg_replace_callback('#[^\\\\]|\\\\(.)#s', function ($m) {
+				return ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
+			}, $res);
+			$res = '"""' . "\n\t" . substr($res, 1, -1) . "\n" . '"""';
+		}
+		return $res;
 	}
 }

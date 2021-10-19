@@ -43,7 +43,41 @@ final class ArrayItemNode extends Node
 	}
 
 
+	/** @param  self[]  $items */
+	public static function itemsToInlineString(array $items): string
+	{
+		$res = '';
+		foreach ($items as $item) {
+			$res .= ($res === '' ? '' : ', ')
+				. ($item->key ? $item->key->toString() . ': ' : '')
+				. $item->value->toString();
+		}
+		return $res;
+	}
+
+
+	/** @param  self[]  $items */
+	public static function itemsToBlockString(array $items): string
+	{
+		$res = '';
+		foreach ($items as $item) {
+			$v = $item->value->toString();
+			$res .= ($item->key ? $item->key->toString() . ':' : '-')
+				. (strpos($v, "\n") === false
+					? ' ' . $v . "\n"
+					: "\n" . preg_replace('#^(?=.)#m', "\t", $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
+		}
+		return $res;
+	}
+
+
 	public function toValue()
+	{
+		throw new \LogicException;
+	}
+
+
+	public function toString(): string
 	{
 		throw new \LogicException;
 	}
