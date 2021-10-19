@@ -67,9 +67,7 @@ final class Encoder
 			}
 
 		} elseif (is_string($var)) {
-			if (!preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $var)
-				&& preg_match('~^' . Decoder::PATTERNS[1] . '$~Dx', $var) // 1 = literals
-			) {
+			if (!Lexer::requiresDelimiters($var)) {
 				return $var;
 			}
 

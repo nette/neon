@@ -16,38 +16,6 @@ namespace Nette\Neon;
  */
 final class Decoder
 {
-	public const PATTERNS = [
-		// strings
-		'
-			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
-			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
-			\' (?: \'\' | [^\'\n] )*+ \' |
-			" (?: \\\\. | [^"\\\\\n] )*+ "
-		',
-
-		// literal / boolean / integer / float
-		'
-			(?: [^#"\',:=[\]{}()\n\t\ `-] | (?<!["\']) [:-] [^"\',=[\]{}()\n\t\ ] )
-			(?:
-				[^,:=\]})(\n\t\ ]++ |
-				:(?! [\n\t\ ,\]})] | $ ) |
-				[\ \t]++ [^#,:=\]})(\n\t\ ]
-			)*+
-		',
-
-		// punctuation
-		'[,:=[\]{}()-]',
-
-		// comment
-		'?:\#.*+',
-
-		// new line + indent
-		'\n[\t\ ]*+',
-
-		// whitespace
-		'?:[\t\ ]++',
-	];
-
 	private const PATTERN_DATETIME = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$#DA';
 
 	private const PATTERN_HEX = '#0x[0-9a-fA-F]++$#DA';
@@ -91,20 +59,9 @@ final class Decoder
 	public function decode(string $input)
 	{
 		$this->input = "\n" . str_replace("\r", '', $input); // \n forces indent detection
-
-		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
-		$tokens = preg_split($pattern, $this->input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
-		if ($tokens === false) {
-			throw new Exception('Invalid UTF-8 sequence.');
-		}
-
-		$this->tokens = [];
-		foreach ($tokens as $token) {
-			$this->tokens[] = new Token($token[0], $token[1]);
-		}
-
-		$last = end($this->tokens);
-		if ($this->tokens && !preg_match($pattern, $last->value)) {
+		$lexer = new Lexer;
+		$this->tokens = $lexer->tokenize($this->input, $error);
+		if ($error) {
 			$this->pos = count($this->tokens) - 1;
 			$this->error();
 		}
