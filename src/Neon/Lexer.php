@@ -46,9 +46,9 @@ final class Lexer
 	];
 
 
-	/** @return Token[] */
-	public function tokenize(string $input, &$error): array
+	public function tokenize(string $input): TokenStream
 	{
+		$input = str_replace("\r", '', $input);
 		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
 		$res = preg_match_all($pattern, $input, $tokens, PREG_SET_ORDER);
 		if ($res === false) {
@@ -74,11 +74,12 @@ final class Lexer
 			$offset += strlen($token->value);
 		}
 
+		$stream = new TokenStream($tokens);
 		if ($offset !== strlen($input)) {
 			$s = str_replace("\n", '\n', substr($input, $offset, 40));
-			$error = "Unexpected '$s'";
+			$stream->error("Unexpected '$s'", count($tokens));
 		}
-		return $tokens;
+		return $stream;
 	}
 
 

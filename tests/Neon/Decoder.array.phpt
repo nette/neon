@@ -235,3 +235,15 @@ Assert::equal(
 
 
 Assert::same(['a' => "a\u{A0}b"], Neon::decode("a: a\u{A0}b"));
+
+
+Assert::same([
+	['a', ['b' => 1]],
+	['c', ['d' => 1, 'e' => 1]],
+], Neon::decode('
+  - - a
+    - b: 1
+  - - c
+    - d: 1
+      e: 1
+'));

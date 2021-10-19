@@ -45,7 +45,7 @@ Assert::exception(function () {
 
 Assert::exception(function () {
 	Neon::decode('"');
-}, Nette\Neon\Exception::class, "Unexpected '\"' on line 0, column 1.");
+}, Nette\Neon\Exception::class, "Unexpected '\"' on line 1, column 1.");
 
 
 Assert::exception(function () {
@@ -117,17 +117,17 @@ Assert::exception(function () {
 a: 1
 a: 2
 ');
-}, Nette\Neon\Exception::class, "Duplicated key 'a' on line 3, column 5.");
+}, Nette\Neon\Exception::class, "Duplicated key 'a' on line 3, column 1.");
 
 
 Assert::exception(function () {
 	Neon::decode('{ []: foo }');
-}, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 5.');
+}, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 3.');
 
 
 Assert::exception(function () {
 	Neon::decode('[]: foo');
-}, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 3.');
+}, Nette\Neon\Exception::class, 'Unacceptable key on line 1, column 1.');
 
 
 Assert::exception(function () {
