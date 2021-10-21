@@ -33,7 +33,6 @@ final class Neon
 
 	/**
 	 * Converts given NEON to PHP value.
-	 * Returns scalars, arrays, DateTimeImmutable and Entity objects.
 	 * @return mixed
 	 */
 	public static function decode(string $input)
@@ -43,5 +42,19 @@ final class Neon
 		}
 		$decoder = new Decoder;
 		return $decoder->decode($input);
+	}
+
+
+	/**
+	 * Converts given NEON file to PHP value.
+	 * @return mixed
+	 */
+	public static function decodeFile(string $file)
+	{
+		if (!is_file($file)) {
+			throw new Exception("File '$file' does not exist.");
+		}
+		$input = file_get_contents($file);
+		return self::decode($input);
 	}
 }

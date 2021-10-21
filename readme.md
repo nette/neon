@@ -54,7 +54,13 @@ $neon = Neon::encode($value, Neon::BLOCK); // Returns $value converted to multil
 $value = Neon::decode('hello: world'); // Returns an array ['hello' => 'world']
 ```
 
-Both methods throw `Nette\Neon\Exception` on error.
+`Neon::decodeFile()` converts given NEON file to PHP value:
+
+```php
+$value = Neon::decodeFile('config.neon');
+```
+
+All methods throw `Nette\Neon\Exception` on error.
 
 
 Integration
