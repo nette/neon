@@ -72,6 +72,12 @@ Integration
 - [NEON for Python](https://github.com/paveldedik/neon-py).
 
 
+You can check for syntax errors in Neon files using the `neon-lint` console command:
+
+```shell
+vendor/bin/neon-lint <path>
+```
+
 Syntax
 ======
 
