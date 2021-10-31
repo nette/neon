@@ -19,6 +19,9 @@ abstract class Node
 	/** @var ?int */
 	public $endPos;
 
+	/** @var array */
+	public $data = [];
+
 
 	/**
 	 * @param  callable(self): mixed|null  $evaluator

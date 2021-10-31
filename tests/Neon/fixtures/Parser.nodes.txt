@@ -25,6 +25,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'first'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  value: Nette\Neon\Node\ArrayNode
    |  |  |  code: '- a'
    |  |  |  items: array (1)
@@ -36,13 +37,17 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  value: 'a'
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
+   |  |  |  |  |  data: array (0)
    |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  startPos: unset
    |  |  endPos: unset
+   |  |  data: array (0)
    |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'next:\n
@@ -54,6 +59,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'next'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  value: Nette\Neon\Node\ArrayNode
    |  |  |  code: string
    |  |  |  |  '- [k,\n
@@ -75,13 +81,17 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  indentation: null
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
+   |  |  |  |  |  data: array (0)
    |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  startPos: unset
    |  |  endPos: unset
+   |  |  data: array (0)
    |  2 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'second:\n
@@ -93,6 +103,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'second'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  value: Nette\Neon\Node\ArrayNode
    |  |  |  code: string
    |  |  |  |  'sub:\n
@@ -109,6 +120,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  value: 'sub'
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  value: Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  code: string
    |  |  |  |  |  |  |  'a: 1\n
@@ -117,13 +129,17 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  indentation: '\t    '
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
+   |  |  |  |  |  data: array (0)
    |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  startPos: unset
    |  |  endPos: unset
+   |  |  data: array (0)
    |  3 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'third:\n
@@ -134,6 +150,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'third'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  value: Nette\Neon\Node\ArrayNode
    |  |  |  code: string
    |  |  |  |  '- entity(a: 1)\n
@@ -148,8 +165,10 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  attributes: array (1) ...
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
+   |  |  |  |  |  data: array (0)
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- entity(a: 1)foo()bar'
    |  |  |  |  |  key: null
@@ -158,13 +177,18 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  chain: array (3) ...
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  |  data: array (0)
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
+   |  |  |  |  |  data: array (0)
    |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
+   |  |  |  data: array (0)
    |  |  startPos: unset
    |  |  endPos: unset
+   |  |  data: array (0)
    indentation: ''
    startPos: unset
    endPos: unset
+   data: array (0)
