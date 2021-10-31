@@ -39,13 +39,13 @@ composer require nette/neon
 
 It requires PHP version 7.1 and supports PHP up to 8.1. Documentation can be found on the [website](https://doc.nette.org/neon).
 
-`Neon::encode()` returns `$value` converted to NEON. As the second parameter you can use `Neon::BLOCK`, which will create multiline output.
+`Neon::encode()` returns `$value` converted to NEON. As the second parameter `$blockMode` you can pass true, which will create multiline output.
 
 ```php
 use Nette\Neon\Neon;
 
 $neon = Neon::encode($value); // Returns $value converted to NEON
-$neon = Neon::encode($value, Neon::BLOCK); // Returns $value converted to multiline NEON
+$neon = Neon::encode($value, true); // Returns $value converted to multiline NEON
 ```
 
 `Neon::decode()` converts given NEON to PHP value:

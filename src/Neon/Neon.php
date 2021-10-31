@@ -22,12 +22,13 @@ final class Neon
 
 
 	/**
-	 * Returns value converted to NEON. The flag can be Neon::BLOCK, which will create multiline output.
+	 * Returns value converted to NEON.
 	 */
-	public static function encode($value, int $flags = 0): string
+	public static function encode($value, bool $blockMode = false): string
 	{
 		$encoder = new Encoder;
-		return $encoder->encode($value, $flags);
+		$encoder->blockMode = $blockMode;
+		return $encoder->encode($value);
 	}
 
 
