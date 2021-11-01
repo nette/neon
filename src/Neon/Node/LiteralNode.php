@@ -81,7 +81,7 @@ final class LiteralNode extends Node
 
 		} elseif (is_float($this->value)) {
 			$res = json_encode($this->value);
-			return strpos($res, '.') === false ? $res . '.0' : $res;
+			return str_contains($res, '.') ? $res : $res . '.0';
 
 		} elseif (is_int($this->value) || is_bool($this->value) || $this->value === null) {
 			return json_encode($this->value);

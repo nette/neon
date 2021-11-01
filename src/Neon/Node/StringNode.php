@@ -57,11 +57,7 @@ final class StringNode extends Node
 				if (isset(self::EscapeSequences[$sq[1]])) {
 					return self::EscapeSequences[$sq[1]];
 				} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
-					if (($res = json_decode('"' . $sq . '"')) !== null) {
-						return $res;
-					}
-
-					throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
+					return json_decode('"' . $sq . '"') ?? throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
 				} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 					trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
 					return chr(hexdec(substr($sq, 2)));
@@ -76,7 +72,7 @@ final class StringNode extends Node
 
 	public function toString(): string
 	{
-		if (strpos($this->value, "\n") === false) {
+		if (!str_contains($this->value, "\n")) {
 			return "'" . str_replace("'", "''", $this->value) . "'";
 
 		} elseif (preg_match('~\n[\t ]+\'{3}~', $this->value)) {
