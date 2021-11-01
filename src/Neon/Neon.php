@@ -16,6 +16,7 @@ namespace Nette\Neon;
  */
 final class Neon
 {
+	/** @deprecated */
 	public const BLOCK = Encoder::BLOCK;
 
 	public const CHAIN = '!!chain';
