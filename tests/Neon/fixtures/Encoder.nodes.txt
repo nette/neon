@@ -29,7 +29,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indent: null
+   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -65,7 +65,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indent: null
+   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -115,7 +115,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indent: null
+   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -207,6 +207,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  endPos: null
    |  |  startPos: null
    |  |  endPos: null
-   indent: null
+   indentation: null
    startPos: null
    endPos: null

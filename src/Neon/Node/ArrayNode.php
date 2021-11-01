@@ -19,12 +19,12 @@ final class ArrayNode extends Node
 	public $items = [];
 
 	/** @var ?string */
-	public $indent;
+	public $indentation;
 
 
-	public function __construct(?string $indent = null, int $pos = null)
+	public function __construct(?string $indentation = null, int $pos = null)
 	{
-		$this->indent = $indent;
+		$this->indentation = $indentation;
 		$this->startPos = $this->endPos = $pos;
 	}
 
@@ -37,7 +37,7 @@ final class ArrayNode extends Node
 
 	public function toString(): string
 	{
-		if ($this->indent === null) {
+		if ($this->indentation === null) {
 			$isList = !array_filter($this->items, function ($item) { return $item->key; });
 			$res = ArrayItemNode::itemsToInlineString($this->items);
 			return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
