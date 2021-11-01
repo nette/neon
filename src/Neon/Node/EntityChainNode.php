@@ -28,11 +28,11 @@ final class EntityChainNode extends Node
 	}
 
 
-	public function toValue(): Neon\Entity
+	public function toValue(callable $evaluator = null): Neon\Entity
 	{
 		$entities = [];
 		foreach ($this->chain as $item) {
-			$entities[] = $item->toValue();
+			$entities[] = $evaluator ? $evaluator($item) : $item->toValue();
 		}
 		return new Neon\Entity(Neon\Neon::CHAIN, $entities);
 	}

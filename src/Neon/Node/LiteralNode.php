@@ -39,7 +39,7 @@ final class LiteralNode extends Node
 	}
 
 
-	public function toValue()
+	public function toValue(callable $evaluator = null)
 	{
 		return $this->value;
 	}

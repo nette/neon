@@ -29,14 +29,15 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToArray(array $items): array
+	public static function itemsToArray(array $items, callable $evaluator = null): array
 	{
 		$res = [];
 		foreach ($items as $item) {
+			$v = $evaluator ? $evaluator($item->value) : $item->value->toValue();
 			if ($item->key === null) {
-				$res[] = $item->value->toValue();
+				$res[] = $v;
 			} else {
-				$res[(string) $item->key->toValue()] = $item->value->toValue();
+				$res[(string) ($evaluator ? $evaluator($item->key) : $item->key->toValue())] = $v;
 			}
 		}
 		return $res;
@@ -71,7 +72,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	public function toValue()
+	public function toValue(callable $evaluator = null)
 	{
 		throw new \LogicException;
 	}

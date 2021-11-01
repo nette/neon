@@ -31,7 +31,7 @@ final class StringNode extends Node
 	}
 
 
-	public function toValue(): string
+	public function toValue(callable $evaluator = null): string
 	{
 		return $this->value;
 	}

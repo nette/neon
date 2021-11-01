@@ -1,0 +1,62 @@
+Test
+   value: array (7)
+   |  'map' => Test
+   |  |  value: array (2)
+   |  |  |  'a' => Test
+   |  |  |  |  value: 'b'
+   |  |  |  'c' => Test
+   |  |  |  |  value: 'd'
+   |  'index' => Test
+   |  |  value: array (3)
+   |  |  |  0 => Test
+   |  |  |  |  value: 'a'
+   |  |  |  1 => Test
+   |  |  |  |  value: 'b'
+   |  |  |  2 => Test
+   |  |  |  |  value: 'c'
+   |  'mixed' => Test
+   |  |  value: array (4)
+   |  |  |  0 => Test
+   |  |  |  |  value: 'a'
+   |  |  |  1 => Test
+   |  |  |  |  value: 'b'
+   |  |  |  4 => Test
+   |  |  |  |  value: 'c'
+   |  |  |  5 => Test
+   |  |  |  |  value: 'd'
+   |  'entity' => Test
+   |  |  value: Nette\Neon\Entity
+   |  |  |  value: Test
+   |  |  |  |  value: 'ent'
+   |  |  |  attributes: array (2)
+   |  |  |  |  0 => Test
+   |  |  |  |  |  value: 'a'
+   |  |  |  |  1 => Test
+   |  |  |  |  |  value: 'b'
+   |  'chain' => Test
+   |  |  value: Nette\Neon\Entity
+   |  |  |  value: '!!chain'
+   |  |  |  attributes: array (2)
+   |  |  |  |  0 => Test
+   |  |  |  |  |  value: Nette\Neon\Entity
+   |  |  |  |  |  |  value: Test
+   |  |  |  |  |  |  |  value: 'first'
+   |  |  |  |  |  |  attributes: array (2)
+   |  |  |  |  |  |  |  0 => Test
+   |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  |  1 => Test
+   |  |  |  |  |  |  |  |  value: 'b'
+   |  |  |  |  1 => Test
+   |  |  |  |  |  value: Nette\Neon\Entity
+   |  |  |  |  |  |  value: Test
+   |  |  |  |  |  |  |  value: 'second'
+   |  |  |  |  |  |  attributes: array (0)
+   |  'multiline' => Test
+   |  |  value: string
+   |  |  |  'hello\n
+   |  |  |   world'
+   |  'date' => Test
+   |  |  value: DateTime
+   |  |  |  date: '2016-06-03 19:00:00.000000'
+   |  |  |  timezone_type: 1
+   |  |  |  timezone: '+02:00'

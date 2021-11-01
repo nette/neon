@@ -20,8 +20,11 @@ abstract class Node
 	public $endPos;
 
 
-	/** @return mixed */
-	abstract public function toValue();
+	/**
+	 * @param  callable(self): mixed|null  $evaluator
+	 * @return mixed
+	 */
+	abstract public function toValue(callable $evaluator = null);
 
 
 	abstract public function toString(): string;
