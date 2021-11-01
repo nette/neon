@@ -24,10 +24,11 @@ final class Neon
 	/**
 	 * Returns value converted to NEON.
 	 */
-	public static function encode($value, bool $blockMode = false): string
+	public static function encode($value, bool $blockMode = false, string $indentation = "\t"): string
 	{
 		$encoder = new Encoder;
 		$encoder->blockMode = $blockMode;
+		$encoder->indentation = $indentation;
 		return $encoder->encode($value);
 	}
 

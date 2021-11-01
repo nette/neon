@@ -102,6 +102,11 @@ Assert::same(
 );
 
 Assert::same(
+	"foo: 1\nbar:\n  x:\n    - 1\n    - 2\n\n  y:\n    - 3\n    - 4\n\nbaz: null\n",
+	Neon::encode(['foo' => 1, 'bar' => ['x' => [1, 2], 'y' => [3, 4]], 'baz' => null], true, '  ')
+);
+
+Assert::same(
 	'ent(1)inner(2, 3)',
 	Neon::encode(Neon::decode('ent(1)inner(2, 3)'))
 );

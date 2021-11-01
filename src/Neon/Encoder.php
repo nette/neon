@@ -22,6 +22,9 @@ final class Encoder
 	/** @var bool */
 	public $blockMode = false;
 
+	/** @var string */
+	public $indentation = "\t";
+
 
 	/**
 	 * Returns the NEON representation of a value.
@@ -52,7 +55,7 @@ final class Encoder
 			);
 
 		} elseif (is_object($val) || is_array($val)) {
-			$node = new Node\ArrayNode($blockMode ? "\t" : null);
+			$node = new Node\ArrayNode($blockMode ? $this->indentation : null);
 			$node->items = $this->arrayToNodes($val, $blockMode);
 			return $node;
 
