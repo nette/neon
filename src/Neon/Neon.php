@@ -16,9 +16,13 @@ namespace Nette\Neon;
  */
 final class Neon
 {
-	public const BLOCK = Encoder::BLOCK;
 	public const Chain = '!!chain';
+
+	/** @deprecated use Neon::Chain */
 	public const CHAIN = self::Chain;
+
+	/** @deprecated use parameter $blockMode */
+	public const BLOCK = Encoder::BLOCK;
 
 
 	/**
