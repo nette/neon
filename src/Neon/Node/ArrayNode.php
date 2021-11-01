@@ -19,6 +19,7 @@ abstract class ArrayNode extends Node
 	public $items = [];
 
 
+	/** @return mixed[] */
 	public function toValue(): array
 	{
 		return ArrayItemNode::itemsToArray($this->items);

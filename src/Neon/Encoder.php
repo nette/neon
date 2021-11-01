@@ -75,6 +75,7 @@ final class Encoder
 	}
 
 
+	/** @return Node\ArrayItemNode[] */
 	private function arrayToNodes($val, bool $blockMode = false): array
 	{
 		$res = [];

@@ -220,6 +220,7 @@ final class Parser
 	}
 
 
+	/** @param  true[]  $arr */
 	private function checkArrayKey(Node $key, array &$arr): void
 	{
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {

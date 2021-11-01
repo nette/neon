@@ -22,7 +22,10 @@ final class ArrayItemNode extends Node
 	public $value;
 
 
-	/** @param  self[]  $items */
+	/**
+	 * @param  self[]  $items
+	 * @return mixed[]
+	 */
 	public static function itemsToArray(array $items): array
 	{
 		$res = [];
