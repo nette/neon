@@ -48,13 +48,14 @@ $neon = Neon::encode($value); // Returns $value converted to NEON
 $neon = Neon::encode($value, true); // Returns $value converted to multiline NEON
 ```
 
-`Neon::decode()` converts given NEON to PHP value:
+`Neon::decode()` converts given NEON to PHP value. As the second parameter `$associativeAsObjects` you can pass true, which will return objects instead of associative arrays.
 
 ```php
 $value = Neon::decode('hello: world'); // Returns an array ['hello' => 'world']
+$value = Neon::decode('hello: world', true); // Returns an object {'hello': 'world'}
 ```
 
-`Neon::decodeFile()` converts given NEON file to PHP value:
+`Neon::decodeFile()` converts given NEON file to PHP value. It has also parameter `$associativeAsObjects`.
 
 ```php
 $value = Neon::decodeFile('config.neon');

@@ -16,6 +16,9 @@ namespace Nette\Neon;
  */
 final class Decoder
 {
+	public $associativeAsObjects = false;
+
+
 	/**
 	 * Decodes a NEON string.
 	 * @return mixed
@@ -23,6 +26,15 @@ final class Decoder
 	public function decode(string $input)
 	{
 		$node = $this->parseToNode($input);
+		if ($this->associativeAsObjects) {
+			$evaluator = function (Node $node) use (&$evaluator) {
+				$value = $node->toValue($evaluator);
+				return $node instanceof Node\ArrayNode && $value && array_keys($value) !== range(0, count($value) - 1)
+					? (object) $value
+					: $value;
+			};
+			return $evaluator($node);
+		}
 		return $node->toValue();
 	}
 
