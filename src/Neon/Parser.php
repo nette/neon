@@ -229,7 +229,7 @@ final class Parser
 					if (isset(self::ESCAPE_SEQUENCES[$sq[1]])) {
 						return self::ESCAPE_SEQUENCES[$sq[1]];
 					} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
-						return $this->decodeUnicodeSequence($sq);
+						return json_decode('"' . $sq . '"') ?? $this->tokens->error("Invalid UTF-8 sequence $sq", $this->tokens->getPos() - 1);
 					} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 						trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
 						return chr(hexdec(substr($sq, 2)));
@@ -241,20 +241,6 @@ final class Parser
 			);
 		}
 		return $res;
-	}
-
-
-	private function decodeUnicodeSequence(string $sq): string
-	{
-		$lead = hexdec(substr($sq, 2, 4));
-		$tail = hexdec(substr($sq, 8, 4));
-		$code = $tail ? (0x2400 + (($lead - 0xD800) << 10) + $tail) : $lead;
-		if ($code >= 0xD800 && $code <= 0xDFFF) {
-			$this->tokens->error("Invalid UTF-8 (lone surrogate) $sq", $this->tokens->getPos() - 1);
-		}
-		return function_exists('iconv')
-			? iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code))
-			: mb_convert_encoding(pack('N', $code), 'UTF-8', 'UTF-32BE');
 	}
 
 

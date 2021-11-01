@@ -20,7 +20,7 @@ Assert::exception(function () {
 
 Assert::exception(function () {
 	Neon::decode('"\uD801"');
-}, Nette\Neon\Exception::class, 'Invalid UTF-8 (lone surrogate) \\uD801 on line 1, column 1.');
+}, Nette\Neon\Exception::class, 'Invalid UTF-8 sequence \\uD801 on line 1, column 1.');
 
 
 Assert::exception(function () {
