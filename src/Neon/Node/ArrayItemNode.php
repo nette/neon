@@ -61,9 +61,9 @@ final class ArrayItemNode extends Node
 		foreach ($items as $item) {
 			$v = $serializer ? $serializer($item->value) : $item->value->toString();
 			$res .= ($item->key ? ($serializer ? $serializer($item->key) : $item->key->toString()) . ':' : '-')
-				. (strpos($v, "\n") === false
-					? ' ' . $v . "\n"
-					: "\n" . preg_replace('#^(?=.)#m', $indentation, $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
+				. (str_contains($v, "\n")
+					? "\n" . preg_replace('#^(?=.)#m', $indentation, $v) . (substr($v, -2, 1) === "\n" ? '' : "\n")
+					: ' ' . $v . "\n");
 		}
 		return $res;
 	}

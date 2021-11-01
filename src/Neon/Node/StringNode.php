@@ -57,10 +57,7 @@ final class StringNode extends Node
 				if (isset(self::ESCAPE_SEQUENCES[$sq[1]])) {
 					return self::ESCAPE_SEQUENCES[$sq[1]];
 				} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
-					if (($res = json_decode('"' . $sq . '"')) !== null) {
-						return $res;
-					}
-					throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
+					return json_decode('"' . $sq . '"') ?? throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
 				} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 					trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
 					return chr(hexdec(substr($sq, 2)));
@@ -79,7 +76,7 @@ final class StringNode extends Node
 		if ($res === false) {
 			throw new Nette\Neon\Exception('Invalid UTF-8 sequence: ' . $this->value);
 		}
-		if (strpos($this->value, "\n") !== false) {
+		if (str_contains($this->value, "\n")) {
 			$res = preg_replace_callback(
 				'#[^\\\\]|\\\\(.)#s',
 				fn($m) => ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0],
