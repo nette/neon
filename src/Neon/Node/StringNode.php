@@ -75,7 +75,7 @@ final class StringNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(callable $serializer = null): string
 	{
 		$res = json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		if ($res === false) {

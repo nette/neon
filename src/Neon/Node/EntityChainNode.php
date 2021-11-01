@@ -38,9 +38,11 @@ final class EntityChainNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(callable $serializer = null): string
 	{
-		return implode('', array_map(function ($entity) { return $entity->toString(); }, $this->chain));
+		return implode('', array_map(function ($entity) use ($serializer) {
+			return $serializer ? $serializer($entity) : $entity->toString();
+		}, $this->chain));
 	}
 
 

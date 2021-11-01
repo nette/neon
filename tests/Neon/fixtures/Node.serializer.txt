@@ -1,0 +1,23 @@
+**map:
+	**a: *b
+	*c: *d
+
+*index:
+	*- *a
+	- *b
+	- *c
+
+*mixed:
+	*- *a
+	- *b
+	*4: *c
+	*5: *d
+
+*entity: **ent(*a, *b)
+*chain: ***first(*a, *b)**second()
+*multiline:
+	*"""
+		hello
+		world
+	"""
+*date: *2016-06-03 19:00:00 +0200

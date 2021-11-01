@@ -35,18 +35,18 @@ final class ArrayNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(callable $serializer = null): string
 	{
 		if ($this->indentation === null) {
 			$isList = !array_filter($this->items, function ($item) { return $item->key; });
-			$res = ArrayItemNode::itemsToInlineString($this->items);
+			$res = ArrayItemNode::itemsToInlineString($this->items, $serializer);
 			return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
 
 		} elseif (count($this->items) === 0) {
 			return '[]';
 
 		} else {
-			return ArrayItemNode::itemsToBlockString($this->items, $this->indentation);
+			return ArrayItemNode::itemsToBlockString($this->items, $this->indentation, $serializer);
 		}
 	}
 

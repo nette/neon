@@ -41,11 +41,11 @@ final class EntityNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(callable $serializer = null): string
 	{
-		return $this->value->toString()
+		return ($serializer ? $serializer($this->value) : $this->value->toString())
 			. '('
-			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes) : '')
+			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes, $serializer) : '')
 			. ')';
 	}
 

@@ -45,25 +45,25 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToInlineString(array $items): string
+	public static function itemsToInlineString(array $items, callable $serializer = null): string
 	{
 		$res = '';
 		foreach ($items as $item) {
 			$res .= ($res === '' ? '' : ', ')
-				. ($item->key ? $item->key->toString() . ': ' : '')
-				. $item->value->toString();
+				. ($item->key ? ($serializer ? $serializer($item->key) : $item->key->toString()) . ': ' : '')
+				. ($serializer ? $serializer($item->value) : $item->value->toString());
 		}
 		return $res;
 	}
 
 
 	/** @param  self[]  $items */
-	public static function itemsToBlockString(array $items, string $indentation): string
+	public static function itemsToBlockString(array $items, string $indentation, callable $serializer = null): string
 	{
 		$res = '';
 		foreach ($items as $item) {
-			$v = $item->value->toString();
-			$res .= ($item->key ? $item->key->toString() . ':' : '-')
+			$v = $serializer ? $serializer($item->value) : $item->value->toString();
+			$res .= ($item->key ? ($serializer ? $serializer($item->key) : $item->key->toString()) . ':' : '-')
 				. (strpos($v, "\n") === false
 					? ' ' . $v . "\n"
 					: "\n" . preg_replace('#^(?=.)#m', $indentation, $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
@@ -78,7 +78,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(callable $serializer = null): string
 	{
 		throw new \LogicException;
 	}
