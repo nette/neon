@@ -46,7 +46,7 @@ final class ArrayNode extends Node
 			return '[]';
 
 		} else {
-			return ArrayItemNode::itemsToBlockString($this->items);
+			return ArrayItemNode::itemsToBlockString($this->items, $this->indentation);
 		}
 	}
 

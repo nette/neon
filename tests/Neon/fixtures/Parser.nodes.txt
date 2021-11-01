@@ -114,7 +114,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  |  'a: 1\n
    |  |  |  |  |  |  |   \t    \t    b: 2'
    |  |  |  |  |  |  items: array (2) ...
-   |  |  |  |  |  |  indentation: '\t    \t    '
+   |  |  |  |  |  |  indentation: '\t    '
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset

@@ -57,7 +57,7 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToBlockString(array $items): string
+	public static function itemsToBlockString(array $items, string $indentation): string
 	{
 		$res = '';
 		foreach ($items as $item) {
@@ -65,7 +65,7 @@ final class ArrayItemNode extends Node
 			$res .= ($item->key ? $item->key->toString() . ':' : '-')
 				. (strpos($v, "\n") === false
 					? ' ' . $v . "\n"
-					: "\n" . preg_replace('#^(?=.)#m', "\t", $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
+					: "\n" . preg_replace('#^(?=.)#m', $indentation, $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
 		}
 		return $res;
 	}

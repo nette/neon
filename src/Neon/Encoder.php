@@ -52,7 +52,7 @@ final class Encoder
 			);
 
 		} elseif (is_object($val) || is_array($val)) {
-			$node = new Node\ArrayNode($blockMode ? '' : null);
+			$node = new Node\ArrayNode($blockMode ? "\t" : null);
 			$node->items = $this->arrayToNodes($val, $blockMode);
 			return $node;
 

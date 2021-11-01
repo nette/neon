@@ -104,6 +104,10 @@ final class Parser
 			}
 		}
 
+		if ($item->value instanceof Node\ArrayNode && is_string($item->value->indentation)) {
+			$item->value->indentation = substr($item->value->indentation, strlen($indent));
+		}
+
 		$res->endPos = $item->endPos = $item->value->endPos;
 
 		while ($this->tokens->consume(Token::NEWLINE));
