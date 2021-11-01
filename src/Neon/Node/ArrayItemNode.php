@@ -85,6 +85,6 @@ final class ArrayItemNode extends Node
 
 	public function getSubNodes(): array
 	{
-		return $this->key ? [$this->key, $this->value] : [$this->value];
+		return $this->key ? [&$this->key, &$this->value] : [&$this->value];
 	}
 }

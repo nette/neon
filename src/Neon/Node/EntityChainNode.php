@@ -46,6 +46,10 @@ final class EntityChainNode extends Node
 
 	public function getSubNodes(): array
 	{
-		return $this->chain;
+		$res = [];
+		foreach ($this->chain as &$item) {
+			$res[] = &$item;
+		}
+		return $res;
 	}
 }

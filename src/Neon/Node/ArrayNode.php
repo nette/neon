@@ -53,6 +53,10 @@ final class ArrayNode extends Node
 
 	public function getSubNodes(): array
 	{
-		return $this->items;
+		$res = [];
+		foreach ($this->items as &$item) {
+			$res[] = &$item;
+		}
+		return $res;
 	}
 }

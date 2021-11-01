@@ -52,6 +52,10 @@ final class EntityNode extends Node
 
 	public function getSubNodes(): array
 	{
-		return array_merge([$this->value], $this->attributes);
+		$res = [&$this->value];
+		foreach ($this->attributes as &$item) {
+			$res[] = &$item;
+		}
+		return $res;
 	}
 }
