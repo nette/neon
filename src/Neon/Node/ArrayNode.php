@@ -27,6 +27,7 @@ final class ArrayNode extends Node
 	}
 
 
+	/** @return mixed[] */
 	public function toValue(callable $evaluator = null): array
 	{
 		return ArrayItemNode::itemsToArray($this->items, $evaluator);

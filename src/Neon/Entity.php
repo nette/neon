@@ -17,11 +17,13 @@ final class Entity extends \stdClass
 {
 	public function __construct(
 		public mixed $value,
+		/** @var mixed[] */
 		public array $attributes = [],
 	) {
 	}
 
 
+	/** @param  mixed[]  $properties */
 	public static function __set_state(array $properties)
 	{
 		return new self($properties['value'], $properties['attributes']);

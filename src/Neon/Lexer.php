@@ -15,7 +15,7 @@ final class Lexer
 {
 	public const PATTERNS = [
 		// strings
-		Token::STRING => <<<'XX'
+		Token::STRING => /** @lang PhpRegExpXT */ <<<'XX'
 				'''\n (?:(?: [^\n] | \n(?![\t ]*+''') )*+ \n)?[\t ]*+''' |
 				"""\n (?:(?: [^\n] | \n(?![\t ]*+""") )*+ \n)?[\t ]*+""" |
 				' (?: '' | [^'\n] )*+ ' |
@@ -23,7 +23,7 @@ final class Lexer
 			XX,
 
 		// literal / boolean / integer / float
-		Token::LITERAL => <<<'XX'
+		Token::LITERAL => /** @lang PhpRegExpXT */ <<<'XX'
 				(?: [^#"',:=[\]{}()\n\t `-] | (?<!["']) [:-] [^"',=[\]{}()\n\t ] )
 				(?:
 					[^,:=\]})(\n\t ]++ |
