@@ -21,8 +21,7 @@ abstract class Node implements \IteratorAggregate
 	public ?int $endLine = null;
 
 
-	/** @return mixed */
-	abstract public function toValue();
+	abstract public function toValue(): mixed;
 
 
 	abstract public function toString(): string;

@@ -26,14 +26,14 @@ final class Encoder
 	/**
 	 * Returns the NEON representation of a value.
 	 */
-	public function encode($val): string
+	public function encode(mixed $val): string
 	{
 		$node = $this->valueToNode($val, $this->blockMode);
 		return $node->toString();
 	}
 
 
-	public function valueToNode($val, bool $blockMode = false): Node
+	public function valueToNode(mixed $val, bool $blockMode = false): Node
 	{
 		if ($val instanceof \DateTimeInterface) {
 			return new Node\LiteralNode($val);
@@ -73,7 +73,7 @@ final class Encoder
 
 
 	/** @return Node\ArrayItemNode[] */
-	private function arrayToNodes($val, bool $blockMode = false): array
+	private function arrayToNodes(mixed $val, bool $blockMode = false): array
 	{
 		$res = [];
 		$counter = 0;

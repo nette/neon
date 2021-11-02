@@ -35,14 +35,13 @@ final class LiteralNode extends Node
 	}
 
 
-	public function toValue()
+	public function toValue(): mixed
 	{
 		return $this->value;
 	}
 
 
-	/** @return mixed */
-	public static function parse(string $value, bool $isKey = false)
+	public static function parse(string $value, bool $isKey = false): mixed
 	{
 		if (!$isKey && array_key_exists($value, self::SimpleTypes)) {
 			if (isset(self::DeprecatedTypes[$value])) {
