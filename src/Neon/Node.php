@@ -20,11 +20,8 @@ abstract class Node
 	public array $data = [];
 
 
-	/**
-	 * @param  callable(self): mixed|null  $evaluator
-	 * @return mixed
-	 */
-	abstract public function toValue(callable $evaluator = null);
+	/** @param  callable(self): mixed|null  $evaluator */
+	abstract public function toValue(callable $evaluator = null): mixed;
 
 
 	/** @param  callable(self): string|null  $serializer */

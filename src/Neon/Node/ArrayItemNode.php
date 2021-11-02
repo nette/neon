@@ -69,7 +69,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	public function toValue(callable $evaluator = null)
+	public function toValue(callable $evaluator = null): mixed
 	{
 		throw new \LogicException;
 	}

@@ -24,7 +24,7 @@ final class Neon
 	/**
 	 * Returns value converted to NEON.
 	 */
-	public static function encode($value, bool $blockMode = false, string $indentation = "\t"): string
+	public static function encode(mixed $value, bool $blockMode = false, string $indentation = "\t"): string
 	{
 		$encoder = new Encoder;
 		$encoder->blockMode = $blockMode;
@@ -35,9 +35,8 @@ final class Neon
 
 	/**
 	 * Converts given NEON to PHP value.
-	 * @return mixed
 	 */
-	public static function decode(string $input, bool $associativeAsObjects = false)
+	public static function decode(string $input, bool $associativeAsObjects = false): mixed
 	{
 		$decoder = new Decoder;
 		$decoder->associativeAsObjects = $associativeAsObjects;
@@ -47,9 +46,8 @@ final class Neon
 
 	/**
 	 * Converts given NEON file to PHP value.
-	 * @return mixed
 	 */
-	public static function decodeFile(string $file, bool $associativeAsObjects = false)
+	public static function decodeFile(string $file, bool $associativeAsObjects = false): mixed
 	{
 		if (!is_file($file)) {
 			throw new Exception("File '$file' does not exist.");
