@@ -30,5 +30,5 @@ $node = $encoder->valueToNode($input);
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Encoder.nodes.txt',
-	Dumper::toText($node, [Dumper::HASH => false])
+	Dumper::toText($node, [Dumper::HASH => false]),
 );

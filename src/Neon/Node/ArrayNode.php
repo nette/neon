@@ -38,7 +38,7 @@ final class ArrayNode extends Node
 	public function toString(callable $serializer = null): string
 	{
 		if ($this->indentation === null) {
-			$isList = !array_filter($this->items, function ($item) { return $item->key; });
+			$isList = !array_filter($this->items, fn($item) => $item->key);
 			$res = ArrayItemNode::itemsToInlineString($this->items, $serializer);
 			return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
 

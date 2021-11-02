@@ -35,5 +35,5 @@ $res = $serializer($node);
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Node.serializer.txt',
-	$res
+	$res,
 );

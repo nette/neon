@@ -12,7 +12,7 @@ require __DIR__ . '/../bootstrap.php';
 $visitor = function (Node $node) {
 	if ($node instanceof Node\EntityNode) {
 		foreach ($node->attributes as $i => $attr) {
-			$attr->key = $attr->key ?? new Node\LiteralNode("key$i");
+			$attr->key ??= new Node\LiteralNode("key$i");
 		}
 	}
 };
@@ -29,6 +29,6 @@ $value = $node->toValue();
 Assert::equal([
 	'a' => new Nette\Neon\Entity(
 		'foo',
-		['key0' => 1, 'key1' => 2, 'key2' => 3]
+		['key0' => 1, 'key1' => 2, 'key2' => 3],
 	),
 ], $value);

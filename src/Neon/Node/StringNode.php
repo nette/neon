@@ -70,7 +70,7 @@ final class StringNode extends Node
 					throw new Nette\Neon\Exception("Invalid escaping sequence $sq");
 				}
 			},
-			$res
+			$res,
 		);
 	}
 
@@ -82,9 +82,11 @@ final class StringNode extends Node
 			throw new Nette\Neon\Exception('Invalid UTF-8 sequence: ' . $this->value);
 		}
 		if (strpos($this->value, "\n") !== false) {
-			$res = preg_replace_callback('#[^\\\\]|\\\\(.)#s', function ($m) {
-				return ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
-			}, $res);
+			$res = preg_replace_callback(
+				'#[^\\\\]|\\\\(.)#s',
+				fn($m) => ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0],
+				$res,
+			);
 			$res = '"""' . "\n\t" . substr($res, 1, -1) . "\n" . '"""';
 		}
 		return $res;

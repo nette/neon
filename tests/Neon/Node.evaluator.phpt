@@ -51,5 +51,5 @@ $res = $evaluator($node);
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Node.evaluator.txt',
-	Dumper::toText($res, [Dumper::DEPTH => 10, Dumper::HASH => false])
+	Dumper::toText($res, [Dumper::DEPTH => 10, Dumper::HASH => false]),
 );

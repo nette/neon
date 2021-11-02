@@ -39,20 +39,20 @@ composer require nette/neon
 
 It requires PHP version 8.0 up to 8.1. Documentation can be found on the [website](https://doc.nette.org/neon).
 
-`Neon::encode()` returns `$value` converted to NEON. As the second parameter `$blockMode` you can pass true, which will create multiline output. The third parameter `$indentation` specifies the characters used for indentation (default is tab).
+`Neon::encode()` returns `$value` converted to NEON. As the parameter `$blockMode` you can pass true, which will create multiline output. The parameter `$indentation` specifies the characters used for indentation (default is tab).
 
 ```php
 use Nette\Neon\Neon;
 
 $neon = Neon::encode($value); // Returns $value converted to NEON
-$neon = Neon::encode($value, true); // Returns $value converted to multiline NEON
+$neon = Neon::encode($value, blockMode: true); // Returns $value converted to multiline NEON
 ```
 
-`Neon::decode()` converts given NEON to PHP value. As the second parameter `$associativeAsObjects` you can pass true, which will return objects instead of associative arrays.
+`Neon::decode()` converts given NEON to PHP value. As the parameter `$associativeAsObjects` you can pass true, which will return objects instead of associative arrays.
 
 ```php
 $value = Neon::decode('hello: world'); // Returns an array ['hello' => 'world']
-$value = Neon::decode('hello: world', true); // Returns an object {'hello': 'world'}
+$value = Neon::decode('hello: world', associativeAsObjects: true); // Returns an object {'hello': 'world'}
 ```
 
 `Neon::decodeFile()` converts given NEON file to PHP value. It has also parameter `$associativeAsObjects`.
