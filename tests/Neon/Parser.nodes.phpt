@@ -8,6 +8,7 @@ use Nette\Neon;
 use Nette\Neon\Node;
 use Nette\Neon\Traverser;
 use Tester\Assert;
+use Tracy\Dumper;
 
 
 require __DIR__ . '/../bootstrap.php';
@@ -49,5 +50,5 @@ $traverser->traverse($node, function (Node $node) use ($stream) {
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Parser.nodes.txt',
-	preg_replace('~ #\d+~', '', Tracy\Dumper::toText($node))
+	Dumper::toText($node, [Dumper::HASH => false])
 );

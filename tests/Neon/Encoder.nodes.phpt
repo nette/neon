@@ -7,6 +7,7 @@ declare(strict_types=1);
 use Nette\Neon;
 use Nette\Neon\Entity;
 use Tester\Assert;
+use Tracy\Dumper;
 
 
 require __DIR__ . '/../bootstrap.php';
@@ -31,5 +32,5 @@ $node = $encoder->valueToNode($input);
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Encoder.nodes.txt',
-	preg_replace('~ #\d+~', '', Tracy\Dumper::toText($node))
+	Dumper::toText($node, [Dumper::HASH => false])
 );
