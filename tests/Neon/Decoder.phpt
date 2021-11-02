@@ -179,13 +179,6 @@ $dataSet = [
 
 	// deprecated NEON syntax
 	'deprecated syntax' => [
-		['on', true],
-		['On', true],
-		['ON', true],
-		['off', false],
-		['Off', false],
-		['OFF', false],
-		['"\\x42 hex escape"', "\x42 hex escape"],
 	],
 
 	// inputs with invalid syntax, but still valid UTF-8
