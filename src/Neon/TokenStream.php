@@ -36,7 +36,7 @@ final class TokenStream
 	}
 
 
-	public function isNext(...$types): bool
+	public function isNext(int|string ...$types): bool
 	{
 		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], true)) {
 			$this->pos++;
@@ -48,7 +48,7 @@ final class TokenStream
 	}
 
 
-	public function consume(...$types): ?Token
+	public function consume(int|string ...$types): ?Token
 	{
 		return $this->isNext(...$types)
 			? $this->tokens[$this->pos++]
