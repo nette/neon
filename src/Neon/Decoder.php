@@ -16,7 +16,7 @@ namespace Nette\Neon;
  */
 final class Decoder
 {
-	public $associativeAsObjects = false;
+	public bool $associativeAsObjects = false;
 
 
 	/**

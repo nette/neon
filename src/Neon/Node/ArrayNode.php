@@ -16,10 +16,8 @@ use Nette\Neon\Node;
 final class ArrayNode extends Node
 {
 	/** @var ArrayItemNode[] */
-	public $items = [];
-
-	/** @var ?string */
-	public $indentation;
+	public array $items = [];
+	public ?string $indentation;
 
 
 	public function __construct(?string $indentation = null, int $pos = null)

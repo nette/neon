@@ -13,14 +13,11 @@ namespace Nette\Neon;
 /** @internal */
 abstract class Node
 {
-	/** @var ?int */
-	public $startPos;
+	public ?int $startPos = null;
+	public ?int $endPos = null;
 
-	/** @var ?int */
-	public $endPos;
-
-	/** @var array */
-	public $data = [];
+	/** @var mixed[] */
+	public array $data = [];
 
 
 	/**

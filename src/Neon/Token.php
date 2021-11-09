@@ -20,14 +20,9 @@ final class Token
 	public const NEWLINE = 4;
 	public const WHITESPACE = 5;
 
-	/** @var string */
-	public $value;
-
-	/** @var int */
-	public $offset;
-
-	/** @var int|string */
-	public $type;
+	public string $value;
+	public int $offset;
+	public int|string $type;
 
 
 	public function __construct(string $value, int $offset, $type)

@@ -19,11 +19,8 @@ final class Encoder
 	/** @deprecated */
 	public const BLOCK = true;
 
-	/** @var bool */
-	public $blockMode = false;
-
-	/** @var string */
-	public $indentation = "\t";
+	public bool $blockMode = false;
+	public string $indentation = "\t";
 
 
 	/**
