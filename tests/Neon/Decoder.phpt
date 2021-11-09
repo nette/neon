@@ -175,9 +175,6 @@ $dataSet = [
 		["'the\"string #literal'", 'the"string #literal'],
 		['"the\\"string #literal"', 'the"string #literal'],
 		['a                                     ', 'a'], // backtrack limit
-
-		// BOM
-		["\u{FEFF}a", 'a'],
 	],
 
 	// deprecated NEON syntax
