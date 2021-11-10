@@ -131,12 +131,12 @@ Assert::same(
 );
 
 Assert::same(
-	'[]',
+	'{}',
 	Neon::encode((object) [])
 );
 
 Assert::same(
-	'[]',
+	'{}',
 	Neon::encode(new stdClass)
 );
 

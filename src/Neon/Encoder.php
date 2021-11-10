@@ -55,7 +55,12 @@ final class Encoder
 			);
 
 		} elseif (is_object($val) || is_array($val)) {
-			$node = $blockMode ? new Node\BlockArrayNode : new Node\InlineArrayNode;
+			if ($blockMode) {
+				$node = new Node\BlockArrayNode;
+			} else {
+				$isList = is_array($val) && (!$val || array_keys($val) === range(0, count($val) - 1));
+				$node = new Node\InlineArrayNode($isList ? '[' : '{');
+			}
 			$node->items = $this->arrayToNodes($val, $blockMode);
 			return $node;
 

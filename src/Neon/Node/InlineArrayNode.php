@@ -13,16 +13,21 @@ namespace Nette\Neon\Node;
 /** @internal */
 final class InlineArrayNode extends ArrayNode
 {
-	public function __construct(int $pos = null)
+	/** @var string */
+	public $bracket;
+
+
+	public function __construct(string $bracket, int $pos = null)
 	{
+		$this->bracket = $bracket;
 		$this->startPos = $this->endPos = $pos;
 	}
 
 
 	public function toString(): string
 	{
-		$isList = !array_filter($this->items, function ($item) { return $item->key; });
-		$res = ArrayItemNode::itemsToInlineString($this->items);
-		return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
+		return $this->bracket
+			. ArrayItemNode::itemsToInlineString($this->items)
+			. ['[' => ']', '{' => '}', '(' => ')'][$this->bracket];
 	}
 }

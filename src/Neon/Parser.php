@@ -165,7 +165,7 @@ final class Parser
 	{
 		$token = $this->tokens->consume();
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
-		$res = new Node\InlineArrayNode($this->tokens->getPos() - 1);
+		$res = new Node\InlineArrayNode($token->value, $this->tokens->getPos() - 1);
 		$keyCheck = [];
 
 		loop:

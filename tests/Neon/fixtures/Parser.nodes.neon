@@ -2,7 +2,7 @@ first:
 	- a
 
 next:
-	- {k, l, m: null, n}
+	- [k, l, m: null, n]
 
 second:
 	sub:

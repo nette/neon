@@ -74,6 +74,7 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  '[k,\n
    |  |  |  |  |  |  |   \t    \t    l, m:\n
    |  |  |  |  |  |  |   \t    n]'
+   |  |  |  |  |  |  bracket: '['
    |  |  |  |  |  |  items: array (4) ...
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
