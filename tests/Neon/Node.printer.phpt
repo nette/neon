@@ -17,7 +17,14 @@ $node = $parser->parse($tokens);
 
 $reprintedNode = $node->toString();
 
+// this is current incorrect behavior
+Assert::matchFile(
+	__DIR__ . '/fixtures/nested-list-actualy-reprint.neon',
+	$reprintedNode
+);
+
 Assert::matchFile(
 	__DIR__ . '/fixtures/nested-list.neon',
 	$reprintedNode
 );
+
