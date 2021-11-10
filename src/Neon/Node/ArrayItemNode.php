@@ -63,7 +63,7 @@ final class ArrayItemNode extends Node
 		foreach ($items as $item) {
 			$v = $item->value->toString();
 			$res .= ($item->key ? $item->key->toString() . ':' : '-')
-				. ($item->value instanceof ArrayNode && $item->value->indentation !== null && $item->value->items
+				. ($item->value instanceof BlockArrayNode && $item->value->items
 					? "\n" . $v . (substr($v, -2, 1) === "\n" ? '' : "\n")
 					: ' ' . $v . "\n");
 		}

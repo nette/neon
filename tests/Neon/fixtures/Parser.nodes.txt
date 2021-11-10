@@ -1,4 +1,4 @@
-Nette\Neon\Node\ArrayNode
+Nette\Neon\Node\BlockArrayNode
    code: string
    |  'first: # first comment\n
    |   \t    # another comment\n
@@ -15,6 +15,7 @@ Nette\Neon\Node\ArrayNode
    |   \t    - entity(a: 1)\n
    |   \t    - entity(a: 1 ...    two\n
    |   """'
+   indentation: ''
    items: array (8)
    |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
@@ -26,8 +27,9 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'first'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- a'
+   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- a'
@@ -39,7 +41,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -55,11 +56,12 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'next'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- [k,\n
    |  |  |  |   \t    \t    l, m:\n
    |  |  |  |   \t    n]'
+   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: string
@@ -67,18 +69,16 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |   \t    \t    l, m:\n
    |  |  |  |  |  |   \t    n]'
    |  |  |  |  |  key: null
-   |  |  |  |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  |  |  |  value: Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  |  code: string
    |  |  |  |  |  |  |  '[k,\n
    |  |  |  |  |  |  |   \t    \t    l, m:\n
    |  |  |  |  |  |  |   \t    n]'
    |  |  |  |  |  |  items: array (4) ...
-   |  |  |  |  |  |  indentation: null
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -94,11 +94,12 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'second'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  'sub:\n
    |  |  |  |   \t    \t    a: 1\n
    |  |  |  |   \t    \t    b: 2'
+   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: string
@@ -110,17 +111,16 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  value: 'sub'
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
-   |  |  |  |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  |  |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  code: string
    |  |  |  |  |  |  |  'a: 1\n
    |  |  |  |  |  |  |   \t    \t    b: 2'
-   |  |  |  |  |  |  items: array (2) ...
    |  |  |  |  |  |  indentation: '\t    '
+   |  |  |  |  |  |  items: array (2) ...
    |  |  |  |  |  |  startPos: unset
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -135,10 +135,11 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'third'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- entity(a: 1)\n
    |  |  |  |   \t    - entity(a: 1)foo()bar'
+   |  |  |  indentation: '\t    '
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- entity(a: 1)'
@@ -161,7 +162,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '\t    '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -171,10 +171,11 @@ Nette\Neon\Node\ArrayNode
    |  |  |  '- a: 1\n
    |  |  |     b: 2'
    |  |  key: null
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  'a: 1\n
    |  |  |  |     b: 2'
+   |  |  |  indentation: '  '
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: 'a: 1'
@@ -204,7 +205,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '  '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -212,8 +212,9 @@ Nette\Neon\Node\ArrayNode
    |  5 => Nette\Neon\Node\ArrayItemNode
    |  |  code: '- - c'
    |  |  key: null
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- c'
+   |  |  |  indentation: '  '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- c'
@@ -225,7 +226,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: '  '
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -240,10 +240,11 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'dash subblock'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- a\n
    |  |  |  |   - b'
+   |  |  |  indentation: ''
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- a'
@@ -265,7 +266,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: unset
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
-   |  |  |  indentation: ''
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset
@@ -294,6 +294,5 @@ Nette\Neon\Node\ArrayNode
    |  |  |  endPos: unset
    |  |  startPos: unset
    |  |  endPos: unset
-   indentation: ''
    startPos: unset
    endPos: unset

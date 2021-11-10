@@ -55,7 +55,7 @@ final class Encoder
 			);
 
 		} elseif (is_object($val) || is_array($val)) {
-			$node = new Node\ArrayNode($blockMode ? '' : null);
+			$node = $blockMode ? new Node\BlockArrayNode : new Node\InlineArrayNode;
 			$node->items = $this->arrayToNodes($val, $blockMode);
 			return $node;
 
@@ -77,7 +77,7 @@ final class Encoder
 			$res[] = $item = new Node\ArrayItemNode;
 			$item->key = $hide && $k === $counter ? null : self::valueToNode($k);
 			$item->value = self::valueToNode($v, $blockMode);
-			if ($blockMode && $item->value instanceof Node\ArrayNode) {
+			if ($item->value instanceof Node\BlockArrayNode) {
 				$item->value->indentation = $this->indentation;
 			}
 			if ($hide && is_int($k)) {

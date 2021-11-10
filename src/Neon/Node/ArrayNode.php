@@ -13,42 +13,15 @@ use Nette\Neon\Node;
 
 
 /** @internal */
-final class ArrayNode extends Node
+abstract class ArrayNode extends Node
 {
 	/** @var ArrayItemNode[] */
 	public $items = [];
-
-	/** @var ?string */
-	public $indentation;
-
-
-	public function __construct(?string $indentation = null, int $pos = null)
-	{
-		$this->indentation = $indentation;
-		$this->startPos = $this->endPos = $pos;
-	}
 
 
 	public function toValue(): array
 	{
 		return ArrayItemNode::itemsToArray($this->items);
-	}
-
-
-	public function toString(): string
-	{
-		if ($this->indentation === null) {
-			$isList = !array_filter($this->items, function ($item) { return $item->key; });
-			$res = ArrayItemNode::itemsToInlineString($this->items);
-			return ($isList ? '[' : '{') . $res . ($isList ? ']' : '}');
-
-		} elseif (count($this->items) === 0) {
-			return '[]';
-
-		} else {
-			$res = ArrayItemNode::itemsToBlockString($this->items);
-			return preg_replace('#^(?=.)#m', $this->indentation, $res);
-		}
 	}
 
 

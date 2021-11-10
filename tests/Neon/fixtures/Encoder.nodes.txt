@@ -1,11 +1,11 @@
-Nette\Neon\Node\ArrayNode
+Nette\Neon\Node\InlineArrayNode
    items: array (7)
    |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'map'
    |  |  |  startPos: null
    |  |  |  endPos: null
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\InlineArrayNode
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
@@ -29,7 +29,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -39,7 +38,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'index'
    |  |  |  startPos: null
    |  |  |  endPos: null
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\InlineArrayNode
    |  |  |  items: array (3)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
@@ -65,7 +64,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -75,7 +73,7 @@ Nette\Neon\Node\ArrayNode
    |  |  |  value: 'mixed'
    |  |  |  startPos: null
    |  |  |  endPos: null
-   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  value: Nette\Neon\Node\InlineArrayNode
    |  |  |  items: array (4)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
@@ -115,7 +113,6 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  |  endPos: null
    |  |  |  |  |  startPos: null
    |  |  |  |  |  endPos: null
-   |  |  |  indentation: null
    |  |  |  startPos: null
    |  |  |  endPos: null
    |  |  startPos: null
@@ -207,6 +204,5 @@ Nette\Neon\Node\ArrayNode
    |  |  |  endPos: null
    |  |  startPos: null
    |  |  endPos: null
-   indentation: null
    startPos: null
    endPos: null

@@ -33,7 +33,7 @@ final class Parser
 
 	private function parseBlock(string $indent, bool $onlyBullets = false): Node
 	{
-		$res = new Node\ArrayNode($indent, $this->tokens->getPos());
+		$res = new Node\BlockArrayNode($indent, $this->tokens->getPos());
 		$keyCheck = [];
 
 		loop:
@@ -87,7 +87,7 @@ final class Parser
 			}
 		}
 
-		if ($item->value instanceof Node\ArrayNode && is_string($item->value->indentation)) {
+		if ($item->value instanceof Node\BlockArrayNode) {
 			$item->value->indentation = substr($item->value->indentation, strlen($indent));
 		}
 
@@ -161,11 +161,11 @@ final class Parser
 	}
 
 
-	private function parseBraces(): Node\ArrayNode
+	private function parseBraces(): Node\InlineArrayNode
 	{
 		$token = $this->tokens->consume();
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
-		$res = new Node\ArrayNode(null, $this->tokens->getPos() - 1);
+		$res = new Node\InlineArrayNode($this->tokens->getPos() - 1);
 		$keyCheck = [];
 
 		loop:
