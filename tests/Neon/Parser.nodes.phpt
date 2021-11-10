@@ -30,6 +30,16 @@ second:
 third:
 	- entity(a: 1)
 	- entity(a: 1)foo()bar
+- a: 1
+  b: 2
+- - c
+dash subblock:
+- a
+- b
+text: """
+     one
+     two
+"""
 # world
 ';
 
@@ -38,6 +48,11 @@ $lexer = new Neon\Lexer;
 $parser = new Neon\Parser;
 $stream = $lexer->tokenize($input);
 $node = $parser->parse($stream);
+
+Assert::matchFile(
+	__DIR__ . '/fixtures/Parser.nodes.neon',
+	$node->toString()
+);
 
 $traverser = new Traverser;
 $traverser->traverse($node, function (Node $node) use ($stream) {

@@ -1,0 +1,30 @@
+first:
+	- a
+
+next:
+	- {k, l, m: null, n}
+
+second:
+	sub:
+		a: 1
+		b: 2
+
+third:
+	- entity(a: 1)
+	- entity(a: 1)foo()bar()
+
+-
+  a: 1
+  b: 2
+
+-
+  - c
+
+dash subblock:
+- a
+- b
+
+text: """
+	one
+	two
+"""

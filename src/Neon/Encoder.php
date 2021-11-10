@@ -44,7 +44,7 @@ final class Encoder
 		} elseif ($val instanceof Entity && $val->value === Neon::CHAIN) {
 			$node = new Node\EntityChainNode;
 			foreach ($val->attributes as $entity) {
-				$node->chain[] = $this->valueToNode($entity, $blockMode);
+				$node->chain[] = $this->valueToNode($entity);
 			}
 			return $node;
 
@@ -55,7 +55,7 @@ final class Encoder
 			);
 
 		} elseif (is_object($val) || is_array($val)) {
-			$node = new Node\ArrayNode($blockMode ? $this->indentation : null);
+			$node = new Node\ArrayNode($blockMode ? '' : null);
 			$node->items = $this->arrayToNodes($val, $blockMode);
 			return $node;
 
@@ -77,6 +77,9 @@ final class Encoder
 			$res[] = $item = new Node\ArrayItemNode;
 			$item->key = $hide && $k === $counter ? null : self::valueToNode($k);
 			$item->value = self::valueToNode($v, $blockMode);
+			if ($blockMode && $item->value instanceof Node\ArrayNode) {
+				$item->value->indentation = $this->indentation;
+			}
 			if ($hide && is_int($k)) {
 				$hide = $k === $counter;
 				$counter = max($k + 1, $counter);

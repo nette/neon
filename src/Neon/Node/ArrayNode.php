@@ -46,7 +46,8 @@ final class ArrayNode extends Node
 			return '[]';
 
 		} else {
-			return ArrayItemNode::itemsToBlockString($this->items, $this->indentation);
+			$res = ArrayItemNode::itemsToBlockString($this->items);
+			return preg_replace('#^(?=.)#m', $this->indentation, $res);
 		}
 	}
 

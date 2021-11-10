@@ -13,8 +13,9 @@ Nette\Neon\Node\ArrayNode
    |   \t    \t    b: 2\n
    |   third:\n
    |   \t    - entity(a: 1)\n
-   |   \t    - entity(a: 1)foo()bar'
-   items: array (4)
+   |   \t    - entity(a: 1 ...    two\n
+   |   """'
+   items: array (8)
    |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'first: # first comment\n
@@ -161,6 +162,134 @@ Nette\Neon\Node\ArrayNode
    |  |  |  |  |  startPos: unset
    |  |  |  |  |  endPos: unset
    |  |  |  indentation: '\t    '
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  startPos: unset
+   |  |  endPos: unset
+   |  4 => Nette\Neon\Node\ArrayItemNode
+   |  |  code: string
+   |  |  |  '- a: 1\n
+   |  |  |     b: 2'
+   |  |  key: null
+   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  |  code: string
+   |  |  |  |  'a: 1\n
+   |  |  |  |     b: 2'
+   |  |  |  items: array (2)
+   |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  code: 'a: 1'
+   |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: 'a'
+   |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: '1'
+   |  |  |  |  |  |  value: 1
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  startPos: unset
+   |  |  |  |  |  endPos: unset
+   |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  code: 'b: 2'
+   |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: 'b'
+   |  |  |  |  |  |  value: 'b'
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: '2'
+   |  |  |  |  |  |  value: 2
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  startPos: unset
+   |  |  |  |  |  endPos: unset
+   |  |  |  indentation: '  '
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  startPos: unset
+   |  |  endPos: unset
+   |  5 => Nette\Neon\Node\ArrayItemNode
+   |  |  code: '- - c'
+   |  |  key: null
+   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  |  code: '- c'
+   |  |  |  items: array (1)
+   |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  code: '- c'
+   |  |  |  |  |  key: null
+   |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: 'c'
+   |  |  |  |  |  |  value: 'c'
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  startPos: unset
+   |  |  |  |  |  endPos: unset
+   |  |  |  indentation: '  '
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  startPos: unset
+   |  |  endPos: unset
+   |  6 => Nette\Neon\Node\ArrayItemNode
+   |  |  code: string
+   |  |  |  'dash subblock:\n
+   |  |  |   - a\n
+   |  |  |   - b'
+   |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  code: 'dash subblock'
+   |  |  |  value: 'dash subblock'
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  value: Nette\Neon\Node\ArrayNode
+   |  |  |  code: string
+   |  |  |  |  '- a\n
+   |  |  |  |   - b'
+   |  |  |  items: array (2)
+   |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  code: '- a'
+   |  |  |  |  |  key: null
+   |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: 'a'
+   |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  startPos: unset
+   |  |  |  |  |  endPos: unset
+   |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  code: '- b'
+   |  |  |  |  |  key: null
+   |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  code: 'b'
+   |  |  |  |  |  |  value: 'b'
+   |  |  |  |  |  |  startPos: unset
+   |  |  |  |  |  |  endPos: unset
+   |  |  |  |  |  startPos: unset
+   |  |  |  |  |  endPos: unset
+   |  |  |  indentation: ''
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  startPos: unset
+   |  |  endPos: unset
+   |  7 => Nette\Neon\Node\ArrayItemNode
+   |  |  code: string
+   |  |  |  'text: """\n
+   |  |  |        one\n
+   |  |  |        two\n
+   |  |  |   """'
+   |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  code: 'text'
+   |  |  |  value: 'text'
+   |  |  |  startPos: unset
+   |  |  |  endPos: unset
+   |  |  value: Nette\Neon\Node\StringNode
+   |  |  |  code: string
+   |  |  |  |  '"""\n
+   |  |  |  |        one\n
+   |  |  |  |        two\n
+   |  |  |  |   """'
+   |  |  |  value: string
+   |  |  |  |  'one\n
+   |  |  |  |   two'
    |  |  |  startPos: unset
    |  |  |  endPos: unset
    |  |  startPos: unset

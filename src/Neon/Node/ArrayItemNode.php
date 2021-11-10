@@ -57,15 +57,15 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToBlockString(array $items, string $indentation): string
+	public static function itemsToBlockString(array $items): string
 	{
 		$res = '';
 		foreach ($items as $item) {
 			$v = $item->value->toString();
 			$res .= ($item->key ? $item->key->toString() . ':' : '-')
-				. (strpos($v, "\n") === false
-					? ' ' . $v . "\n"
-					: "\n" . preg_replace('#^(?=.)#m', $indentation, $v) . (substr($v, -2, 1) === "\n" ? '' : "\n"));
+				. ($item->value instanceof ArrayNode && $item->value->indentation !== null && $item->value->items
+					? "\n" . $v . (substr($v, -2, 1) === "\n" ? '' : "\n")
+					: ' ' . $v . "\n");
 		}
 		return $res;
 	}
