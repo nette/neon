@@ -20,7 +20,7 @@
 	},
 	"require-dev": {
 		"nette/tester": "^2.0",
-		"tracy/tracy": "^2.8.8",
+		"tracy/tracy": "^2.7",
 		"phpstan/phpstan": "^0.12"
 	},
 	"autoload": {
