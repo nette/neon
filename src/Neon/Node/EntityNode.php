@@ -23,7 +23,7 @@ final class EntityNode extends Node
 	public $attributes = [];
 
 
-	public function __construct(Node $value, array $attributes, int $startPos = null, int $endPos = null)
+	public function __construct(Node $value, array $attributes, ?int $startPos = null, ?int $endPos = null)
 	{
 		$this->value = $value;
 		$this->attributes = $attributes;

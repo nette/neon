@@ -24,7 +24,7 @@ final class StringNode extends Node
 	public $value;
 
 
-	public function __construct(string $value, int $pos = null)
+	public function __construct(string $value, ?int $pos = null)
 	{
 		$this->value = $value;
 		$this->startPos = $this->endPos = $pos;

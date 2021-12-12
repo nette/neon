@@ -17,7 +17,7 @@ final class InlineArrayNode extends ArrayNode
 	public $bracket;
 
 
-	public function __construct(string $bracket, int $pos = null)
+	public function __construct(string $bracket, ?int $pos = null)
 	{
 		$this->bracket = $bracket;
 		$this->startPos = $this->endPos = $pos;
