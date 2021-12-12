@@ -44,6 +44,7 @@ final class TokenStream
 		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::COMMENT, Token::WHITESPACE], true)) {
 			$this->pos++;
 		}
+
 		return $types
 			? in_array($this->tokens[$this->pos]->type ?? null, $types, true)
 			: isset($this->tokens[$this->pos]);
@@ -76,8 +77,10 @@ final class TokenStream
 			if ($i >= $pos) {
 				break;
 			}
+
 			$input .= $token->value;
 		}
+
 		$line = substr_count($input, "\n") + 1;
 		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
 		$token = $this->tokens[$pos] ?? null;

@@ -56,6 +56,7 @@ final class EntityNode extends Node
 		foreach ($this->attributes as &$item) {
 			$res[] = &$item;
 		}
+
 		return $res;
 	}
 }

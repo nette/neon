@@ -29,6 +29,7 @@ final class BlockArrayNode extends ArrayNode
 		if (count($this->items) === 0) {
 			return '[]';
 		}
+
 		$res = ArrayItemNode::itemsToBlockString($this->items);
 		return preg_replace('#^(?=.)#m', $this->indentation, $res);
 	}

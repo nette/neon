@@ -39,6 +39,7 @@ final class ArrayItemNode extends Node
 				$res[(string) $item->key->toValue()] = $item->value->toValue();
 			}
 		}
+
 		return $res;
 	}
 
@@ -52,6 +53,7 @@ final class ArrayItemNode extends Node
 				. ($item->key ? $item->key->toString() . ': ' : '')
 				. $item->value->toString();
 		}
+
 		return $res;
 	}
 
@@ -67,6 +69,7 @@ final class ArrayItemNode extends Node
 					? "\n" . $v . (substr($v, -2, 1) === "\n" ? '' : "\n")
 					: ' ' . $v . "\n");
 		}
+
 		return $res;
 	}
 

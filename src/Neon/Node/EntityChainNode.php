@@ -34,6 +34,7 @@ final class EntityChainNode extends Node
 		foreach ($this->chain as $item) {
 			$entities[] = $item->toValue();
 		}
+
 		return new Neon\Entity(Neon\Neon::CHAIN, $entities);
 	}
 
@@ -50,6 +51,7 @@ final class EntityChainNode extends Node
 		foreach ($this->chain as &$item) {
 			$res[] = &$item;
 		}
+
 		return $res;
 	}
 }

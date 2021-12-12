@@ -60,6 +60,7 @@ $traverser->traverse($node, function (Node $node) use ($stream) {
 	foreach (array_slice($stream->getTokens(), $node->startPos, $node->endPos - $node->startPos + 1) as $token) {
 		$node->code .= $token->value;
 	}
+
 	unset($node->startPos, $node->endPos);
 });
 

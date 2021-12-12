@@ -31,6 +31,7 @@ final class Traverser
 		foreach ($node->getSubNodes() as &$subnode) {
 			$subnode = $this->traverseNode($subnode);
 		}
+
 		return $node;
 	}
 }

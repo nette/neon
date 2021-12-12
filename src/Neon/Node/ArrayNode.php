@@ -31,6 +31,7 @@ abstract class ArrayNode extends Node
 		foreach ($this->items as &$item) {
 			$res[] = &$item;
 		}
+
 		return $res;
 	}
 }

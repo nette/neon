@@ -27,6 +27,7 @@ final class Parser
 		if ($this->tokens->isNext()) {
 			$this->tokens->error();
 		}
+
 		return $node;
 	}
 
@@ -54,6 +55,7 @@ final class Parser
 				if ($res->items) {
 					$this->tokens->error();
 				}
+
 				return $value;
 			}
 		}
@@ -121,7 +123,6 @@ final class Parser
 			} catch (Exception $e) {
 				$this->tokens->error($e->getMessage(), $this->tokens->getPos() - 1);
 			}
-
 		} elseif ($token = $this->tokens->consume(Token::LITERAL)) {
 			$pos = $this->tokens->getPos() - 1;
 			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->value, $this->tokens->isNext(':', '=')), $pos);
@@ -132,6 +133,7 @@ final class Parser
 		} else {
 			$this->tokens->error();
 		}
+
 		return $this->parseEntity($node);
 	}
 
@@ -155,6 +157,7 @@ final class Parser
 				break;
 			}
 		}
+
 		return count($entities) === 1
 			? $entities[0]
 			: new Node\EntityChainNode($entities, $node->startPos, end($entities)->endPos);
@@ -187,15 +190,18 @@ final class Parser
 		} else {
 			$item->value = $value;
 		}
+
 		$item->endPos = $item->value->endPos;
 
 		if ($this->tokens->consume(',', Token::NEWLINE)) {
 			goto loop;
 		}
+
 		while ($this->tokens->consume(Token::NEWLINE));
 		if (!$this->tokens->isNext($endBrace)) {
 			$this->tokens->error();
 		}
+
 		goto loop;
 	}
 
@@ -205,10 +211,12 @@ final class Parser
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
 			$this->tokens->error('Unacceptable key', $key->startPos);
 		}
+
 		$k = (string) $key->value;
 		if (array_key_exists($k, $arr)) {
 			$this->tokens->error("Duplicated key '$k'", $key->startPos);
 		}
+
 		$arr[$k] = true;
 	}
 }

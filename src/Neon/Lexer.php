@@ -67,9 +67,11 @@ final class Lexer
 					if ($type === Token::CHAR) {
 						$type = $token[0];
 					}
+
 					break;
 				}
 			}
+
 			$token = new Token($token[0], $offset, $type);
 			$offset += strlen($token->value);
 		}
@@ -79,6 +81,7 @@ final class Lexer
 			$s = str_replace("\n", '\n', substr($input, $offset, 40));
 			$stream->error("Unexpected '$s'", count($tokens));
 		}
+
 		return $stream;
 	}
 

@@ -52,6 +52,7 @@ final class LiteralNode extends Node
 			if (isset(self::DEPRECATED_TYPES[$value])) {
 				trigger_error("Neon: keyword '$value' is deprecated, use true/yes or false/no.", E_USER_DEPRECATED);
 			}
+
 			return self::SIMPLE_TYPES[$value];
 
 		} elseif (is_numeric($value)) {

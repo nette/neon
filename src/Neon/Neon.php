@@ -53,10 +53,12 @@ final class Neon
 		if (!is_file($file)) {
 			throw new Exception("File '$file' does not exist.");
 		}
+
 		$input = file_get_contents($file);
 		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
 			$input = substr($input, 3);
 		}
+
 		return self::decode($input);
 	}
 }

@@ -49,9 +49,11 @@ final class StringNode extends Node
 				$res = str_replace("''", "'", $res);
 			}
 		}
+
 		if ($s[0] === "'") {
 			return $res;
 		}
+
 		return preg_replace_callback(
 			'#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i',
 			function (array $m): string {
@@ -62,6 +64,7 @@ final class StringNode extends Node
 					if (($res = json_decode('"' . $sq . '"')) !== null) {
 						return $res;
 					}
+
 					throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
 				} elseif ($sq[1] === 'x' && strlen($sq) === 4) {
 					trigger_error("Neon: '$sq' is deprecated, use '\\uXXXX' instead.", E_USER_DEPRECATED);
@@ -81,12 +84,14 @@ final class StringNode extends Node
 		if ($res === false) {
 			throw new Nette\Neon\Exception('Invalid UTF-8 sequence: ' . $this->value);
 		}
+
 		if (strpos($this->value, "\n") !== false) {
 			$res = preg_replace_callback('#[^\\\\]|\\\\(.)#s', function ($m) {
 				return ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
 			}, $res);
 			$res = '"""' . "\n\t" . substr($res, 1, -1) . "\n" . '"""';
 		}
+
 		return $res;
 	}
 }
