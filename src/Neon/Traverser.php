@@ -16,17 +16,24 @@ final class Traverser
 	public const DontTraverseChildren = 1;
 	public const StopTraversal = 2;
 
-	/** @var callable(Node): (Node|int|null) */
-	private $callback;
+	/** @var callable(Node): (Node|int|null)|null */
+	private $enter;
+
+	/** @var callable(Node): (Node|int|null)|null */
+	private $leave;
 
 	/** @var bool */
 	private $stop;
 
 
-	/** @param  callable(Node): (Node|int|null)  $callback */
-	public function traverse(Node $node, callable $callback): Node
+	/**
+	 * @param  callable(Node): (Node|int|null)|null  $enter
+	 * @param  callable(Node): (Node|int|null)|null  $leave
+	 */
+	public function traverse(Node $node, ?callable $enter = null, ?callable $leave = null): Node
 	{
-		$this->callback = $callback;
+		$this->enter = $enter;
+		$this->leave = $leave;
 		$this->stop = false;
 		return $this->traverseNode($node);
 	}
@@ -35,8 +42,8 @@ final class Traverser
 	private function traverseNode(Node $node): Node
 	{
 		$children = true;
-		if ($this->callback) {
-			$res = ($this->callback)($node);
+		if ($this->enter) {
+			$res = ($this->enter)($node);
 			if ($res instanceof Node) {
 				$node = $res;
 
@@ -55,6 +62,15 @@ final class Traverser
 				if ($this->stop) {
 					break;
 				}
+			}
+		}
+
+		if (!$this->stop && $this->leave) {
+			$res = ($this->leave)($node);
+			if ($res instanceof Node) {
+				$node = $res;
+			} elseif ($res === self::StopTraversal) {
+				$this->stop = true;
 			}
 		}
 
