@@ -13,23 +13,49 @@ namespace Nette\Neon;
 /** @internal */
 final class Traverser
 {
-	/** @var callable(Node): ?Node */
+	public const DontTraverseChildren = 1;
+	public const StopTraversal = 2;
+
+	/** @var callable(Node): (Node|int|null) */
 	private $callback;
 
+	/** @var bool */
+	private $stop;
 
-	/** @param  callable(Node): ?Node  $callback */
+
+	/** @param  callable(Node): (Node|int|null)  $callback */
 	public function traverse(Node $node, callable $callback): Node
 	{
 		$this->callback = $callback;
+		$this->stop = false;
 		return $this->traverseNode($node);
 	}
 
 
 	private function traverseNode(Node $node): Node
 	{
-		$node = ($this->callback)($node) ?? $node;
-		foreach ($node->getSubNodes() as &$subnode) {
-			$subnode = $this->traverseNode($subnode);
+		$children = true;
+		if ($this->callback) {
+			$res = ($this->callback)($node);
+			if ($res instanceof Node) {
+				$node = $res;
+
+			} elseif ($res === self::DontTraverseChildren) {
+				$children = false;
+
+			} elseif ($res === self::StopTraversal) {
+				$this->stop = true;
+				$children = false;
+			}
+		}
+
+		if ($children) {
+			foreach ($node->getSubNodes() as &$subnode) {
+				$subnode = $this->traverseNode($subnode);
+				if ($this->stop) {
+					break;
+				}
+			}
 		}
 
 		return $node;
