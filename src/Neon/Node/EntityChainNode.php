@@ -20,11 +20,9 @@ final class EntityChainNode extends Node
 	public $chain = [];
 
 
-	public function __construct(array $chain = [], ?int $startPos = null, ?int $endPos = null)
+	public function __construct(array $chain = [])
 	{
 		$this->chain = $chain;
-		$this->startPos = $startPos;
-		$this->endPos = $endPos ?? $startPos;
 	}
 
 

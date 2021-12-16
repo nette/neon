@@ -20,15 +20,13 @@ final class EntityNode extends Node
 	public $value;
 
 	/** @var ArrayItemNode[] */
-	public $attributes = [];
+	public $attributes;
 
 
-	public function __construct(Node $value, array $attributes, ?int $startPos = null, ?int $endPos = null)
+	public function __construct(Node $value, array $attributes = [])
 	{
 		$this->value = $value;
 		$this->attributes = $attributes;
-		$this->startPos = $startPos;
-		$this->endPos = $endPos ?? $startPos;
 	}
 
 

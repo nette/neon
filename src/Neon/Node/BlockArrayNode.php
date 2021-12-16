@@ -17,10 +17,9 @@ final class BlockArrayNode extends ArrayNode
 	public $indentation;
 
 
-	public function __construct(string $indentation = '', ?int $pos = null)
+	public function __construct(string $indentation = '')
 	{
 		$this->indentation = $indentation;
-		$this->startPos = $this->endPos = $pos;
 	}
 
 

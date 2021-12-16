@@ -32,10 +32,9 @@ final class LiteralNode extends Node
 	public $value;
 
 
-	public function __construct($value, ?int $pos = null)
+	public function __construct($value)
 	{
 		$this->value = $value;
-		$this->startPos = $this->endPos = $pos;
 	}
 
 

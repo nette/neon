@@ -22,12 +22,6 @@ final class ArrayItemNode extends Node
 	public $value;
 
 
-	public function __construct(?int $pos = null)
-	{
-		$this->startPos = $this->endPos = $pos;
-	}
-
-
 	/** @param  self[]  $items */
 	public static function itemsToArray(array $items): array
 	{
