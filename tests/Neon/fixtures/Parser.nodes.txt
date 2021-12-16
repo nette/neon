@@ -27,6 +27,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'first'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 3
+   |  |  |  endLine: 3
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- a'
    |  |  |  indentation: '\t    '
@@ -39,12 +41,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'a'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 5
+   |  |  |  |  |  |  endLine: 5
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 5
+   |  |  |  |  |  endLine: 5
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 5
+   |  |  |  endLine: 5
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 3
+   |  |  endLine: 5
    |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'next:\n
@@ -56,6 +66,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'next'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 6
+   |  |  |  endLine: 6
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- [k,\n
@@ -78,12 +90,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  items: array (4) ...
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 7
+   |  |  |  |  |  |  endLine: 9
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 7
+   |  |  |  |  |  endLine: 9
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 7
+   |  |  |  endLine: 9
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 6
+   |  |  endLine: 9
    |  2 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'second:\n
@@ -95,6 +115,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'second'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 10
+   |  |  |  endLine: 10
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  'sub:\n
@@ -112,6 +134,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'sub'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 11
+   |  |  |  |  |  |  endLine: 11
    |  |  |  |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  code: string
    |  |  |  |  |  |  |  'a: 1\n
@@ -120,12 +144,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  items: array (2) ...
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 12
+   |  |  |  |  |  |  endLine: 13
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 11
+   |  |  |  |  |  endLine: 13
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 11
+   |  |  |  endLine: 13
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 10
+   |  |  endLine: 13
    |  3 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'third:\n
@@ -136,6 +168,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'third'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 14
+   |  |  |  endLine: 14
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- entity(a: 1)\n
@@ -151,8 +185,12 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  attributes: array (1) ...
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 15
+   |  |  |  |  |  |  endLine: 15
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 15
+   |  |  |  |  |  endLine: 15
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- entity(a: 1)foo()bar'
    |  |  |  |  |  key: null
@@ -161,12 +199,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  chain: array (3) ...
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 16
+   |  |  |  |  |  |  endLine: 16
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 16
+   |  |  |  |  |  endLine: 16
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 15
+   |  |  |  endLine: 16
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 14
+   |  |  endLine: 16
    |  4 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  '- a: 1\n
@@ -185,13 +231,19 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'a'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 17
+   |  |  |  |  |  |  endLine: 17
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  code: '1'
    |  |  |  |  |  |  value: 1
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 17
+   |  |  |  |  |  |  endLine: 17
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 17
+   |  |  |  |  |  endLine: 17
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: 'b: 2'
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
@@ -199,17 +251,27 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'b'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 18
+   |  |  |  |  |  |  endLine: 18
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  code: '2'
    |  |  |  |  |  |  value: 2
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 18
+   |  |  |  |  |  |  endLine: 18
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 18
+   |  |  |  |  |  endLine: 18
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 17
+   |  |  |  endLine: 18
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 17
+   |  |  endLine: 18
    |  5 => Nette\Neon\Node\ArrayItemNode
    |  |  code: '- - c'
    |  |  key: null
@@ -225,12 +287,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'c'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 19
+   |  |  |  |  |  |  endLine: 19
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 19
+   |  |  |  |  |  endLine: 19
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 19
+   |  |  |  endLine: 19
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 19
+   |  |  endLine: 19
    |  6 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'dash subblock:\n
@@ -241,6 +311,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'dash subblock'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 20
+   |  |  |  endLine: 20
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- a\n
@@ -255,8 +327,12 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'a'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 21
+   |  |  |  |  |  |  endLine: 21
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 21
+   |  |  |  |  |  endLine: 21
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- b'
    |  |  |  |  |  key: null
@@ -265,12 +341,20 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  value: 'b'
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  startLine: 22
+   |  |  |  |  |  |  endLine: 22
    |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  startLine: 22
+   |  |  |  |  |  endLine: 22
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 21
+   |  |  |  endLine: 22
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 20
+   |  |  endLine: 22
    |  7 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
    |  |  |  'text: """\n
@@ -282,6 +366,8 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: 'text'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 23
+   |  |  |  endLine: 23
    |  |  value: Nette\Neon\Node\StringNode
    |  |  |  code: string
    |  |  |  |  '"""\n
@@ -293,7 +379,13 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |   two'
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
+   |  |  |  startLine: 23
+   |  |  |  endLine: 26
    |  |  startTokenPos: unset
    |  |  endTokenPos: unset
+   |  |  startLine: 23
+   |  |  endLine: 26
    startTokenPos: unset
    endTokenPos: unset
+   startLine: 3
+   endLine: 26

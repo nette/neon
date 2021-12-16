@@ -19,6 +19,12 @@ abstract class Node
 	/** @var ?int */
 	public $endTokenPos;
 
+	/** @var ?int */
+	public $startLine;
+
+	/** @var ?int */
+	public $endLine;
+
 
 	/** @return mixed */
 	abstract public function toValue();
