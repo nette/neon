@@ -20,12 +20,10 @@ final class StringNode extends Node
 		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
 	];
 
-	public string $value;
 
-
-	public function __construct(string $value)
-	{
-		$this->value = $value;
+	public function __construct(
+		public string $value,
+	) {
 	}
 
 

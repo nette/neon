@@ -28,12 +28,10 @@ final class LiteralNode extends Node
 	private const PatternOctal = '#0o[0-7]++$#DA';
 	private const PatternBinary = '#0b[0-1]++$#DA';
 
-	public mixed $value;
 
-
-	public function __construct($value)
-	{
-		$this->value = $value;
+	public function __construct(
+		public mixed $value,
+	) {
 	}
 
 

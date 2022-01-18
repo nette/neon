@@ -13,12 +13,9 @@ namespace Nette\Neon\Node;
 /** @internal */
 final class BlockArrayNode extends ArrayNode
 {
-	public string $indentation;
-
-
-	public function __construct(string $indentation = '')
-	{
-		$this->indentation = $indentation;
+	public function __construct(
+		public string $indentation = '',
+	) {
 	}
 
 
