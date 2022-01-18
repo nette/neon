@@ -23,17 +23,13 @@ final class Token
 	/** @var string */
 	public $value;
 
-	/** @var int */
-	public $offset;
-
 	/** @var int|string */
 	public $type;
 
 
-	public function __construct(string $value, int $offset, $type)
+	public function __construct(string $value, $type)
 	{
 		$this->value = $value;
-		$this->offset = $offset;
 		$this->type = $type;
 	}
 }

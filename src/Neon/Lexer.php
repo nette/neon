@@ -72,7 +72,7 @@ final class Lexer
 				}
 			}
 
-			$token = new Token($token[0], $offset, $type);
+			$token = new Token($token[0], $type);
 			$offset += strlen($token->value);
 		}
 
