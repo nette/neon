@@ -57,7 +57,7 @@ final class Traverser
 		}
 
 		if ($children) {
-			foreach ($node->getSubNodes() as &$subnode) {
+			foreach ($node as &$subnode) {
 				$subnode = $this->traverseNode($subnode);
 				if ($this->stop) {
 					break;

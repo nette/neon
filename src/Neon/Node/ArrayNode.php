@@ -25,13 +25,10 @@ abstract class ArrayNode extends Node
 	}
 
 
-	public function getSubNodes(): array
+	public function &getIterator(): \Generator
 	{
-		$res = [];
 		foreach ($this->items as &$item) {
-			$res[] = &$item;
+			yield $item;
 		}
-
-		return $res;
 	}
 }

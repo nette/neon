@@ -80,8 +80,11 @@ final class ArrayItemNode extends Node
 	}
 
 
-	public function getSubNodes(): array
+	public function &getIterator(): \Generator
 	{
-		return $this->key ? [&$this->key, &$this->value] : [&$this->value];
+		if ($this->key) {
+			yield $this->key;
+		}
+		yield $this->value;
 	}
 }

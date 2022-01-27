@@ -43,13 +43,10 @@ final class EntityChainNode extends Node
 	}
 
 
-	public function getSubNodes(): array
+	public function &getIterator(): \Generator
 	{
-		$res = [];
 		foreach ($this->chain as &$item) {
-			$res[] = &$item;
+			yield $item;
 		}
-
-		return $res;
 	}
 }

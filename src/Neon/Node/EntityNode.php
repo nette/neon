@@ -48,13 +48,12 @@ final class EntityNode extends Node
 	}
 
 
-	public function getSubNodes(): array
+	public function &getIterator(): \Generator
 	{
-		$res = [&$this->value];
-		foreach ($this->attributes as &$item) {
-			$res[] = &$item;
-		}
+		yield $this->value;
 
-		return $res;
+		foreach ($this->attributes as &$item) {
+			yield $item;
+		}
 	}
 }
