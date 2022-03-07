@@ -20,11 +20,8 @@ final class Token
 	public const Newline = 4;
 	public const Whitespace = 5;
 
-	/** @var string */
-	public $value;
-
-	/** @var int|string */
-	public $type;
+	public string $value;
+	public int|string $type;
 
 
 	public function __construct(string $value, $type)

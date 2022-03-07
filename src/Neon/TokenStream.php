@@ -13,16 +13,13 @@ namespace Nette\Neon;
 /** @internal */
 final class TokenStream
 {
-	/** @var Token[] */
-	private $tokens;
-
-	/** @var int */
-	private $pos = 0;
+	private int $pos = 0;
 
 
-	public function __construct(array $tokens)
-	{
-		$this->tokens = $tokens;
+	public function __construct(
+		/** @var Token[] */
+		public array $tokens,
+	) {
 	}
 
 
