@@ -17,7 +17,7 @@ use Nette\Neon\Node;
 final class EntityChainNode extends Node
 {
 	/** @var EntityNode[] */
-	public $chain = [];
+	public array $chain = [];
 
 
 	public function __construct(array $chain = [])

@@ -15,17 +15,10 @@ namespace Nette\Neon;
  */
 abstract class Node implements \IteratorAggregate
 {
-	/** @var ?int */
-	public $startTokenPos;
-
-	/** @var ?int */
-	public $endTokenPos;
-
-	/** @var ?int */
-	public $startLine;
-
-	/** @var ?int */
-	public $endLine;
+	public ?int $startTokenPos = null;
+	public ?int $endTokenPos = null;
+	public ?int $startLine = null;
+	public ?int $endLine = null;
 
 
 	/** @return mixed */

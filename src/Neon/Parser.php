@@ -13,8 +13,7 @@ namespace Nette\Neon;
 /** @internal */
 final class Parser
 {
-	/** @var TokenStream */
-	private $tokens;
+	private TokenStream $tokens;
 
 	/** @var int[] */
 	private $posToLine = [];

@@ -15,11 +15,9 @@ namespace Nette\Neon;
  */
 final class Entity extends \stdClass
 {
-	/** @var mixed */
-	public $value;
-
+	public mixed $value;
 	/** @var mixed[] */
-	public $attributes;
+	public array $attributes;
 
 
 	public function __construct($value, array $attrs = [])

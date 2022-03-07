@@ -16,11 +16,10 @@ use Nette\Neon\Node;
 /** @internal */
 final class EntityNode extends Node
 {
-	/** @var Node */
-	public $value;
+	public Node $value;
 
 	/** @var ArrayItemNode[] */
-	public $attributes;
+	public array $attributes;
 
 
 	public function __construct(Node $value, array $attributes = [])
