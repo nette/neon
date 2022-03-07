@@ -13,9 +13,9 @@ namespace Nette\Neon;
 /** @internal */
 final class Lexer
 {
-	public const PATTERNS = [
+	public const Patterns = [
 		// strings
-		Token::STRING => '
+		Token::String => '
 			\'\'\'\n (?:(?: [^\n] | \n(?![\t\ ]*+\'\'\') )*+ \n)?[\t\ ]*+\'\'\' |
 			"""\n (?:(?: [^\n] | \n(?![\t\ ]*+""") )*+ \n)?[\t\ ]*+""" |
 			\' (?: \'\' | [^\'\n] )*+ \' |
@@ -23,7 +23,7 @@ final class Lexer
 		',
 
 		// literal / boolean / integer / float
-		Token::LITERAL => '
+		Token::Literal => '
 			(?: [^#"\',:=[\]{}()\n\t\ `-] | (?<!["\']) [:-] [^"\',=[\]{}()\n\t\ ] )
 			(?:
 				[^,:=\]})(\n\t\ ]++ |
@@ -33,29 +33,29 @@ final class Lexer
 		',
 
 		// punctuation
-		Token::CHAR => '[,:=[\]{}()-]',
+		Token::Char => '[,:=[\]{}()-]',
 
 		// comment
-		Token::COMMENT => '\#.*+',
+		Token::Comment => '\#.*+',
 
 		// new line
-		Token::NEWLINE => '\n++',
+		Token::Newline => '\n++',
 
 		// whitespace
-		Token::WHITESPACE => '[\t\ ]++',
+		Token::Whitespace => '[\t\ ]++',
 	];
 
 
 	public function tokenize(string $input): TokenStream
 	{
 		$input = str_replace("\r", '', $input);
-		$pattern = '~(' . implode(')|(', self::PATTERNS) . ')~Amixu';
+		$pattern = '~(' . implode(')|(', self::Patterns) . ')~Amixu';
 		$res = preg_match_all($pattern, $input, $tokens, PREG_SET_ORDER);
 		if ($res === false) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
 
-		$types = array_keys(self::PATTERNS);
+		$types = array_keys(self::Patterns);
 		$offset = 0;
 		foreach ($tokens as &$token) {
 			$type = null;
@@ -64,7 +64,7 @@ final class Lexer
 					break;
 				} elseif ($token[$i] !== '') {
 					$type = $types[$i - 1];
-					if ($type === Token::CHAR) {
+					if ($type === Token::Char) {
 						$type = $token[0];
 					}
 
@@ -89,6 +89,6 @@ final class Lexer
 	public static function requiresDelimiters(string $s): bool
 	{
 		return preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $s)
-			|| !preg_match('~^' . self::PATTERNS[Token::LITERAL] . '$~Dx', $s);
+			|| !preg_match('~^' . self::Patterns[Token::Literal] . '$~Dx', $s);
 	}
 }

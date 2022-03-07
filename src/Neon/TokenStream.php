@@ -41,7 +41,7 @@ final class TokenStream
 
 	public function isNext(...$types): bool
 	{
-		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::COMMENT, Token::WHITESPACE], true)) {
+		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], true)) {
 			$this->pos++;
 		}
 
@@ -61,8 +61,8 @@ final class TokenStream
 
 	public function getIndentation(): string
 	{
-		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::NEWLINE, null], true)
-			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::WHITESPACE
+		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], true)
+			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::Whitespace
 			? $this->tokens[$this->pos - 1]->value
 			: '';
 	}

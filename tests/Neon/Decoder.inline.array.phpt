@@ -82,7 +82,7 @@ Assert::equal(
 
 
 Assert::equal(
-	new Entity(Neon::CHAIN, [
+	new Entity(Neon::Chain, [
 		new Entity('first', ['a', 'b']),
 		new Entity('second'),
 	]),
@@ -91,7 +91,7 @@ Assert::equal(
 
 
 Assert::equal(
-	new Entity(Neon::CHAIN, [
+	new Entity(Neon::Chain, [
 		new Entity('first', ['a', 'b']),
 		new Entity('second', [1, 2]),
 	]),
@@ -99,7 +99,7 @@ Assert::equal(
 );
 
 Assert::equal(
-	new Entity(Neon::CHAIN, [
+	new Entity(Neon::Chain, [
 		new Entity(1, []),
 		new Entity(2, []),
 	]),

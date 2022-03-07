@@ -16,7 +16,7 @@ use Nette\Neon\Node;
 /** @internal */
 final class StringNode extends Node
 {
-	private const ESCAPE_SEQUENCES = [
+	private const EscapeSequences = [
 		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
 	];
 
@@ -58,8 +58,8 @@ final class StringNode extends Node
 			'#\\\\(?:ud[89ab][0-9a-f]{2}\\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|x[0-9a-f]{2}|.)#i',
 			function (array $m): string {
 				$sq = $m[0];
-				if (isset(self::ESCAPE_SEQUENCES[$sq[1]])) {
-					return self::ESCAPE_SEQUENCES[$sq[1]];
+				if (isset(self::EscapeSequences[$sq[1]])) {
+					return self::EscapeSequences[$sq[1]];
 				} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
 					if (($res = json_decode('"' . $sq . '"')) !== null) {
 						return $res;

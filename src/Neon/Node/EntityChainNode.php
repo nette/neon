@@ -35,7 +35,7 @@ final class EntityChainNode extends Node
 			$entities[] = $item->toValue();
 		}
 
-		return new Neon\Entity(Neon\Neon::CHAIN, $entities);
+		return new Neon\Entity(Neon\Neon::Chain, $entities);
 	}
 
 

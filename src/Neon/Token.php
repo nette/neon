@@ -13,12 +13,12 @@ namespace Nette\Neon;
 /** @internal */
 final class Token
 {
-	public const STRING = 1;
-	public const LITERAL = 2;
-	public const CHAR = 0;
-	public const COMMENT = 3;
-	public const NEWLINE = 4;
-	public const WHITESPACE = 5;
+	public const String = 1;
+	public const Literal = 2;
+	public const Char = 0;
+	public const Comment = 3;
+	public const Newline = 4;
+	public const Whitespace = 5;
 
 	/** @var string */
 	public $value;

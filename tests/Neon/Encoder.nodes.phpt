@@ -18,7 +18,7 @@ $input = [
 	'index' => ['a', 'b', 'c'],
 	'mixed' => ['a', 'b', 4 => 'c',  'd'],
 	'entity' => new Entity('ent', ['a', 'b']),
-	'chain' => new Entity(Neon\Neon::CHAIN, [
+	'chain' => new Entity(Neon\Neon::Chain, [
 		new Entity('first', ['a', 'b']),
 		new Entity('second'),
 	]),

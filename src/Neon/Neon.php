@@ -17,8 +17,8 @@ namespace Nette\Neon;
 final class Neon
 {
 	public const BLOCK = Encoder::BLOCK;
-
-	public const CHAIN = '!!chain';
+	public const Chain = '!!chain';
+	public const CHAIN = self::Chain;
 
 
 	/**

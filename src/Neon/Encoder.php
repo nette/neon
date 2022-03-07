@@ -41,7 +41,7 @@ final class Encoder
 		if ($val instanceof \DateTimeInterface) {
 			return new Node\LiteralNode($val);
 
-		} elseif ($val instanceof Entity && $val->value === Neon::CHAIN) {
+		} elseif ($val instanceof Entity && $val->value === Neon::Chain) {
 			$node = new Node\EntityChainNode;
 			foreach ($val->attributes as $entity) {
 				$node->chain[] = $this->valueToNode($entity);
