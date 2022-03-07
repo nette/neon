@@ -66,5 +66,5 @@ $traverser->traverse($node, function (Node $node) use ($stream) {
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Parser.nodes.txt',
-	Dumper::toText($node, [Dumper::HASH => false])
+	Dumper::toText($node, [Dumper::HASH => false, Dumper::DEPTH => 20])
 );

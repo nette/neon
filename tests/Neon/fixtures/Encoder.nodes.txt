@@ -247,8 +247,30 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  |  startLine: null
    |  |  |  |  |  |  endLine: null
    |  |  |  |  |  attributes: array (2)
-   |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode ...
-   |  |  |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode ...
+   |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  |  |  key: null
+   |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  |  |  startTokenPos: null
+   |  |  |  |  |  |  |  |  endTokenPos: null
+   |  |  |  |  |  |  |  |  startLine: null
+   |  |  |  |  |  |  |  |  endLine: null
+   |  |  |  |  |  |  |  startTokenPos: null
+   |  |  |  |  |  |  |  endTokenPos: null
+   |  |  |  |  |  |  |  startLine: null
+   |  |  |  |  |  |  |  endLine: null
+   |  |  |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  |  |  key: null
+   |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  value: 'b'
+   |  |  |  |  |  |  |  |  startTokenPos: null
+   |  |  |  |  |  |  |  |  endTokenPos: null
+   |  |  |  |  |  |  |  |  startLine: null
+   |  |  |  |  |  |  |  |  endLine: null
+   |  |  |  |  |  |  |  startTokenPos: null
+   |  |  |  |  |  |  |  endTokenPos: null
+   |  |  |  |  |  |  |  startLine: null
+   |  |  |  |  |  |  |  endLine: null
    |  |  |  |  |  startTokenPos: null
    |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  startLine: null
