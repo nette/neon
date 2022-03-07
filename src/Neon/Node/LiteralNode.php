@@ -16,12 +16,10 @@ use Nette\Neon\Node;
 final class LiteralNode extends Node
 {
 	private const SimpleTypes = [
-		'true' => true, 'True' => true, 'TRUE' => true, 'yes' => true, 'Yes' => true, 'YES' => true, 'on' => true, 'On' => true, 'ON' => true,
-		'false' => false, 'False' => false, 'FALSE' => false, 'no' => false, 'No' => false, 'NO' => false, 'off' => false, 'Off' => false, 'OFF' => false,
+		'true' => true, 'True' => true, 'TRUE' => true, 'yes' => true, 'Yes' => true, 'YES' => true,
+		'false' => false, 'False' => false, 'FALSE' => false, 'no' => false, 'No' => false, 'NO' => false,
 		'null' => null, 'Null' => null, 'NULL' => null,
 	];
-
-	private const DeprecatedTypes = ['on' => 1, 'On' => 1, 'ON' => 1, 'off' => 1, 'Off' => 1, 'OFF' => 1];
 
 	private const PatternDatetime = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$#DA';
 	private const PatternHex = '#0x[0-9a-fA-F]++$#DA';
@@ -44,10 +42,6 @@ final class LiteralNode extends Node
 	public static function parse(string $value, bool $isKey = false): mixed
 	{
 		if (!$isKey && array_key_exists($value, self::SimpleTypes)) {
-			if (isset(self::DeprecatedTypes[$value])) {
-				trigger_error("Neon: keyword '$value' is deprecated, use true/yes or false/no.", E_USER_DEPRECATED);
-			}
-
 			return self::SimpleTypes[$value];
 
 		} elseif (is_numeric($value)) {
