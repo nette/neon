@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 
 
 Assert::same(
-	'[true, "TRUE", "tRuE", "true", false, "FALSE", "fAlSe", "false", null, "NULL", "nUlL", "null", "yes", "no", "on", "off"]',
+	"[true, 'TRUE', 'tRuE', 'true', false, 'FALSE', 'fAlSe', 'false', null, 'NULL', 'nUlL', 'null', 'yes', 'no', 'on', 'off']",
 	Neon::encode([
 		true, 'TRUE', 'tRuE', 'true',
 		false, 'FALSE', 'fAlSe', 'false',
@@ -25,27 +25,47 @@ Assert::same(
 );
 
 Assert::same(
-	'[1, 1.0, 0, 0.0, -1, -1.2, "1", "1.0", "-1"]',
+	"[1, 1.0, 0, 0.0, -1, -1.2, '1', '1.0', '-1']",
 	Neon::encode([1, 1.0, 0, 0.0, -1, -1.2, '1', '1.0', '-1'])
 );
 
 Assert::same(
-	'["1", "0xAA", "0o12", "0b110", "+1", "-1", ".50", "1e10"]',
+	"['1', '0xAA', '0o12', '0b110', '+1', '-1', '.50', '1e10']",
 	Neon::encode(['1', '0xAA', '0o12', '0b110', '+1', '-1', '.50', '1e10'])
 );
 
 Assert::same(
-	'[\, "\'", "\"", "\r", "\\\\ \r"]',
-	Neon::encode(['\\', "'", '"', "\r", "\\ \r"])
+	"[\\, '''', '\"', '''\n\n\n''', '''\n\t\\ \n\n''']",
+	Neon::encode(['\\', "'", '"', "\n", "\\ \n"])
 );
 
 Assert::same(
-	"{multi: [\"\"\"\n\tone\n\ttwo\n\tthree\\\\ne \"'\t\n\"\"\"]}",
+	"'''\n\taaa\n\t'''bbb\n'''",
+	Neon::encode("aaa\n'''bbb")
+);
+
+Assert::same(
+	"\"\"\"\n\taaa\n\t \t'''bbb\n\"\"\"",
+	Neon::encode("aaa\n \t'''bbb")
+);
+
+Assert::same(
+	"'''\n\taaa'''\n\tbbb\n'''",
+	Neon::encode("aaa'''\nbbb")
+);
+
+Assert::same(
+	"\"\"\"\n\taaa\n\t \t'''bbb\n\t \t\"\"\\\"ccc\n\"\"\"",
+	Neon::encode("aaa\n \t'''bbb\n \t\"\"\"ccc")
+);
+
+Assert::same(
+	"{multi: ['''\n\tone\n\ttwo\n\tthree\\ne \"'\t\n''']}",
 	Neon::encode(['multi' => ["one\ntwo\nthree\\ne \"'\t"]])
 );
 
 Assert::same(
-	'["[", "]", "{", "}", ":", ": ", "=", "#"]',
+	"['[', ']', '{', '}', ':', ': ', '=', '#']",
 	Neon::encode(['[', ']', '{', '}', ':', ': ', '=', '#'])
 );
 
@@ -92,7 +112,7 @@ Assert::same(
 );
 
 Assert::same(
-	'",žlu/ťoučký"',
+	"',žlu/ťoučký'",
 	Neon::encode(',žlu/ťoučký')
 );
 
@@ -144,7 +164,3 @@ Assert::same(
 	'[]',
 	Neon::encode([], Neon::BLOCK)
 );
-
-Assert::exception(function () {
-	Neon::encode("a invalid utf8 char sequence: \xc2\x82\x28\xfc\xa1\xa1\xa1\xa1\xa1\xe2\x80\x82");
-}, Nette\Neon\Exception::class);

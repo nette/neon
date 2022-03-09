@@ -79,18 +79,27 @@ final class StringNode extends Node
 
 	public function toString(): string
 	{
-		$res = json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-		if ($res === false) {
-			throw new Nette\Neon\Exception('Invalid UTF-8 sequence: ' . $this->value);
+		if (strpos($this->value, "\n") === false) {
+			return "'" . str_replace("'", "''", $this->value) . "'";
+
+		} elseif (preg_match('~\n[\t ]+\'{3}~', $this->value)) {
+			$s = json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			$s = preg_replace_callback(
+				'#[^\\\\]|\\\\(.)#s',
+				function ($m) {
+					return ['n' => "\n", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
+				},
+				substr($s, 1, -1)
+			);
+			$s = str_replace('"""', '""\"', $s);
+			$delim = '"""';
+
+		} else {
+			$s = $this->value;
+			$delim = "'''";
 		}
 
-		if (strpos($this->value, "\n") !== false) {
-			$res = preg_replace_callback('#[^\\\\]|\\\\(.)#s', function ($m) {
-				return ['n' => "\n\t", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
-			}, $res);
-			$res = '"""' . "\n\t" . substr($res, 1, -1) . "\n" . '"""';
-		}
-
-		return $res;
+		$s = preg_replace('#^(?=.)#m', "\t", $s);
+		return $delim . "\n" . $s . "\n" . $delim;
 	}
 }

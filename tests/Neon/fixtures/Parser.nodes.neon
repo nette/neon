@@ -24,7 +24,7 @@ dash subblock:
 - a
 - b
 
-text: """
+text: '''
 	one
 	two
-"""
+'''
