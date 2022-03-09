@@ -57,11 +57,11 @@ Assert::matchFile(
 $traverser = new Traverser;
 $traverser->traverse($node, function (Node $node) use ($stream) {
 	$node->code = '';
-	foreach (array_slice($stream->getTokens(), $node->startPos, $node->endPos - $node->startPos + 1) as $token) {
+	foreach (array_slice($stream->getTokens(), $node->startTokenPos, $node->endTokenPos - $node->startTokenPos + 1) as $token) {
 		$node->code .= $token->value;
 	}
 
-	unset($node->startPos, $node->endPos);
+	unset($node->startTokenPos, $node->endTokenPos);
 });
 
 Assert::matchFile(

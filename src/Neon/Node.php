@@ -14,10 +14,10 @@ namespace Nette\Neon;
 abstract class Node
 {
 	/** @var ?int */
-	public $startPos;
+	public $startTokenPos;
 
 	/** @var ?int */
-	public $endPos;
+	public $endTokenPos;
 
 
 	/** @return mixed */

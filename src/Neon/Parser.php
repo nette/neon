@@ -96,8 +96,8 @@ final class Parser
 			$item->value->indentation = substr($item->value->indentation, strlen($indent));
 		}
 
-		$this->injectPos($res, $res->startPos, $item->value->endPos);
-		$this->injectPos($item, $item->startPos, $item->value->endPos);
+		$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
+		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
 		while ($this->tokens->consume(Token::Newline));
 		if (!$this->tokens->isNext()) {
@@ -151,23 +151,23 @@ final class Parser
 		}
 
 		$attributes = $this->parseBraces();
-		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startPos, $attributes->endPos);
+		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
 
 		while ($token = $this->tokens->consume(Token::Literal)) {
 			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->value));
 			$this->injectPos($valueNode, $this->tokens->getPos() - 1);
 			if ($this->tokens->isNext('(')) {
 				$attributes = $this->parseBraces();
-				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startPos, $attributes->endPos);
+				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startTokenPos, $attributes->endTokenPos);
 			} else {
-				$entities[] = $this->injectPos(new Node\EntityNode($valueNode), $valueNode->startPos);
+				$entities[] = $this->injectPos(new Node\EntityNode($valueNode), $valueNode->startTokenPos);
 				break;
 			}
 		}
 
 		return count($entities) === 1
 			? $entities[0]
-			: $this->injectPos(new Node\EntityChainNode($entities), $node->startPos, end($entities)->endPos);
+			: $this->injectPos(new Node\EntityChainNode($entities), $node->startTokenPos, end($entities)->endTokenPos);
 	}
 
 
@@ -182,7 +182,7 @@ final class Parser
 		loop:
 		while ($this->tokens->consume(Token::Newline));
 		if ($this->tokens->consume($endBrace)) {
-			$this->injectPos($res, $res->startPos, $this->tokens->getPos() - 1);
+			$this->injectPos($res, $res->startTokenPos, $this->tokens->getPos() - 1);
 			return $res;
 		}
 
@@ -200,7 +200,7 @@ final class Parser
 			$item->value = $value;
 		}
 
-		$this->injectPos($item, $item->startPos, $item->value->endPos);
+		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
 		if ($this->tokens->consume(',', Token::Newline)) {
 			goto loop;
@@ -218,12 +218,12 @@ final class Parser
 	private function checkArrayKey(Node $key, array &$arr): void
 	{
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
-			$this->tokens->error('Unacceptable key', $key->startPos);
+			$this->tokens->error('Unacceptable key', $key->startTokenPos);
 		}
 
 		$k = (string) $key->value;
 		if (array_key_exists($k, $arr)) {
-			$this->tokens->error("Duplicated key '$k'", $key->startPos);
+			$this->tokens->error("Duplicated key '$k'", $key->startTokenPos);
 		}
 
 		$arr[$k] = true;
@@ -232,8 +232,8 @@ final class Parser
 
 	private function injectPos(Node $node, int $start = null, int $end = null): Node
 	{
-		$node->startPos = $start ?? $this->tokens->getPos();
-		$node->endPos = $end ?? $node->startPos;
+		$node->startTokenPos = $start ?? $this->tokens->getPos();
+		$node->endTokenPos = $end ?? $node->startTokenPos;
 		return $node;
 	}
 }
