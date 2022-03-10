@@ -17,6 +17,7 @@ abstract class Node implements \IteratorAggregate
 {
 	public ?Position $start = null;
 	public ?Position $end = null;
+	public array $data = [];
 
 
 	abstract public function toValue(): mixed;
