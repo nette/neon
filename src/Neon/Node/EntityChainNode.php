@@ -39,7 +39,7 @@ final class EntityChainNode extends Node
 
 	public function toString(): string
 	{
-		return implode('', array_map(function ($entity) { return $entity->toString(); }, $this->chain));
+		return implode('', array_map(fn($entity) => $entity->toString(), $this->chain));
 	}
 
 

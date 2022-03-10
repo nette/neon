@@ -52,7 +52,7 @@ final class Encoder
 		} elseif ($val instanceof Entity) {
 			return new Node\EntityNode(
 				$this->valueToNode($val->value),
-				$this->arrayToNodes((array) $val->attributes)
+				$this->arrayToNodes((array) $val->attributes),
 			);
 
 		} elseif (is_object($val) || is_array($val)) {

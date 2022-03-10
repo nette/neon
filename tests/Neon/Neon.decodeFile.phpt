@@ -19,5 +19,5 @@ Assert::exception(function () {
 
 Assert::same(
 	['a', 'b'],
-	Neon::decodeFile(__DIR__ . '/fixtures/file.neon')
+	Neon::decodeFile(__DIR__ . '/fixtures/file.neon'),
 );

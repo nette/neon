@@ -11,7 +11,7 @@ require __DIR__ . '/../bootstrap.php';
 
 Assert::same(
 	[true, true, false, false],
-	@Neon::decode('[On, on, Off, off]')
+	@Neon::decode('[On, on, Off, off]'),
 );
 
 Assert::error(function () {
