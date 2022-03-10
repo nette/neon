@@ -34,7 +34,7 @@ final class EntityNode extends Node
 	{
 		return new Entity(
 			$this->value->toValue(),
-			ArrayItemNode::itemsToArray($this->attributes)
+			ArrayItemNode::itemsToArray($this->attributes),
 		);
 	}
 

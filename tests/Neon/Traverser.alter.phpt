@@ -9,9 +9,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$visitor = function (Node $node) {
-	return clone $node;
-};
+$visitor = fn(Node $node) => clone $node;
 
 $decoder = new Neon\Decoder;
 $node = $decoder->parseToNode('

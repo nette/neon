@@ -71,7 +71,7 @@ final class TokenStream
 	/** @return never */
 	public function error(?string $message = null, ?int $pos = null): void
 	{
-		$pos = $pos ?? $this->pos;
+		$pos ??= $this->pos;
 		$input = '';
 		foreach ($this->tokens as $i => $token) {
 			if ($i >= $pos) {
@@ -84,7 +84,7 @@ final class TokenStream
 		$line = substr_count($input, "\n") + 1;
 		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
 		$token = $this->tokens[$pos] ?? null;
-		$message = $message ?? 'Unexpected ' . ($token === null
+		$message ??= 'Unexpected ' . ($token === null
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
 		throw new Exception("$message on line $line, column $col.");

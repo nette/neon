@@ -72,7 +72,7 @@ final class StringNode extends Node
 					throw new Nette\Neon\Exception("Invalid escaping sequence $sq");
 				}
 			},
-			$res
+			$res,
 		);
 	}
 
@@ -86,10 +86,8 @@ final class StringNode extends Node
 			$s = json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 			$s = preg_replace_callback(
 				'#[^\\\\]|\\\\(.)#s',
-				function ($m) {
-					return ['n' => "\n", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0];
-				},
-				substr($s, 1, -1)
+				fn($m) => ['n' => "\n", 't' => "\t", '"' => '"'][$m[1] ?? ''] ?? $m[0],
+				substr($s, 1, -1),
 			);
 			$s = str_replace('"""', '""\"', $s);
 			$delim = '"""';
