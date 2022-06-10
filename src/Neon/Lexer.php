@@ -50,28 +50,19 @@ final class Lexer
 	{
 		$input = str_replace("\r", '', $input);
 		$pattern = '~(' . implode(')|(', self::Patterns) . ')~Amixu';
-		$res = preg_match_all($pattern, $input, $tokens, PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL);
+		$res = preg_match_all($pattern, $input, $matches, PREG_SET_ORDER);
 		if ($res === false) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
 
 		$types = array_keys(self::Patterns);
 		$offset = 0;
-		foreach ($tokens as &$token) {
-			$type = null;
-			for ($i = 1; $i <= count($types); $i++) {
-				if (isset($token[$i])) {
-					$type = $types[$i - 1];
-					if ($type === Token::Char) {
-						$type = $token[0];
-					}
 
-					break;
-				}
-			}
-
-			$token = new Token($token[0], $type);
-			$offset += strlen($token->value);
+		$tokens = [];
+		foreach ($matches as $match) {
+			$type = $types[count($match) - 2];
+			$tokens[] = new Token($match[0], $type === Token::Char ? $match[0] : $type);
+			$offset += strlen($match[0]);
 		}
 
 		$stream = new TokenStream($tokens);
