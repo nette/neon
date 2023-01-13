@@ -50,11 +50,12 @@ final class Neon
 	 */
 	public static function decodeFile(string $file)
 	{
-		if (!is_file($file)) {
-			throw new Exception("File '$file' does not exist.");
+		$input = @file_get_contents($file); // @ is escalated to exception
+		if ($input === false) {
+			$error = preg_replace('#^\w+\(.*?\): #', '', error_get_last()['message'] ?? '');
+			throw new Exception("Unable to read file '$file'. $error");
 		}
 
-		$input = file_get_contents($file);
 		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
 			$input = substr($input, 3);
 		}

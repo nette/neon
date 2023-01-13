@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 
 Assert::exception(function () {
 	Neon::decodeFile('unknown');
-}, Nette\Neon\Exception::class, "File 'unknown' does not exist.");
+}, Nette\Neon\Exception::class, "Unable to read file 'unknown'. %a%");
 
 Assert::same(
 	['a', 'b'],
