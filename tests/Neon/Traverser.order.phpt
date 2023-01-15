@@ -11,9 +11,11 @@ require __DIR__ . '/../bootstrap.php';
 
 $traverser = new Neon\Traverser;
 $decoder = new Neon\Decoder;
-$node = $decoder->parseToNode('
-a: 1
-');
+$node = $decoder->parseToNode(<<<'XX'
+
+	a: 1
+
+	XX);
 
 
 $log = [];

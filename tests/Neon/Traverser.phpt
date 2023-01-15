@@ -18,9 +18,11 @@ $visitor = function (Node $node) {
 };
 
 $decoder = new Neon\Decoder;
-$node = $decoder->parseToNode('
-a: foo(1, 2, 3)
-');
+$node = $decoder->parseToNode(<<<'XX'
+
+	a: foo(1, 2, 3)
+
+	XX);
 
 $traverser = new Neon\Traverser;
 $node = $traverser->traverse($node, $visitor);

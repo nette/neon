@@ -11,13 +11,15 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$parsed = Neon::decode('
-person:
-	id:   	100
-	data:   Andares(gender=male, married=yes)
-');
+$parsed = Neon::decode(<<<'XX'
 
-$serialized = var_export($parsed, true);
+	person:
+		id:   	100
+		data:   Andares(gender=male, married=yes)
+
+	XX);
+
+$serialized = var_export($parsed, return: true);
 $unserialized = eval("return $serialized;");
 
 Assert::equal($parsed, $unserialized);

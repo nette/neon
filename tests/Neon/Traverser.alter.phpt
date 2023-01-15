@@ -12,9 +12,11 @@ require __DIR__ . '/../bootstrap.php';
 $visitor = fn(Node $node) => clone $node;
 
 $decoder = new Neon\Decoder;
-$node = $decoder->parseToNode('
-a: foo(1, 2, 3)
-');
+$node = $decoder->parseToNode(<<<'XX'
+
+	a: foo(1, 2, 3)
+
+	XX);
 
 $traverser = new Neon\Traverser;
 $newNode = $traverser->traverse($node, $visitor);

@@ -58,7 +58,7 @@ final class Neon
 			throw new Exception("Unable to read file '$file'. $error");
 		}
 
-		if (substr($input, 0, 3) === "\u{FEFF}") { // BOM
+		if (str_starts_with($input, "\u{FEFF}")) { // BOM
 			$input = substr($input, 3);
 		}
 

@@ -13,9 +13,11 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-Assert::exception(function () {
-	Neon::decodeFile('unknown');
-}, Nette\Neon\Exception::class, "Unable to read file 'unknown'. %a%");
+Assert::exception(
+	fn() => Neon::decodeFile('unknown'),
+	Nette\Neon\Exception::class,
+	"Unable to read file 'unknown'. %a%",
+);
 
 Assert::same(
 	['a', 'b'],

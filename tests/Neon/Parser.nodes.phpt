@@ -12,34 +12,36 @@ use Tracy\Dumper;
 require __DIR__ . '/../bootstrap.php';
 
 
-$input = '
-# hello
-first: # first comment
-	# another comment
-	- a  # a comment
-next:
-	- [k,
-		l, m:
-	n]
-second:
-	sub:
-		a: 1
-		b: 2
-third:
-	- entity(a: 1)
-	- entity(a: 1)foo()bar
-- a: 1
-  b: 2
-- - c
-dash subblock:
-- a
-- b
-text: """
-     one
-     two
-"""
-# world
-';
+$input = <<<'XX'
+
+	# hello
+	first: # first comment
+		# another comment
+		- a  # a comment
+	next:
+		- [k,
+			l, m:
+		n]
+	second:
+		sub:
+			a: 1
+			b: 2
+	third:
+		- entity(a: 1)
+		- entity(a: 1)foo()bar
+	- a: 1
+	  b: 2
+	- - c
+	dash subblock:
+	- a
+	- b
+	text: """
+	     one
+	     two
+	"""
+	# world
+
+	XX;
 
 
 $lexer = new Neon\Lexer;

@@ -84,7 +84,7 @@ final class Parser
 				return $res;
 
 			} elseif ($item->key !== null && $this->tokens->isNext('-')) { // special dash subblock
-				$item->value = $this->parseBlock($indent, true);
+				$item->value = $this->parseBlock($indent, onlyBullets: true);
 			}
 		} elseif ($item->key === null) {
 			$item->value = $this->parseBlock($indent . '  '); // open new block after dash
