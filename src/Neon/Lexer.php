@@ -64,7 +64,7 @@ final class Lexer
 		$tokens = [];
 		foreach ($matches as $match) {
 			$type = $types[count($match) - 2];
-			$tokens[] = new Token($match[0], $type === Token::Char ? $match[0] : $type);
+			$tokens[] = new Token($type === Token::Char ? $match[0] : $type, $match[0]);
 			$offset += strlen($match[0]);
 		}
 
