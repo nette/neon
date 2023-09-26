@@ -61,7 +61,7 @@ final class TokenStream
 	{
 		return in_array($this->tokens[$this->index - 2]->type ?? null, [Token::Newline, null], strict: true)
 			&& ($this->tokens[$this->index - 1]->type ?? null) === Token::Whitespace
-			? $this->tokens[$this->index - 1]->value
+			? $this->tokens[$this->index - 1]->text
 			: '';
 	}
 
@@ -76,7 +76,7 @@ final class TokenStream
 				break;
 			}
 
-			$input .= $token->value;
+			$input .= $token->text;
 		}
 
 		$line = substr_count($input, "\n") + 1;
@@ -84,7 +84,7 @@ final class TokenStream
 		$token = $this->tokens[$pos] ?? null;
 		$message ??= 'Unexpected ' . ($token === null
 			? 'end'
-			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
+			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->text, 0, 40)) . "'");
 		throw new Exception("$message on line $line at column $col");
 	}
 }
