@@ -134,14 +134,14 @@ final class Parser
 	{
 		if ($token = $this->tokens->tryConsume(Token::String)) {
 			try {
-				$node = new Node\StringNode(Node\StringNode::parse($token->value));
+				$node = new Node\StringNode(Node\StringNode::parse($token->text));
 				$this->injectPos($node, $this->tokens->getIndex() - 1);
 			} catch (Exception $e) {
 				$this->tokens->error($e->getMessage(), $this->tokens->getIndex() - 1);
 			}
 		} elseif ($token = $this->tokens->tryConsume(Token::Literal)) {
 			$pos = $this->tokens->getIndex() - 1;
-			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->value, $this->tokens->is(':', '=')));
+			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->text, $this->tokens->is(':', '=')));
 			$this->injectPos($node, $pos);
 
 		} elseif ($this->tokens->is('[', '(', '{')) {
@@ -165,7 +165,7 @@ final class Parser
 		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
 
 		while ($token = $this->tokens->tryConsume(Token::Literal)) {
-			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->value));
+			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->text));
 			$this->injectPos($valueNode, $this->tokens->getIndex() - 1);
 			if ($this->tokens->is('(')) {
 				$attributes = $this->parseBraces();
@@ -185,8 +185,8 @@ final class Parser
 	private function parseBraces(): Node\InlineArrayNode
 	{
 		$token = $this->tokens->tryConsume();
-		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
-		$res = new Node\InlineArrayNode($token->value);
+		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->text];
+		$res = new Node\InlineArrayNode($token->text);
 		$this->injectPos($res, $this->tokens->getIndex() - 1);
 		$keyCheck = [];
 
@@ -258,7 +258,7 @@ final class Parser
 		$line = 1;
 		foreach ($this->tokens->tokens as $token) {
 			$this->posToLine[] = $line;
-			$line += substr_count($token->value, "\n");
+			$line += substr_count($token->text, "\n");
 		}
 
 		$this->posToLine[] = $line;
