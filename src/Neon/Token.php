@@ -22,8 +22,8 @@ final class Token
 
 
 	public function __construct(
-		public string $value,
 		public int|string $type,
+		public string $text,
 	) {
 	}
 }
