@@ -25,6 +25,7 @@ final readonly class Token
 	public function __construct(
 		public int|string $type,
 		public string $text,
+		public Position $position,
 	) {
 	}
 

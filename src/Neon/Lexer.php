@@ -59,24 +59,42 @@ final class Lexer
 		}
 
 		$types = array_keys(self::Patterns);
-		$offset = 0;
+		$position = new Position;
 
 		$tokens = [];
 		foreach ($matches as $match) {
 			$type = $types[count($match) - 2];
-			$tokens[] = new Token($type === Token::Char ? $match[0] : $type, $match[0]);
-			$offset += strlen($match[0]);
+			$tokens[] = new Token($type === Token::Char ? $match[0] : $type, $match[0], $position);
+			$position = $this->advance($position, $match[0]);
 		}
 
-		$tokens[] = new Token(Token::End, '');
+		$tokens[] = new Token(Token::End, '', $position);
 
 		$stream = new TokenStream($tokens);
-		if ($offset !== strlen($input)) {
-			$s = str_replace("\n", '\n', substr($input, $offset, 40));
+		if ($position->offset !== strlen($input)) {
+			$s = str_replace("\n", '\n', substr($input, $position->offset, 40));
 			$stream->error("Unexpected '$s'", count($tokens) - 1);
 		}
 
 		return $stream;
+	}
+
+
+	private function advance(Position $position, string $str): Position
+	{
+		if ($lines = substr_count($str, "\n")) {
+			return new Position(
+				$position->line + $lines,
+				strlen($str) - strrpos($str, "\n"),
+				$position->offset + strlen($str),
+			);
+		} else {
+			return new Position(
+				$position->line,
+				$position->column + strlen($str),
+				$position->offset + strlen($str),
+			);
+		}
 	}
 
 
