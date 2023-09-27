@@ -35,7 +35,7 @@ final class StringNode extends Node
 	}
 
 
-	public static function parse(string $s): string
+	public static function parse(string $s, Nette\Neon\Position $position): string
 	{
 		if (preg_match('#^...\n++([\t ]*+)#', $s, $m)) { // multiline
 			$res = substr($s, 3, -3);
@@ -54,14 +54,14 @@ final class StringNode extends Node
 
 		return preg_replace_callback(
 			'#\\\(?:ud[89ab][0-9a-f]{2}\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|.)#i',
-			function (array $m): string {
+			function (array $m) use ($position): string {
 				$sq = $m[0];
 				if (isset(self::EscapeSequences[$sq[1]])) {
 					return self::EscapeSequences[$sq[1]];
 				} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
-					return json_decode('"' . $sq . '"') ?? throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
+					return json_decode('"' . $sq . '"') ?? throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq", $position);
 				} else {
-					throw new Nette\Neon\Exception("Invalid escaping sequence $sq");
+					throw new Nette\Neon\Exception("Invalid escaping sequence $sq", $position);
 				}
 			},
 			$res,

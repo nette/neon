@@ -80,6 +80,6 @@ final class TokenStream
 		$message ??= 'Unexpected ' . ($token->type === Token::End
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($token->text, 0, 40)) . "'");
-		throw new Exception("$message $token->position");
+		throw new Exception($message, $token->position);
 	}
 }
