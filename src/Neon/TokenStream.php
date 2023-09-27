@@ -92,6 +92,6 @@ final class TokenStream
 		$message ??= 'Unexpected ' . ($token === null
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
-		throw new Exception("$message on line $line, column $col.");
+		throw new Exception("$message on line $line at column $col");
 	}
 }
