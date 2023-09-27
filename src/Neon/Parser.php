@@ -259,7 +259,7 @@ final class Parser
 	{
 		$this->posToLine = [];
 		$line = 1;
-		foreach ($this->tokens->getTokens() as $token) {
+		foreach ($this->tokens->tokens as $token) {
 			$this->posToLine[] = $line;
 			$line += substr_count($token->value, "\n");
 		}
