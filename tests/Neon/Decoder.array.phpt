@@ -172,6 +172,57 @@ Assert::same(
 
 Assert::same(
 	[
+		[
+			'a' => 'b',
+			'c' => 'd',
+		],
+	],
+	Neon::decode(<<<'XX'
+		-	a: b
+			c: d
+		XX),
+);
+
+
+Assert::same(
+	[
+		[
+			'a' => 'b',
+			[
+				'c' => 'd',
+				['e' => 'f'],
+			],
+		],
+	],
+	Neon::decode(<<<'XX'
+		-	a: b
+			-	c: d
+				- e: f
+		XX),
+);
+
+
+Assert::same(
+	[
+		[
+			'a' => 'b',
+			[
+				'c' => 'd',
+				'e' => 'f',
+			],
+		],
+	],
+	Neon::decode(<<<'XX'
+		- a: b
+		  -	c: d
+		  	e: f
+		XX),
+);
+
+
+
+Assert::same(
+	[
 		'root' => [['key1' => null, 'key3' => 123]],
 	],
 	Neon::decode(<<<XX

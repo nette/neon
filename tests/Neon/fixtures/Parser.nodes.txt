@@ -467,7 +467,7 @@ Nette\Neon\Node\BlockArrayNode
    |  |  key: null
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- c'
-   |  |  |  indentation: '  '
+   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- c'

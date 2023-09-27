@@ -29,6 +29,12 @@ final class TokenStream
 	}
 
 
+	public function seek(int $position): void
+	{
+		$this->pos = $position;
+	}
+
+
 	/** @return Token[] */
 	public function getTokens(): array
 	{
