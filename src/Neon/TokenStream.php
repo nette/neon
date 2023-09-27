@@ -20,7 +20,7 @@ final class TokenStream
 
 	public function __construct(
 		/** @var Token[] */
-		public array $tokens,
+		public /*readonly*/ array $tokens,
 	) {
 	}
 
@@ -34,13 +34,6 @@ final class TokenStream
 	public function seek(int $index): void
 	{
 		$this->index = $index;
-	}
-
-
-	/** @return Token[] */
-	public function getTokens(): array
-	{
-		return $this->tokens;
 	}
 
 
