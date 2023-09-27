@@ -36,28 +36,26 @@ final class TokenStream
 
 
 	/**
-	 * Skips comments and whitespace, then checks whether the next token matches one of the given types.
-	 * With no arguments, checks whether any token remains.
+	 * Tells whether the token at current position is of given kind.
 	 */
-	public function is(int|string ...$types): bool
+	public function is(int|string ...$kind): bool
 	{
-		while (in_array($this->tokens[$this->index]->type, [Token::Comment, Token::Whitespace], strict: true)) {
+		while ($this->tokens[$this->index]->is(Token::Comment, Token::Whitespace)) {
 			$this->index++;
 		}
 
-		return $types
-			? in_array($this->tokens[$this->index]->type, $types, strict: true)
+		return $kind
+			? $this->tokens[$this->index]->is(...$kind)
 			: $this->tokens[$this->index]->type !== Token::End;
 	}
 
 
 	/**
-	 * Consumes and returns the next token if it matches one of the given types, or null otherwise.
-	 * With no arguments, consumes any next token.
+	 * Consumes the current token of given kind or returns null.
 	 */
-	public function tryConsume(int|string ...$types): ?Token
+	public function tryConsume(int|string ...$kind): ?Token
 	{
-		return $this->is(...$types)
+		return $this->is(...$kind)
 			? $this->tokens[$this->index++]
 			: null;
 	}
