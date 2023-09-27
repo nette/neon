@@ -7,6 +7,8 @@
 
 namespace Nette\Neon;
 
+use function in_array;
+
 
 /** @internal */
 final readonly class Token
@@ -24,5 +26,11 @@ final readonly class Token
 		public int|string $type,
 		public string $text,
 	) {
+	}
+
+
+	public function is(int|string ...$kind): bool
+	{
+		return in_array($this->type, $kind, strict: true);
 	}
 }
