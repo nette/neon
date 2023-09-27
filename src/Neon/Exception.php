@@ -15,4 +15,13 @@ namespace Nette\Neon;
  */
 class Exception extends \Exception
 {
+	public ?Position /*readonly*/ $position = null;
+
+
+	public function __construct(string $message, ?Position $position = null, ?\Throwable $previous = null)
+	{
+		$message .= $position ? ' ' . $position : '';
+		$this->position = $position;
+		parent::__construct($message, 0, $previous);
+	}
 }
