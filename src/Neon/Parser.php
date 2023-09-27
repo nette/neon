@@ -17,14 +17,10 @@ final class Parser
 {
 	private TokenStream $stream;
 
-	/** @var int[] */
-	private $posToLine = [];
-
 
 	public function parse(TokenStream $stream): Node
 	{
 		$this->stream = $stream;
-		$this->initLines();
 
 		while ($this->stream->tryConsume(Token::Newline));
 		$node = $this->parseBlock($this->stream->getIndentation());
@@ -242,22 +238,10 @@ final class Parser
 	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
 	{
 		$node->startTokenPos = $start ?? $this->stream->getIndex();
-		$node->startLine = $this->posToLine[$node->startTokenPos];
+		$node->start = $this->stream->tokens[$node->startTokenPos]->position;
 		$node->endTokenPos = $end ?? $node->startTokenPos;
-		$node->endLine = $this->posToLine[$node->endTokenPos + 1] ?? end($this->posToLine);
+		$token = $this->stream->tokens[$node->startTokenPos + 1] ?? $this->stream->tokens[$node->startTokenPos];
+		$node->end = $token->position;
 		return $node;
-	}
-
-
-	private function initLines(): void
-	{
-		$this->posToLine = [];
-		$line = 1;
-		foreach ($this->stream->tokens as $token) {
-			$this->posToLine[] = $line;
-			$line += substr_count($token->text, "\n");
-		}
-
-		$this->posToLine[] = $line;
 	}
 }
