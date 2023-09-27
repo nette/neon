@@ -39,13 +39,13 @@ final class TokenStream
 
 	public function is(int|string ...$types): bool
 	{
-		while (in_array($this->tokens[$this->index]->type ?? null, [Token::Comment, Token::Whitespace], strict: true)) {
+		while (in_array($this->tokens[$this->index]->type, [Token::Comment, Token::Whitespace], strict: true)) {
 			$this->index++;
 		}
 
 		return $types
-			? in_array($this->tokens[$this->index]->type ?? null, $types, strict: true)
-			: isset($this->tokens[$this->index]);
+			? in_array($this->tokens[$this->index]->type, $types, strict: true)
+			: $this->tokens[$this->index]->type !== Token::End;
 	}
 
 
@@ -81,8 +81,8 @@ final class TokenStream
 
 		$line = substr_count($input, "\n") + 1;
 		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
-		$token = $this->tokens[$pos] ?? null;
-		$message ??= 'Unexpected ' . ($token === null
+		$token = $this->tokens[$pos];
+		$message ??= 'Unexpected ' . ($token->type === Token::End
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->text, 0, 40)) . "'");
 		throw new Exception("$message on line $line at column $col");
