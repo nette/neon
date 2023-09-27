@@ -28,7 +28,7 @@ final class Parser
 		$node = $this->parseBlock($this->stream->getIndentation());
 
 		while ($this->stream->tryConsume(Token::Newline));
-		if ($this->stream->is()) {
+		if (!$this->stream->is(Token::End)) {
 			$this->stream->error();
 		}
 
@@ -47,7 +47,7 @@ final class Parser
 		$this->injectPos($item);
 		if ($this->stream->tryConsume('-')) {
 			// continue
-		} elseif (!$this->stream->is() || $onlyBullets) {
+		} elseif ($this->stream->is(Token::End) || $onlyBullets) {
 			return $res->items
 				? $res
 				: $this->injectPos(new Node\LiteralNode(null));
@@ -94,9 +94,9 @@ final class Parser
 				$this->stream->seek($save);
 				$item->value = $this->parseBlock($indent . '  ');
 			}
-		} elseif ($this->stream->is()) {
+		} elseif (!$this->stream->is(Token::End)) {
 			$item->value = $this->parseValue();
-			if ($this->stream->is() && !$this->stream->is(Token::Newline)) {
+			if (!$this->stream->is(Token::End, Token::Newline)) {
 				$this->stream->error();
 			}
 		}
@@ -109,7 +109,7 @@ final class Parser
 		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
 		while ($this->stream->tryConsume(Token::Newline));
-		if (!$this->stream->is()) {
+		if ($this->stream->is(Token::End)) {
 			return $res;
 		}
 
