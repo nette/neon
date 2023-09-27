@@ -64,7 +64,7 @@ $traverser->traverse($node, function (Node $node) use ($stream) {
 	unset($node->startTokenPos, $node->endTokenPos);
 });
 
-Assert::matchFile(
-	__DIR__ . '/fixtures/Parser.nodes.txt',
+Assert::same(
+	strtr(file_get_contents(__DIR__ . '/fixtures/Parser.nodes.txt'), ["\r\n" => "\n"]),
 	Dumper::toText($node, [Dumper::HASH => false, Dumper::DEPTH => 20]),
 );
