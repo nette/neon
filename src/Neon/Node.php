@@ -15,8 +15,6 @@ namespace Nette\Neon;
  */
 abstract class Node implements \IteratorAggregate
 {
-	public ?int $startTokenPos = null;
-	public ?int $endTokenPos = null;
 	public ?Position $start = null;
 	public ?Position $end = null;
 

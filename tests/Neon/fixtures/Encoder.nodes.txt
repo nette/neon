@@ -4,8 +4,6 @@ Nette\Neon\Node\InlineArrayNode
    |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'map'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\InlineArrayNode
@@ -14,50 +12,32 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'a'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'b'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'c'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'd'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'index'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\InlineArrayNode
@@ -67,51 +47,33 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'a'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'b'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  2 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'c'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  2 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'mixed'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\InlineArrayNode
@@ -121,80 +83,52 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'a'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'b'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  2 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 4
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'c'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  3 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 5
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'd'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  3 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'entity'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\EntityNode
    |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  value: 'ent'
-   |  |  |  |  startTokenPos: null
-   |  |  |  |  endTokenPos: null
    |  |  |  |  start: null
    |  |  |  |  end: null
    |  |  |  attributes: array (2)
@@ -202,39 +136,25 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'a'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'b'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  4 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'chain'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\EntityChainNode
@@ -242,8 +162,6 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  0 => Nette\Neon\Node\EntityNode
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'first'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  attributes: array (2)
@@ -251,74 +169,48 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  |  |  |  key: null
    |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  |  |  value: 'a'
-   |  |  |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  |  |  start: null
    |  |  |  |  |  |  |  |  end: null
-   |  |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  |  start: null
    |  |  |  |  |  |  |  end: null
    |  |  |  |  |  |  1 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  |  |  key: null
    |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  |  |  value: 'b'
-   |  |  |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  |  |  start: null
    |  |  |  |  |  |  |  |  end: null
-   |  |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  |  start: null
    |  |  |  |  |  |  |  end: null
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
    |  |  |  |  1 => Nette\Neon\Node\EntityNode
    |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
    |  |  |  |  |  |  value: 'second'
-   |  |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  |  start: null
    |  |  |  |  |  |  end: null
    |  |  |  |  |  attributes: array (0)
-   |  |  |  |  |  startTokenPos: null
-   |  |  |  |  |  endTokenPos: null
    |  |  |  |  |  start: null
    |  |  |  |  |  end: null
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  5 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'multiline'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\StringNode
    |  |  |  value: string
    |  |  |  |  'hello\n
    |  |  |  |   world'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
    |  6 => Nette\Neon\Node\ArrayItemNode
    |  |  key: Nette\Neon\Node\LiteralNode
    |  |  |  value: 'date'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
    |  |  value: Nette\Neon\Node\LiteralNode
@@ -326,15 +218,9 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  |  date: '2016-06-03 19:00:00.000000'
    |  |  |  |  timezone_type: 1
    |  |  |  |  timezone: '+02:00'
-   |  |  |  startTokenPos: null
-   |  |  |  endTokenPos: null
    |  |  |  start: null
    |  |  |  end: null
-   |  |  startTokenPos: null
-   |  |  endTokenPos: null
    |  |  start: null
    |  |  end: null
-   startTokenPos: null
-   endTokenPos: null
    start: null
    end: null

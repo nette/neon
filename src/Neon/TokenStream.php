@@ -36,6 +36,15 @@ final class TokenStream
 
 
 	/**
+	 * Gets the token at $offset from the current position.
+	 */
+	public function peek(int $offset = 0): ?Token
+	{
+		return $this->tokens[$this->index + $offset] ?? null;
+	}
+
+
+	/**
 	 * Tells whether the token at current position is of given kind.
 	 */
 	public function is(int|string ...$kind): bool
@@ -71,13 +80,24 @@ final class TokenStream
 
 
 	/** @return never */
-	public function error(?string $message = null, ?int $pos = null): void
+	public function error(?string $message = null): void
 	{
-		$pos ??= $this->index;
-		$token = $this->tokens[$pos];
+		$token = $this->tokens[$this->index];
 		$message ??= 'Unexpected ' . ($token->type === Token::End
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($token->text, 0, 40)) . "'");
 		throw new Exception($message, $token->position);
+	}
+
+
+	public function findIndex(Position $pos): ?int
+	{
+		// TODO direct search per offset
+		foreach ($this->tokens as $index => $token) {
+			if ($token->position === $pos) {
+				return $index;
+			}
+		}
+		return null;
 	}
 }

@@ -57,11 +57,11 @@ Assert::matchFile(
 $traverser = new Traverser;
 $traverser->traverse($node, function (Node $node) use ($stream) {
 	@$node->code = ''; // dynamic property is deprecated
-	foreach (array_slice($stream->tokens, $node->startTokenPos, $node->endTokenPos - $node->startTokenPos + 1) as $token) {
+	foreach (array_slice($stream->tokens, $start = $stream->findIndex($node->start), $stream->findIndex($node->end) - $start + 1) as $token) {
 		$node->code .= $token->text;
 	}
 
-	unset($node->startTokenPos, $node->endTokenPos);
+	unset($node->start, $node->end);
 });
 
 Assert::same(
