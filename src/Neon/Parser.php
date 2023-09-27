@@ -133,12 +133,9 @@ final class Parser
 	private function parseValue(): Node
 	{
 		if ($token = $this->stream->tryConsume(Token::String)) {
-			try {
-				$node = new Node\StringNode(Node\StringNode::parse($token->text));
-				$this->injectPos($node, $this->stream->getIndex() - 1);
-			} catch (Exception $e) {
-				$this->stream->error($e->getMessage(), $this->stream->getIndex() - 1);
-			}
+			$node = new Node\StringNode(Node\StringNode::parse($token->text, $token->position));
+			$this->injectPos($node, $this->stream->getIndex() - 1);
+
 		} elseif ($token = $this->stream->tryConsume(Token::Literal)) {
 			$pos = $this->stream->getIndex() - 1;
 			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->text, $this->stream->is(':', '=')));

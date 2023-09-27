@@ -73,7 +73,7 @@ final class Lexer
 		$stream = new TokenStream($tokens);
 		if ($position->offset !== strlen($input)) {
 			$s = str_replace("\n", '\n', substr($input, $position->offset, 40));
-			$stream->error("Unexpected '$s'", count($tokens) - 1);
+			throw new Exception("Unexpected '$s'", $position);
 		}
 
 		return $stream;
