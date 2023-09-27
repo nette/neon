@@ -19,6 +19,7 @@ final class Token
 	public const Comment = 3;
 	public const Newline = 4;
 	public const Whitespace = 5;
+	public const End = -1;
 
 
 	public function __construct(
