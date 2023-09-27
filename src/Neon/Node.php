@@ -17,8 +17,8 @@ abstract class Node implements \IteratorAggregate
 {
 	public ?int $startTokenPos = null;
 	public ?int $endTokenPos = null;
-	public ?int $startLine = null;
-	public ?int $endLine = null;
+	public ?Position $start = null;
+	public ?Position $end = null;
 
 
 	abstract public function toValue(): mixed;
