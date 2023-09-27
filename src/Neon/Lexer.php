@@ -68,10 +68,12 @@ final class Lexer
 			$offset += strlen($match[0]);
 		}
 
+		$tokens[] = new Token(Token::End, '');
+
 		$stream = new TokenStream($tokens);
 		if ($offset !== strlen($input)) {
 			$s = str_replace("\n", '\n', substr($input, $offset, 40));
-			$stream->error("Unexpected '$s'", count($tokens));
+			$stream->error("Unexpected '$s'", count($tokens) - 1);
 		}
 
 		return $stream;
