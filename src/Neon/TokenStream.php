@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function in_array, str_replace, strlen, strrpos, substr, substr_count;
+use function in_array, str_replace, substr;
 
 
 /** @internal */
@@ -78,21 +78,10 @@ final class TokenStream
 	public function error(?string $message = null, ?int $pos = null): never
 	{
 		$pos ??= $this->index;
-		$input = '';
-		foreach ($this->tokens as $i => $token) {
-			if ($i >= $pos) {
-				break;
-			}
-
-			$input .= $token->text;
-		}
-
-		$line = substr_count($input, "\n") + 1;
-		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
 		$token = $this->tokens[$pos];
 		$message ??= 'Unexpected ' . ($token->type === Token::End
 			? 'end'
-			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->text, 0, 40)) . "'");
-		throw new Exception("$message on line $line at column $col");
+			: "'" . str_replace("\n", '<new line>', substr($token->text, 0, 40)) . "'");
+		throw new Exception("$message $token->position");
 	}
 }
