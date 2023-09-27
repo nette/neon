@@ -27,4 +27,10 @@ final readonly class Token
 		public string $text,
 	) {
 	}
+
+
+	public function is(int|string ...$kind): bool
+	{
+		return in_array($this->type, $kind, strict: true);
+	}
 }
