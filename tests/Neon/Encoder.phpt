@@ -164,3 +164,9 @@ Assert::same(
 	'[]',
 	Neon::encode([], Neon::BLOCK),
 );
+
+Assert::exception(
+	fn() => Neon::encode(INF),
+	Nette\Neon\Exception::class,
+	'INF and NAN cannot be encoded to NEON',
+);

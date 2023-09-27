@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Neon\Node;
 
+use Nette\Neon\Exception;
 use Nette\Neon\Node;
 
 
@@ -74,6 +75,9 @@ final class LiteralNode extends Node
 			return $this->value;
 
 		} elseif (is_float($this->value)) {
+			if (!is_finite($this->value)) {
+				throw new Exception('INF and NAN cannot be encoded to NEON');
+			}
 			$res = json_encode($this->value);
 			return str_contains($res, '.') ? $res : $res . '.0';
 
