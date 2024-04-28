@@ -15,23 +15,23 @@ use function array_key_exists, count, end, is_scalar, min, strlen, strncmp, subs
 /** @internal */
 final class Parser
 {
-	private TokenStream $tokens;
+	private TokenStream $stream;
 
 	/** @var int[] */
 	private $posToLine = [];
 
 
-	public function parse(TokenStream $tokens): Node
+	public function parse(TokenStream $stream): Node
 	{
-		$this->tokens = $tokens;
+		$this->stream = $stream;
 		$this->initLines();
 
-		while ($this->tokens->tryConsume(Token::Newline));
-		$node = $this->parseBlock($this->tokens->getIndentation());
+		while ($this->stream->tryConsume(Token::Newline));
+		$node = $this->parseBlock($this->stream->getIndentation());
 
-		while ($this->tokens->tryConsume(Token::Newline));
-		if ($this->tokens->is()) {
-			$this->tokens->error();
+		while ($this->stream->tryConsume(Token::Newline));
+		if ($this->stream->is()) {
+			$this->stream->error();
 		}
 
 		return $node;
@@ -47,21 +47,21 @@ final class Parser
 		loop:
 		$item = new Node\ArrayItemNode;
 		$this->injectPos($item);
-		if ($this->tokens->tryConsume('-')) {
+		if ($this->stream->tryConsume('-')) {
 			// continue
-		} elseif (!$this->tokens->is() || $onlyBullets) {
+		} elseif (!$this->stream->is() || $onlyBullets) {
 			return $res->items
 				? $res
 				: $this->injectPos(new Node\LiteralNode(null));
 
 		} else {
 			$value = $this->parseValue();
-			if ($this->tokens->tryConsume(':', '=')) {
+			if ($this->stream->tryConsume(':', '=')) {
 				$this->checkArrayKey($value, $keyCheck);
 				$item->key = $value;
 			} else {
 				if ($res->items) {
-					$this->tokens->error();
+					$this->stream->error();
 				}
 
 				return $value;
@@ -72,12 +72,12 @@ final class Parser
 		$item->value = new Node\LiteralNode(null);
 		$this->injectPos($item->value);
 
-		if ($this->tokens->tryConsume(Token::Newline)) {
-			while ($this->tokens->tryConsume(Token::Newline));
-			$nextIndent = $this->tokens->getIndentation();
+		if ($this->stream->tryConsume(Token::Newline)) {
+			while ($this->stream->tryConsume(Token::Newline));
+			$nextIndent = $this->stream->getIndentation();
 
 			if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-				$this->tokens->error('Invalid combination of tabs and spaces');
+				$this->stream->error('Invalid combination of tabs and spaces');
 
 			} elseif (strlen($nextIndent) > strlen($indent)) { // open new block
 				$item->value = $this->parseBlock($nextIndent);
@@ -85,21 +85,21 @@ final class Parser
 			} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 				return $res;
 
-			} elseif ($item->key !== null && $this->tokens->is('-')) { // special dash subblock
+			} elseif ($item->key !== null && $this->stream->is('-')) { // special dash subblock
 				$item->value = $this->parseBlock($indent, onlyBullets: true);
 			}
 		} elseif ($item->key === null) {  // open new block after dash
-			$save = $this->tokens->getIndex();
+			$save = $this->stream->getIndex();
 			try {
 				$item->value = $this->parseBlock($indent . "\t");
 			} catch (Exception) {
-				$this->tokens->seek($save);
+				$this->stream->seek($save);
 				$item->value = $this->parseBlock($indent . '  ');
 			}
-		} elseif ($this->tokens->is()) {
+		} elseif ($this->stream->is()) {
 			$item->value = $this->parseValue();
-			if ($this->tokens->is() && !$this->tokens->is(Token::Newline)) {
-				$this->tokens->error();
+			if ($this->stream->is() && !$this->stream->is(Token::Newline)) {
+				$this->stream->error();
 			}
 		}
 
@@ -110,17 +110,17 @@ final class Parser
 		$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
 		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-		while ($this->tokens->tryConsume(Token::Newline));
-		if (!$this->tokens->is()) {
+		while ($this->stream->tryConsume(Token::Newline));
+		if (!$this->stream->is()) {
 			return $res;
 		}
 
-		$nextIndent = $this->tokens->getIndentation();
+		$nextIndent = $this->stream->getIndentation();
 		if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-			$this->tokens->error('Invalid combination of tabs and spaces');
+			$this->stream->error('Invalid combination of tabs and spaces');
 
 		} elseif (strlen($nextIndent) > strlen($indent)) {
-			$this->tokens->error('Bad indentation');
+			$this->stream->error('Bad indentation');
 
 		} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 			return $res;
@@ -132,23 +132,23 @@ final class Parser
 
 	private function parseValue(): Node
 	{
-		if ($token = $this->tokens->tryConsume(Token::String)) {
+		if ($token = $this->stream->tryConsume(Token::String)) {
 			try {
 				$node = new Node\StringNode(Node\StringNode::parse($token->text));
-				$this->injectPos($node, $this->tokens->getIndex() - 1);
+				$this->injectPos($node, $this->stream->getIndex() - 1);
 			} catch (Exception $e) {
-				$this->tokens->error($e->getMessage(), $this->tokens->getIndex() - 1);
+				$this->stream->error($e->getMessage(), $this->stream->getIndex() - 1);
 			}
-		} elseif ($token = $this->tokens->tryConsume(Token::Literal)) {
-			$pos = $this->tokens->getIndex() - 1;
-			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->text, $this->tokens->is(':', '=')));
+		} elseif ($token = $this->stream->tryConsume(Token::Literal)) {
+			$pos = $this->stream->getIndex() - 1;
+			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->text, $this->stream->is(':', '=')));
 			$this->injectPos($node, $pos);
 
-		} elseif ($this->tokens->is('[', '(', '{')) {
+		} elseif ($this->stream->is('[', '(', '{')) {
 			$node = $this->parseBraces();
 
 		} else {
-			$this->tokens->error();
+			$this->stream->error();
 		}
 
 		return $this->parseEntity($node);
@@ -157,17 +157,17 @@ final class Parser
 
 	private function parseEntity(Node $node): Node
 	{
-		if (!$this->tokens->is('(')) {
+		if (!$this->stream->is('(')) {
 			return $node;
 		}
 
 		$attributes = $this->parseBraces();
 		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
 
-		while ($token = $this->tokens->tryConsume(Token::Literal)) {
+		while ($token = $this->stream->tryConsume(Token::Literal)) {
 			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->text));
-			$this->injectPos($valueNode, $this->tokens->getIndex() - 1);
-			if ($this->tokens->is('(')) {
+			$this->injectPos($valueNode, $this->stream->getIndex() - 1);
+			if ($this->stream->is('(')) {
 				$attributes = $this->parseBraces();
 				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startTokenPos, $attributes->endTokenPos);
 			} else {
@@ -184,28 +184,28 @@ final class Parser
 
 	private function parseBraces(): Node\InlineArrayNode
 	{
-		$token = $this->tokens->tryConsume();
+		$token = $this->stream->tryConsume();
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->text];
 		$res = new Node\InlineArrayNode($token->text);
-		$this->injectPos($res, $this->tokens->getIndex() - 1);
+		$this->injectPos($res, $this->stream->getIndex() - 1);
 		$keyCheck = [];
 
 		loop:
-		while ($this->tokens->tryConsume(Token::Newline));
-		if ($this->tokens->tryConsume($endBrace)) {
-			$this->injectPos($res, $res->startTokenPos, $this->tokens->getIndex() - 1);
+		while ($this->stream->tryConsume(Token::Newline));
+		if ($this->stream->tryConsume($endBrace)) {
+			$this->injectPos($res, $res->startTokenPos, $this->stream->getIndex() - 1);
 			return $res;
 		}
 
 		$res->items[] = $item = new Node\ArrayItemNode;
-		$this->injectPos($item, $this->tokens->getIndex());
+		$this->injectPos($item, $this->stream->getIndex());
 		$value = $this->parseValue();
 
-		if ($this->tokens->tryConsume(':', '=')) {
+		if ($this->stream->tryConsume(':', '=')) {
 			$this->checkArrayKey($value, $keyCheck);
 			$item->key = $value;
-			$item->value = $this->tokens->is(Token::Newline, ',', $endBrace)
-				? $this->injectPos(new Node\LiteralNode(null), $this->tokens->getIndex())
+			$item->value = $this->stream->is(Token::Newline, ',', $endBrace)
+				? $this->injectPos(new Node\LiteralNode(null), $this->stream->getIndex())
 				: $this->parseValue();
 		} else {
 			$item->value = $value;
@@ -213,13 +213,13 @@ final class Parser
 
 		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-		$old = $this->tokens->getIndex();
-		while ($this->tokens->tryConsume(Token::Newline));
-		$this->tokens->tryConsume(',');
-		if ($old !== $this->tokens->getIndex()) {
+		$old = $this->stream->getIndex();
+		while ($this->stream->tryConsume(Token::Newline));
+		$this->stream->tryConsume(',');
+		if ($old !== $this->stream->getIndex()) {
 			goto loop;
-		} elseif (!$this->tokens->is($endBrace)) {
-			$this->tokens->error();
+		} elseif (!$this->stream->is($endBrace)) {
+			$this->stream->error();
 		}
 
 		goto loop;
@@ -230,12 +230,12 @@ final class Parser
 	private function checkArrayKey(Node $key, array &$arr): void
 	{
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
-			$this->tokens->error('Unacceptable key', $key->startTokenPos);
+			$this->stream->error('Unacceptable key', $key->startTokenPos);
 		}
 
 		$k = (string) $key->value;
 		if (array_key_exists($k, $arr)) {
-			$this->tokens->error("Duplicated key '$k'", $key->startTokenPos);
+			$this->stream->error("Duplicated key '$k'", $key->startTokenPos);
 		}
 
 		$arr[$k] = true;
@@ -244,7 +244,7 @@ final class Parser
 
 	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
 	{
-		$node->startTokenPos = $start ?? $this->tokens->getIndex();
+		$node->startTokenPos = $start ?? $this->stream->getIndex();
 		$node->startLine = $this->posToLine[$node->startTokenPos];
 		$node->endTokenPos = $end ?? $node->startTokenPos;
 		$node->endLine = $this->posToLine[$node->endTokenPos + 1] ?? end($this->posToLine);
@@ -256,7 +256,7 @@ final class Parser
 	{
 		$this->posToLine = [];
 		$line = 1;
-		foreach ($this->tokens->tokens as $token) {
+		foreach ($this->stream->tokens as $token) {
 			$this->posToLine[] = $line;
 			$line += substr_count($token->text, "\n");
 		}
