@@ -46,16 +46,16 @@ final class LiteralNode extends Node
 			return self::SimpleTypes[$value];
 
 		} elseif (is_numeric($value)) {
-			return $value * 1;
+			return is_int($num = $value * 1) || preg_match('#[.eE]#', $value) ? $num : $value;
 
 		} elseif (preg_match(self::PatternHex, $value)) {
-			return hexdec($value);
+			return self::baseConvert(substr($value, 2), 16);
 
 		} elseif (preg_match(self::PatternOctal, $value)) {
-			return octdec($value);
+			return self::baseConvert(substr($value, 2), 8);
 
 		} elseif (preg_match(self::PatternBinary, $value)) {
-			return bindec($value);
+			return self::baseConvert(substr($value, 2), 2);
 
 		} elseif (!$isKey && preg_match(self::PatternDatetime, $value)) {
 			return new \DateTimeImmutable($value);
@@ -63,6 +63,30 @@ final class LiteralNode extends Node
 		} else {
 			return $value;
 		}
+	}
+
+
+	public static function baseConvert(string $number, int $base): string|int
+	{
+		if (strlen($number) < 16) {
+			$res = base_convert($number, $base, 10);
+		} elseif (!extension_loaded('bcmath')) {
+			throw new Exception("The number '$number' is too large, enable 'bcmath' extension to handle it.");
+		} else {
+			$res = '0';
+			for ($i = 0; $i < strlen($number); $i++) {
+				$char = $number[$i];
+				$char = match (true) {
+					$char >= 'a' => ord($char) - 87,
+					$char >= 'A' => ord($char) - 55,
+					default => $char,
+				};
+				$res = bcmul($res, (string) $base, 0);
+				$res = bcadd($res, (string) $char, 0);
+			}
+		}
+
+		return is_int($num = $res * 1) ? $num : $res;
 	}
 
 
@@ -82,6 +106,7 @@ final class LiteralNode extends Node
 			return str_contains($res, '.') ? $res : $res . '.0';
 
 		} elseif (is_int($this->value) || is_bool($this->value) || $this->value === null) {
+
 			return json_encode($this->value);
 
 		} else {
