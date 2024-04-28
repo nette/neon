@@ -66,3 +66,7 @@ Assert::same(
 
 // JSON compatibility
 Assert::same(['a' => true], Neon::decode('{"a":true}'));
+Assert::same([1, 2], Neon::decode('[1,2]'));
+Assert::same([1, 2], Neon::decode("[1\n,2]"));
+Assert::same([1, 2], Neon::decode("[1,\n2]"));
+Assert::same([1, 2], Neon::decode("[1\n,\n2]"));
