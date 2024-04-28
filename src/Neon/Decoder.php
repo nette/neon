@@ -30,7 +30,7 @@ final class Decoder
 	{
 		$lexer = new Lexer;
 		$parser = new Parser;
-		$tokens = $lexer->tokenize($input);
-		return $parser->parse($tokens);
+		$stream = $lexer->tokenize($input);
+		return $parser->parse($stream);
 	}
 }
