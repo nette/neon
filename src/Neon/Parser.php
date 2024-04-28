@@ -26,11 +26,11 @@ final class Parser
 		$this->tokens = $tokens;
 		$this->initLines();
 
-		while ($this->tokens->consume(Token::Newline));
+		while ($this->tokens->tryConsume(Token::Newline));
 		$node = $this->parseBlock($this->tokens->getIndentation());
 
-		while ($this->tokens->consume(Token::Newline));
-		if ($this->tokens->isNext()) {
+		while ($this->tokens->tryConsume(Token::Newline));
+		if ($this->tokens->is()) {
 			$this->tokens->error();
 		}
 
@@ -47,16 +47,16 @@ final class Parser
 		loop:
 		$item = new Node\ArrayItemNode;
 		$this->injectPos($item);
-		if ($this->tokens->consume('-')) {
+		if ($this->tokens->tryConsume('-')) {
 			// continue
-		} elseif (!$this->tokens->isNext() || $onlyBullets) {
+		} elseif (!$this->tokens->is() || $onlyBullets) {
 			return $res->items
 				? $res
 				: $this->injectPos(new Node\LiteralNode(null));
 
 		} else {
 			$value = $this->parseValue();
-			if ($this->tokens->consume(':', '=')) {
+			if ($this->tokens->tryConsume(':', '=')) {
 				$this->checkArrayKey($value, $keyCheck);
 				$item->key = $value;
 			} else {
@@ -72,8 +72,8 @@ final class Parser
 		$item->value = new Node\LiteralNode(null);
 		$this->injectPos($item->value);
 
-		if ($this->tokens->consume(Token::Newline)) {
-			while ($this->tokens->consume(Token::Newline));
+		if ($this->tokens->tryConsume(Token::Newline)) {
+			while ($this->tokens->tryConsume(Token::Newline));
 			$nextIndent = $this->tokens->getIndentation();
 
 			if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
@@ -85,20 +85,20 @@ final class Parser
 			} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 				return $res;
 
-			} elseif ($item->key !== null && $this->tokens->isNext('-')) { // special dash subblock
+			} elseif ($item->key !== null && $this->tokens->is('-')) { // special dash subblock
 				$item->value = $this->parseBlock($indent, onlyBullets: true);
 			}
 		} elseif ($item->key === null) {  // open new block after dash
-			$save = $this->tokens->getPos();
+			$save = $this->tokens->getIndex();
 			try {
 				$item->value = $this->parseBlock($indent . "\t");
 			} catch (Exception) {
 				$this->tokens->seek($save);
 				$item->value = $this->parseBlock($indent . '  ');
 			}
-		} elseif ($this->tokens->isNext()) {
+		} elseif ($this->tokens->is()) {
 			$item->value = $this->parseValue();
-			if ($this->tokens->isNext() && !$this->tokens->isNext(Token::Newline)) {
+			if ($this->tokens->is() && !$this->tokens->is(Token::Newline)) {
 				$this->tokens->error();
 			}
 		}
@@ -110,8 +110,8 @@ final class Parser
 		$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
 		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-		while ($this->tokens->consume(Token::Newline));
-		if (!$this->tokens->isNext()) {
+		while ($this->tokens->tryConsume(Token::Newline));
+		if (!$this->tokens->is()) {
 			return $res;
 		}
 
@@ -132,19 +132,19 @@ final class Parser
 
 	private function parseValue(): Node
 	{
-		if ($token = $this->tokens->consume(Token::String)) {
+		if ($token = $this->tokens->tryConsume(Token::String)) {
 			try {
 				$node = new Node\StringNode(Node\StringNode::parse($token->value));
-				$this->injectPos($node, $this->tokens->getPos() - 1);
+				$this->injectPos($node, $this->tokens->getIndex() - 1);
 			} catch (Exception $e) {
-				$this->tokens->error($e->getMessage(), $this->tokens->getPos() - 1);
+				$this->tokens->error($e->getMessage(), $this->tokens->getIndex() - 1);
 			}
-		} elseif ($token = $this->tokens->consume(Token::Literal)) {
-			$pos = $this->tokens->getPos() - 1;
-			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->value, $this->tokens->isNext(':', '=')));
+		} elseif ($token = $this->tokens->tryConsume(Token::Literal)) {
+			$pos = $this->tokens->getIndex() - 1;
+			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->value, $this->tokens->is(':', '=')));
 			$this->injectPos($node, $pos);
 
-		} elseif ($this->tokens->isNext('[', '(', '{')) {
+		} elseif ($this->tokens->is('[', '(', '{')) {
 			$node = $this->parseBraces();
 
 		} else {
@@ -157,17 +157,17 @@ final class Parser
 
 	private function parseEntity(Node $node): Node
 	{
-		if (!$this->tokens->isNext('(')) {
+		if (!$this->tokens->is('(')) {
 			return $node;
 		}
 
 		$attributes = $this->parseBraces();
 		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
 
-		while ($token = $this->tokens->consume(Token::Literal)) {
+		while ($token = $this->tokens->tryConsume(Token::Literal)) {
 			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->value));
-			$this->injectPos($valueNode, $this->tokens->getPos() - 1);
-			if ($this->tokens->isNext('(')) {
+			$this->injectPos($valueNode, $this->tokens->getIndex() - 1);
+			if ($this->tokens->is('(')) {
 				$attributes = $this->parseBraces();
 				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startTokenPos, $attributes->endTokenPos);
 			} else {
@@ -184,28 +184,28 @@ final class Parser
 
 	private function parseBraces(): Node\InlineArrayNode
 	{
-		$token = $this->tokens->consume();
+		$token = $this->tokens->tryConsume();
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
 		$res = new Node\InlineArrayNode($token->value);
-		$this->injectPos($res, $this->tokens->getPos() - 1);
+		$this->injectPos($res, $this->tokens->getIndex() - 1);
 		$keyCheck = [];
 
 		loop:
-		while ($this->tokens->consume(Token::Newline));
-		if ($this->tokens->consume($endBrace)) {
-			$this->injectPos($res, $res->startTokenPos, $this->tokens->getPos() - 1);
+		while ($this->tokens->tryConsume(Token::Newline));
+		if ($this->tokens->tryConsume($endBrace)) {
+			$this->injectPos($res, $res->startTokenPos, $this->tokens->getIndex() - 1);
 			return $res;
 		}
 
 		$res->items[] = $item = new Node\ArrayItemNode;
-		$this->injectPos($item, $this->tokens->getPos());
+		$this->injectPos($item, $this->tokens->getIndex());
 		$value = $this->parseValue();
 
-		if ($this->tokens->consume(':', '=')) {
+		if ($this->tokens->tryConsume(':', '=')) {
 			$this->checkArrayKey($value, $keyCheck);
 			$item->key = $value;
-			$item->value = $this->tokens->isNext(Token::Newline, ',', $endBrace)
-				? $this->injectPos(new Node\LiteralNode(null), $this->tokens->getPos())
+			$item->value = $this->tokens->is(Token::Newline, ',', $endBrace)
+				? $this->injectPos(new Node\LiteralNode(null), $this->tokens->getIndex())
 				: $this->parseValue();
 		} else {
 			$item->value = $value;
@@ -213,12 +213,12 @@ final class Parser
 
 		$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-		$old = $this->tokens->getPos();
-		while ($this->tokens->consume(Token::Newline));
-		$this->tokens->consume(',');
-		if ($old !== $this->tokens->getPos()) {
+		$old = $this->tokens->getIndex();
+		while ($this->tokens->tryConsume(Token::Newline));
+		$this->tokens->tryConsume(',');
+		if ($old !== $this->tokens->getIndex()) {
 			goto loop;
-		} elseif (!$this->tokens->isNext($endBrace)) {
+		} elseif (!$this->tokens->is($endBrace)) {
 			$this->tokens->error();
 		}
 
@@ -244,7 +244,7 @@ final class Parser
 
 	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
 	{
-		$node->startTokenPos = $start ?? $this->tokens->getPos();
+		$node->startTokenPos = $start ?? $this->tokens->getIndex();
 		$node->startLine = $this->posToLine[$node->startTokenPos];
 		$node->endTokenPos = $end ?? $node->startTokenPos;
 		$node->endLine = $this->posToLine[$node->endTokenPos + 1] ?? end($this->posToLine);
