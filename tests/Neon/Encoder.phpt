@@ -170,3 +170,9 @@ Assert::exception(
 	Nette\Neon\Exception::class,
 	'INF and NAN cannot be encoded to NEON',
 );
+
+$crlf = "test\r\ntest 2";
+Assert::same(
+	$crlf,
+	Neon::decode(Neon::encode($crlf, true)),
+);
