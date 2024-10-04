@@ -170,3 +170,13 @@ Assert::exception(
 	Nette\Neon\Exception::class,
 	'INF and NAN cannot be encoded to NEON',
 );
+
+Assert::same(
+	'"special \u0000 chars"',
+	Neon::encode("special \x00 chars", true),
+);
+
+Assert::same(
+	"\"\"\"\n\tspecial\\r\n\tchars\n\"\"\"",
+	Neon::encode("special\r\nchars", true),
+);
