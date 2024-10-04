@@ -164,3 +164,13 @@ Assert::same(
 	'[]',
 	Neon::encode([], Neon::BLOCK)
 );
+
+Assert::same(
+	'"special \u0000 chars"',
+	Neon::encode("special \x00 chars", true)
+);
+
+Assert::same(
+	"\"\"\"\n\tspecial\\r\n\tchars\n\"\"\"",
+	Neon::encode("special\r\nchars", true)
+);
