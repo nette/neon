@@ -160,6 +160,7 @@ final class Parser
 			$this->injectPos($valueNode, $this->stream->getIndex() - 1);
 			if ($this->stream->is('(')) {
 				$attributes = $this->parseBraces();
+                $valueNode->setMemberFlag();
 				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startTokenPos, $attributes->endTokenPos);
 			} else {
 				$entities[] = $this->injectPos(new Node\EntityNode($valueNode), $valueNode->startTokenPos);
