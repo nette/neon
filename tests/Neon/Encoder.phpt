@@ -125,7 +125,7 @@ Assert::same(
 
 Assert::same(
 	"foo: 1\nbar:\n\tx:\n\t\t- 1\n\t\t- 2\n\n\ty:\n\t\t- 3\n\t\t- 4\n\nbaz: null\n",
-	Neon::encode(['foo' => 1, 'bar' => ['x' => [1, 2], 'y' => [3, 4]], 'baz' => null], Neon::BLOCK),
+	Neon::encode(['foo' => 1, 'bar' => ['x' => [1, 2], 'y' => [3, 4]], 'baz' => null], blockMode: true),
 );
 
 Assert::same(
@@ -169,7 +169,7 @@ Assert::same(
 
 Assert::same(
 	'[]',
-	Neon::encode([], Neon::BLOCK),
+	Neon::encode([], blockMode: true),
 );
 
 Assert::exception(

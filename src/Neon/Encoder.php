@@ -16,7 +16,7 @@ use function is_array, is_int, is_object, is_string;
  */
 final class Encoder
 {
-	/** @deprecated */
+	#[\Deprecated]
 	public const BLOCK = true;
 
 	public bool $blockMode = false;
