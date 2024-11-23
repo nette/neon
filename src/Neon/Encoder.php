@@ -18,7 +18,7 @@ use function array_keys, count, is_array, is_int, is_object, is_string, max, ran
  */
 final class Encoder
 {
-	/** @deprecated */
+	#[\Deprecated]
 	public const BLOCK = true;
 
 	public bool $blockMode = false;
