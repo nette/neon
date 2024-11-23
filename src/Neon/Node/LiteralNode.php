@@ -113,4 +113,13 @@ final class LiteralNode extends Node
 			throw new \LogicException;
 		}
 	}
+
+
+    public function setMemberFlag(): void
+    {
+        if(is_string($this->value) && str_starts_with($this->value, '::')){
+            $this->value .= '()';
+        }
+    }
+
 }
