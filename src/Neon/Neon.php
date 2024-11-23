@@ -18,10 +18,10 @@ final class Neon
 {
 	public const Chain = '!!chain';
 
-	/** @deprecated use Neon::Chain */
+	#[\Deprecated('use Neon::Chain')]
 	public const CHAIN = self::Chain;
 
-	/** @deprecated use parameter $blockMode */
+	#[\Deprecated('use parameter $blockMode')]
 	public const BLOCK = Encoder::BLOCK;
 
 

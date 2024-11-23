@@ -16,7 +16,7 @@ namespace Nette\Neon;
  */
 final class Encoder
 {
-	/** @deprecated */
+	#[\Deprecated]
 	public const BLOCK = true;
 
 	public bool $blockMode = false;
