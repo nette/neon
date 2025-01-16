@@ -23,7 +23,7 @@ Assert::exception(
 Assert::exception(
 	fn() => Neon::decode('"\uD801"'),
 	Nette\Neon\Exception::class,
-	'Invalid UTF-8 sequence \\uD801 on line 1, column 1.',
+	'Invalid UTF-8 sequence \uD801 on line 1, column 1.',
 );
 
 
