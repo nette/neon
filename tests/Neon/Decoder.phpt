@@ -53,8 +53,8 @@ $dataSet = [
 		["'fo''o'", "fo'o"],
 		['""', ''],
 		['"foo"', 'foo'],
-		['"f\\no"', "f\no"],
-		['"\\b\\f\\n\\r\\t\\"\\/\\\\"', "\x08\f\n\r\t\"/\\"],
+		['"f\no"', "f\no"],
+		['"\b\f\n\r\t\"\/\\\"', "\x08\f\n\r\t\"/\\"],
 		['"\u0040"', '@'],
 		['"\u011B"', "\u{11B}"],
 		['"\uD801\uDC01"', "\u{10401}"], // U+10401 encoded as surrogate pair
@@ -107,7 +107,7 @@ $dataSet = [
 		['NO', false],
 
 		// extended string syntax
-		["'single \\n quote'", 'single \\n quote'],
+		["'single \\n quote'", 'single \n quote'],
 
 		// strings without quotes
 		['a', 'a'],
@@ -179,7 +179,7 @@ $dataSet = [
 		// edge
 		['"the\'string #literal"', "the'string #literal"],
 		["'the\"string #literal'", 'the"string #literal'],
-		['"the\\"string #literal"', 'the"string #literal'],
+		['"the\"string #literal"', 'the"string #literal'],
 		['a                                     ', 'a'], // backtrack limit
 	],
 
@@ -189,15 +189,15 @@ $dataSet = [
 
 	// inputs with invalid syntax, but still valid UTF-8
 	'invalid syntax' => [
-		['"\\a invalid escape"'],
-		['"\\v invalid escape"'],
-		['"\\u202 invalid escape"'],
-		['"\\012 invalid escape"'],
+		['"\a invalid escape"'],
+		['"\v invalid escape"'],
+		['"\u202 invalid escape"'],
+		['"\012 invalid escape"'],
 		['"\\\' invalid escape"'],
 
 		['"Unterminated string'],
-		['"Unterminated string\\"'],
-		['"Unterminated string\\\\\\"'],
+		['"Unterminated string\"'],
+		['"Unterminated string\\\\\"'],
 
 		['"42" ""'],
 		['"" ""'],
