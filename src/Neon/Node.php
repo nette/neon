@@ -24,7 +24,7 @@ abstract class Node implements \IteratorAggregate
 	abstract public function toValue(): mixed;
 
 
-	abstract public function toString(): string;
+	abstract public function toString(string $indentation): string;
 
 
 	public function &getIterator(): \Generator

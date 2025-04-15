@@ -90,7 +90,7 @@ final class LiteralNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
 		if ($this->value instanceof \DateTimeInterface) {
 			return $this->value->format('Y-m-d H:i:s O');

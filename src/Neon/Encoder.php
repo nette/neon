@@ -29,7 +29,7 @@ final class Encoder
 	public function encode(mixed $val): string
 	{
 		$node = $this->valueToNode($val, $this->blockMode);
-		return $node->toString();
+		return $node->toString($this->indentation);
 	}
 
 

@@ -19,13 +19,13 @@ final class BlockArrayNode extends ArrayNode
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
 		if (count($this->items) === 0) {
 			return '[]';
 		}
 
-		$res = ArrayItemNode::itemsToBlockString($this->items);
+		$res = ArrayItemNode::itemsToBlockString($this->items, $indentation);
 		return preg_replace('#^(?=.)#m', $this->indentation, $res);
 	}
 }

@@ -19,10 +19,10 @@ final class InlineArrayNode extends ArrayNode
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
 		return $this->bracket
-			. ArrayItemNode::itemsToInlineString($this->items)
+			. ArrayItemNode::itemsToInlineString($this->items, $indentation)
 			. ['[' => ']', '{' => '}', '(' => ')'][$this->bracket];
 	}
 }

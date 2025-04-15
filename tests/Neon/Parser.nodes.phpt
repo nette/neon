@@ -51,7 +51,7 @@ $node = $parser->parse($stream);
 
 Assert::matchFile(
 	__DIR__ . '/fixtures/Parser.nodes.neon',
-	$node->toString(),
+	$node->toString("\t"),
 );
 
 $traverser = new Traverser;

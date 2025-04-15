@@ -64,10 +64,12 @@ final class StringNode extends Node
 			},
 			$res,
 		);
+
+
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
 		if (!str_contains($this->value, "\n")) {
 			return preg_match('~[\x00-\x08\x0B-\x1F]~', $this->value)
@@ -89,7 +91,7 @@ final class StringNode extends Node
 			$delim = "'''";
 		}
 
-		$s = preg_replace('#^(?=.)#m', "\t", $s);
+		$s = preg_replace('#^(?=.)#m', $indentation, $s);
 		return $delim . "\n" . $s . "\n" . $delim;
 	}
 }

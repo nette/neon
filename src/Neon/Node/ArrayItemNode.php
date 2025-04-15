@@ -39,13 +39,13 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToInlineString(array $items): string
+	public static function itemsToInlineString(array $items, string $indentation): string
 	{
 		$res = '';
 		foreach ($items as $item) {
 			$res .= ($res === '' ? '' : ', ')
-				. ($item->key ? $item->key->toString() . ': ' : '')
-				. $item->value->toString();
+				. ($item->key ? $item->key->toString($indentation) . ': ' : '')
+				. $item->value->toString($indentation);
 		}
 
 		return $res;
@@ -53,12 +53,12 @@ final class ArrayItemNode extends Node
 
 
 	/** @param  self[]  $items */
-	public static function itemsToBlockString(array $items): string
+	public static function itemsToBlockString(array $items, string $indentation): string
 	{
 		$res = '';
 		foreach ($items as $item) {
-			$v = $item->value->toString();
-			$res .= ($item->key ? $item->key->toString() . ':' : '-')
+			$v = $item->value->toString($indentation);
+			$res .= ($item->key ? $item->key->toString($indentation) . ':' : '-')
 				. ($item->value instanceof BlockArrayNode && $item->value->items
 					? "\n" . $v . (substr($v, -2, 1) === "\n" ? '' : "\n")
 					: ' ' . $v . "\n");
@@ -74,7 +74,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
 		throw new \LogicException;
 	}
