@@ -33,11 +33,11 @@ final class EntityNode extends Node
 	}
 
 
-	public function toString(): string
+	public function toString(string $indentation): string
 	{
-		return $this->value->toString()
+		return $this->value->toString($indentation)
 			. '('
-			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes) : '')
+			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes, $indentation) : '')
 			. ')';
 	}
 
