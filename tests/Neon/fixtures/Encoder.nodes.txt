@@ -306,6 +306,7 @@ Nette\Neon\Node\InlineArrayNode
    |  |  |  value: string
    |  |  |  |  'hello\n
    |  |  |  |   world'
+   |  |  |  indentation: '\t    '
    |  |  |  startTokenPos: null
    |  |  |  endTokenPos: null
    |  |  |  start: null
