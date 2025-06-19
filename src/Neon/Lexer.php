@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Nette\Neon;
 
+use function array_keys, count, implode, preg_match, preg_match_all, str_replace, strlen, substr;
+use const PREG_SET_ORDER;
+
 
 /** @internal */
 final class Lexer

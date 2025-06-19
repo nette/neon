@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Nette\Neon;
 
+use function array_keys, count, is_array, is_int, is_object, is_string, max, range;
+
 
 /**
  * Converts value to NEON format.

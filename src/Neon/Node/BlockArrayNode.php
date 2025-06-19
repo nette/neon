@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Nette\Neon\Node;
 
+use function count, preg_replace;
+
 
 /** @internal */
 final class BlockArrayNode extends ArrayNode

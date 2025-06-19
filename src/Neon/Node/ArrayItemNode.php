@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Neon\Node;
 
 use Nette\Neon\Node;
+use function substr;
 
 
 /** @internal */

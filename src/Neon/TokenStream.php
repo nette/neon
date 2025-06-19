@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Nette\Neon;
 
+use function in_array, str_replace, strlen, strrpos, substr, substr_count;
+
 
 /** @internal */
 final class TokenStream
