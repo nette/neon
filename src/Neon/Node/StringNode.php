@@ -25,6 +25,7 @@ final class StringNode extends Node
 
 	public function __construct(
 		public string $value,
+		public string $indentation = "\t",
 	) {
 	}
 
@@ -91,7 +92,7 @@ final class StringNode extends Node
 			$delim = "'''";
 		}
 
-		$s = preg_replace('#^(?=.)#m', "\t", $s);
+		$s = preg_replace('#^(?=.)#m', $this->indentation, $s);
 		return $delim . "\n" . $s . "\n" . $delim;
 	}
 }
