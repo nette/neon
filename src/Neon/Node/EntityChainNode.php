@@ -46,5 +46,6 @@ final class EntityChainNode extends Node
 		foreach ($this->chain as &$item) {
 			yield $item;
 		}
+		$this->chain = array_values(array_filter($this->chain));
 	}
 }

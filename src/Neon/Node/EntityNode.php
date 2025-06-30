@@ -49,5 +49,6 @@ final class EntityNode extends Node
 		foreach ($this->attributes as &$item) {
 			yield $item;
 		}
+		$this->attributes = array_values(array_filter($this->attributes));
 	}
 }

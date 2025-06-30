@@ -31,5 +31,6 @@ abstract class ArrayNode extends Node
 		foreach ($this->items as &$item) {
 			yield $item;
 		}
+		$this->items = array_values(array_filter($this->items));
 	}
 }
