@@ -2,7 +2,7 @@
 	"name": "nette/neon",
 	"description": "🍸 Nette NEON: encodes and decodes NEON file format.",
 	"keywords": ["nette", "neon", "import", "export", "yaml"],
-	"homepage": "https://ne-on.org",
+	"homepage": "https://neon.nette.org",
 	"license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
 	"authors": [
 		{

@@ -12,7 +12,7 @@ namespace Nette\Neon;
 
 /**
  * Simple parser & generator for Nette Object Notation.
- * @see https://ne-on.org
+ * @see https://neon.nette.org
  */
 final class Neon
 {

@@ -1,4 +1,4 @@
-[![NEON](https://github.com/nette/neon/assets/194960/9d3c809d-0a60-4ff0-a54a-bbb25273a8a8)](https://ne-on.org)
+[![NEON](https://github.com/nette/neon/assets/194960/9d3c809d-0a60-4ff0-a54a-bbb25273a8a8)](https://neon.nette.org)
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/neon.svg)](https://packagist.org/packages/nette/neon)
 [![Tests](https://github.com/nette/neon/workflows/Tests/badge.svg?branch=master)](https://github.com/nette/neon/actions)
@@ -11,7 +11,7 @@
 Introduction
 ============
 
-NEON is a human-readable structured data format. In Nette, it is used for configuration files. It is also used for structured data such as settings, language translations, etc. [Try it on the sandbox](https://ne-on.org).
+NEON is a human-readable structured data format. In Nette, it is used for configuration files. It is also used for structured data such as settings, language translations, etc. [Try it on the sandbox](https://fiddle.nette.org/neon/).
 
 NEON stands for *Nette Object Notation*. It is less complex and ungainly than XML or JSON, but provides similar capabilities. It is very similar to YAML. The main advantage is that NEON has so-called [entities](#entities), thanks to which the configuration of DI services is so sexy. And allows tabs for indentation.
 
