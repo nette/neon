@@ -180,3 +180,8 @@ Assert::same(
 	"\"\"\"\n\tspecial\\r\n\tchars\n\"\"\"",
 	Neon::encode("special\r\nchars", true),
 );
+
+Assert::same(
+	"inner:\n    msg: '''\n        string\n        with newline\n    '''\n\n",
+	Neon::encode(['inner' => ['msg' => "string\nwith newline"]], true, '    '),
+);

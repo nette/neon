@@ -567,6 +567,7 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: string
    |  |  |  |  'one\n
    |  |  |  |   two'
+   |  |  |  indentation: '\t    '
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
    |  |  |  startLine: 23

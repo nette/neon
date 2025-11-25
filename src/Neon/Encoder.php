@@ -66,7 +66,7 @@ final class Encoder
 			return $node;
 
 		} elseif (is_string($val) && Lexer::requiresDelimiters($val)) {
-			return new Node\StringNode($val);
+			return new Node\StringNode($val, $this->indentation);
 
 		} else {
 			return new Node\LiteralNode($val);
