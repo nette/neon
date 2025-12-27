@@ -83,8 +83,8 @@ final class TokenStream
 	}
 
 
-	/** @return never */
-	public function error(?string $message = null, ?int $pos = null): void
+	/** Throws a parsing exception with position information from the current or given token. */
+	public function error(?string $message = null, ?int $pos = null): never
 	{
 		$pos ??= $this->pos;
 		$input = '';

@@ -67,15 +67,15 @@ final class ArrayItemNode extends Node
 	}
 
 
-	/** @return never Use itemsToArray() on the parent array node instead. */
-	public function toValue(): mixed
+	/** Use itemsToArray() on the parent array node instead. */
+	public function toValue(): never
 	{
 		throw new \LogicException;
 	}
 
 
-	/** @return never Use itemsToBlockString() or itemsToInlineString() instead. */
-	public function toString(): string
+	/** Use itemsToBlockString() or itemsToInlineString() instead. */
+	public function toString(): never
 	{
 		throw new \LogicException;
 	}
