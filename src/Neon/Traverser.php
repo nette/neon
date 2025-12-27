@@ -22,8 +22,7 @@ final class Traverser
 	/** @var callable(Node): (Node|int|null)|null */
 	private $leave;
 
-	/** @var bool */
-	private $stop;
+	private ?bool $stop = null;
 
 
 	/**

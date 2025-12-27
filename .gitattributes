@@ -6,4 +6,5 @@ phpstan*.neon export-ignore
 tests/ export-ignore
 
 *.sh eol=lf
+bin/neon-lint eol=lf
 *.php* diff=php linguist-language=PHP
