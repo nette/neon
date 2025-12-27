@@ -18,7 +18,7 @@ final class Parser
 	private TokenStream $tokens;
 
 	/** @var int[] */
-	private $posToLine = [];
+	private array $posToLine = [];
 
 
 	public function parse(TokenStream $tokens): Node
