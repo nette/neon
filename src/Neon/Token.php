@@ -11,7 +11,7 @@ namespace Nette\Neon;
 
 
 /** @internal */
-final class Token
+final readonly class Token
 {
 	public const String = 1;
 	public const Literal = 2;

@@ -73,8 +73,7 @@ final class TokenStream
 	}
 
 
-	/** @return never */
-	public function error(?string $message = null, ?int $pos = null): void
+	public function error(?string $message = null, ?int $pos = null): never
 	{
 		$pos ??= $this->pos;
 		$input = '';
