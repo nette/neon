@@ -25,7 +25,7 @@ is extended at release time from the git history.
 human-readable configuration format, YAML-like but with entities. JSON is a subset
 of NEON.
 
-- **PHP Version**: 8.0 - 8.5
+- **PHP Version**: 8.4 - 8.6
 - **Package**: `nette/neon` (only dependency: `ext-json`)
 
 ## Essential Commands
