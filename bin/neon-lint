@@ -11,21 +11,6 @@ if (
 	exit(1);
 }
 
-if (function_exists('pcntl_signal')) {
-	pcntl_signal(SIGINT, function (): void {
-		pcntl_signal(SIGINT, SIG_DFL);
-		echo "Terminated\n";
-		exit(1);
-	});
-} elseif (function_exists('sapi_windows_set_ctrl_handler')) {
-	sapi_windows_set_ctrl_handler(function () {
-		echo "Terminated\n";
-		exit(1);
-	});
-}
-
-set_time_limit(0);
-
 
 echo '
 NEON linter
@@ -33,60 +18,137 @@ NEON linter
 ';
 
 if ($argc < 2) {
-	echo "Usage: neon-lint <path>\n";
+	echo "Usage: neon-lint [--debug] <path>\n";
 	exit(1);
 }
 
-$ok = scanPath($argv[1]);
-exit($ok ? 0 : 1);
+$debug = in_array('--debug', $argv, true);
+if ($debug) {
+	echo "Debug mode\n";
+}
 
+$path = end($argv);
 
-function scanPath(string $path): bool
-{
-	echo "Scanning $path\n";
+try {
+	$linter = new NeonLinter(debug: $debug);
+	$ok = $linter->scanDirectory($path);
+	exit($ok ? 0 : 1);
 
-	$it = new RecursiveDirectoryIterator($path);
-	$it = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::LEAVES_ONLY);
-	$it = new RegexIterator($it, '~\.neon$~');
-
-	$counter = 0;
-	$success = true;
-	foreach ($it as $file) {
-		echo str_pad(str_repeat('.', $counter++ % 40), 40), "\x0D";
-		$success = lintFile((string) $file) && $success;
-	}
-
-	echo str_pad('', 40), "\x0D";
-	echo "Done.\n";
-	return $success;
+} catch (Throwable $e) {
+	fwrite(STDERR, $debug ? "\n$e\n" : "\nError: {$e->getMessage()}\n");
+	exit(2);
 }
 
 
-function lintFile(string $file): bool
+class NeonLinter
 {
-	set_error_handler(function (int $severity, string $message) use ($file) {
-		if ($severity === E_USER_DEPRECATED) {
-			fwrite(STDERR, "[DEPRECATED] $file    $message\n");
-			return null;
+	/** @var string[] */
+	public array $excludedDirs = ['.*', '*.tmp', 'temp', 'vendor', 'node_modules'];
+
+
+	public function __construct(
+		private readonly bool $debug = false,
+	) {
+	}
+
+
+	public function scanDirectory(string $path): bool
+	{
+		$this->initialize();
+		echo "Scanning $path\n";
+		$counter = 0;
+		$errors = 0;
+		foreach ($this->getFiles($path) as $file) {
+			$file = (string) $file;
+			echo preg_replace('~\.?[/\\\]~A', '', $file), "\x0D";
+			$errors += $this->lintFile($file) ? 0 : 1;
+			echo str_pad('...', strlen($file)), "\x0D";
+			$counter++;
 		}
-		return false;
-	});
 
-	$s = file_get_contents($file);
-	if (substr($s, 0, 3) === "\xEF\xBB\xBF") {
-		fwrite(STDERR, "[WARNING]    $file    contains BOM\n");
-		$contents = substr($s, 3);
+		echo "Done (checked $counter files, found errors in $errors)\n";
+		return !$errors;
 	}
 
-	try {
-		Nette\Neon\Neon::decode($s);
-		return true;
 
-	} catch (Nette\Neon\Exception $e) {
-		fwrite(STDERR, "[ERROR]      $file    {$e->getMessage()}\n");
+	public function lintFile(string $file): bool
+	{
+		if ($this->debug) {
+			echo $file, "\n";
+		}
 
-	} finally {
-		restore_error_handler();
+		$s = file_get_contents($file);
+		if (str_starts_with($s, "\xEF\xBB\xBF")) {
+			$this->writeError('WARNING', $file, 'contains BOM');
+			$s = substr($s, 3);
+		}
+
+		try {
+			Nette\Neon\Neon::decode($s);
+			return true;
+
+		} catch (Nette\Neon\Exception $e) {
+			if ($this->debug) {
+				echo $e;
+			}
+			$this->writeError('ERROR', $file, $e->getMessage());
+			return false;
+		}
 	}
-	return false;
+
+
+	private function initialize(): void
+	{
+		if (function_exists('pcntl_signal')) {
+			pcntl_signal(SIGINT, function (): never {
+				pcntl_signal(SIGINT, SIG_DFL);
+				echo "Terminated\n";
+				exit(1);
+			});
+		} elseif (function_exists('sapi_windows_set_ctrl_handler')) {
+			sapi_windows_set_ctrl_handler(function (): never {
+				echo "Terminated\n";
+				exit(1);
+			});
+		}
+
+		set_time_limit(0);
+	}
+
+
+	private function getFiles(string $path): Iterator
+	{
+		$it = match (true) {
+			is_file($path) => new ArrayIterator([$path]),
+			is_dir($path) => $this->findNeonFiles($path),
+			(bool) preg_match('~[*?]~', $path) => new GlobIterator($path),
+			default => throw new InvalidArgumentException("File or directory '$path' not found."),
+		};
+		return new CallbackFilterIterator($it, fn($file) => is_file((string) $file));
+	}
+
+
+	private function findNeonFiles(string $dir): Generator
+	{
+		foreach (scandir($dir) as $name) {
+			$path = ($dir === '.' ? '' : $dir . DIRECTORY_SEPARATOR) . $name;
+			if ($name !== '.' && $name !== '..' && is_dir($path)) {
+				foreach ($this->excludedDirs as $pattern) {
+					if (fnmatch($pattern, $name)) {
+						continue 2;
+					}
+				}
+				yield from $this->findNeonFiles($path);
+
+			} elseif (str_ends_with($name, '.neon')) {
+				yield $path;
+			}
+		}
+	}
+
+
+	private function writeError(string $label, string $file, string $message): void
+	{
+		fwrite(STDERR, str_pad("[$label]", 13) . ' ' . $file . '    ' . $message . "\n");
+	}
 }
