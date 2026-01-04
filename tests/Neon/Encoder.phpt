@@ -185,3 +185,10 @@ Assert::same(
 	"inner:\n    msg: '''\n        string\n        with newline\n    '''\n\n",
 	Neon::encode(['inner' => ['msg' => "string\nwith newline"]], true, '    '),
 );
+
+
+// Invalid UTF-8 is replaced with U+FFFD and triggers warning
+Assert::error(function () {
+	$result = Neon::encode("\x80");
+	Assert::same("\u{FFFD}", $result);
+}, E_USER_WARNING, 'Invalid UTF-8 sequence in string, replaced with U+FFFD');
