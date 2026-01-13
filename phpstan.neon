@@ -1,8 +1,12 @@
-includes:
-	- phpstan-baseline.neon
-
 parameters:
-	level: 6
+	level: 8
 
 	paths:
 		- src
+
+	ignoreErrors:
+		- # Traverser can set items to null via by-reference iteration
+			identifier: arrayFilter.same
+
+includes:
+	- phpstan-baseline.neon

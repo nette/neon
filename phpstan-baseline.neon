@@ -1,41 +1,73 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Property Nette\\Neon\\Node\\EntityChainNode\:\:\$chain \(array\<Nette\\Neon\\Node\\EntityNode\>\) does not accept array\<Nette\\Neon\\Node\>\.$#'
+			message: '#^Property Nette\\Neon\\Node\\EntityChainNode\:\:\$chain \(list\<Nette\\Neon\\Node\\EntityNode\>\) does not accept non\-empty\-list\<Nette\\Neon\\Node\>\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/Neon/Encoder.php
 
 		-
+			message: '#^Strict comparison using \=\=\= between int\<0, max\> and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Neon/Lexer.php
+
+		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
 			count: 1
 			path: src/Neon/Node.php
 
 		-
+			message: '#^Binary operation "\*" between string and 1 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Neon/Node/LiteralNode.php
+
+		-
+			message: '#^Result of \|\| is always true\.$#'
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: src/Neon/Node/LiteralNode.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: src/Neon/Node/LiteralNode.php
+
+		-
 			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
 			count: 1
 			path: src/Neon/Parser.php
 
 		-
 			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
 			path: src/Neon/Parser.php
 
 		-
-			message: '#^Parameter \#1 \$chain of class Nette\\Neon\\Node\\EntityChainNode constructor expects array\<Nette\\Neon\\Node\\EntityNode\>, array\<int, Nette\\Neon\\Node\> given\.$#'
+			message: '#^Property Nette\\Neon\\Node\:\:\$endLine \(int\|null\) does not accept int\|false\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/Neon/Parser.php
 
 		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
 			count: 1
 			path: src/Neon/Parser.php
 
 		-
 			message: '#^While loop condition is always false\.$#'
-			count: 2
+			identifier: while.alwaysFalse
+			count: 1
 			path: src/Neon/Parser.php
 
 		-
 			message: '#^While loop condition is always true\.$#'
+			identifier: while.alwaysTrue
 			count: 1
 			path: src/Neon/Parser.php

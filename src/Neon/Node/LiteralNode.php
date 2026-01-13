@@ -82,7 +82,7 @@ final class LiteralNode extends Node
 				$char = match (true) {
 					$char >= 'a' => ord($char) - 87,
 					$char >= 'A' => ord($char) - 55,
-					default => $char,
+					default => (int) $char,
 				};
 				$res = bcmul($res, (string) $base, 0);
 				$res = bcadd($res, (string) $char, 0);
