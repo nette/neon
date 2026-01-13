@@ -14,23 +14,23 @@ final class Traverser
 	public const DontTraverseChildren = 1;
 	public const StopTraversal = 2;
 
-	/** @var callable(Node): (Node|int|null)|null */
-	private $enter;
+	/** @var ?(\Closure(Node): (Node|int|null)) */
+	private ?\Closure $enter = null;
 
-	/** @var callable(Node): (Node|int|null)|null */
-	private $leave;
+	/** @var ?(\Closure(Node): (Node|int|null)) */
+	private ?\Closure $leave = null;
 
 	private ?bool $stop = null;
 
 
 	/**
-	 * @param  callable(Node): (Node|int|null)|null  $enter
-	 * @param  callable(Node): (Node|int|null)|null  $leave
+	 * @param  ?(callable(Node): (Node|int|null))  $enter
+	 * @param  ?(callable(Node): (Node|int|null))  $leave
 	 */
 	public function traverse(Node $node, ?callable $enter = null, ?callable $leave = null): Node
 	{
-		$this->enter = $enter;
-		$this->leave = $leave;
+		$this->enter = $enter ? $enter(...) : null;
+		$this->leave = $leave ? $leave(...) : null;
 		$this->stop = false;
 		return $this->traverseNode($node);
 	}
