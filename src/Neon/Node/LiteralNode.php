@@ -28,17 +28,20 @@ final class LiteralNode extends Node
 
 
 	public function __construct(
+		/** @var  bool|int|float|string|\DateTimeInterface|null */
 		public mixed $value,
 	) {
 	}
 
 
+	/** @return bool|int|float|string|\DateTimeInterface|null */
 	public function toValue(): mixed
 	{
 		return $this->value;
 	}
 
 
+	/** @return ($isKey is true ? int|float|string : bool|int|float|string|\DateTimeImmutable|null) */
 	public static function parse(string $value, bool $isKey = false): mixed
 	{
 		if (!$isKey && array_key_exists($value, self::SimpleTypes)) {

@@ -19,7 +19,7 @@ final class ArrayItemNode extends Node
 
 
 	/**
-	 * @param  self[]  $items
+	 * @param  list<self>  $items
 	 * @return mixed[]
 	 */
 	public static function itemsToArray(array $items): array
@@ -37,7 +37,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	/** @param  self[]  $items */
+	/** @param  list<self>  $items */
 	public static function itemsToInlineString(array $items): string
 	{
 		$res = '';
@@ -51,7 +51,7 @@ final class ArrayItemNode extends Node
 	}
 
 
-	/** @param  self[]  $items */
+	/** @param  list<self>  $items */
 	public static function itemsToBlockString(array $items): string
 	{
 		$res = '';
@@ -67,12 +67,14 @@ final class ArrayItemNode extends Node
 	}
 
 
+	/** @return never */
 	public function toValue(): mixed
 	{
 		throw new \LogicException;
 	}
 
 
+	/** @return never */
 	public function toString(): string
 	{
 		throw new \LogicException;

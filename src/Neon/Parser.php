@@ -15,7 +15,7 @@ final class Parser
 {
 	private TokenStream $tokens;
 
-	/** @var int[] */
+	/** @var list<int> */
 	private array $posToLine = [];
 
 
@@ -222,7 +222,7 @@ final class Parser
 	}
 
 
-	/** @param  true[]  $arr */
+	/** @param  array<string, true>  $arr */
 	private function checkArrayKey(Node $key, array &$arr): void
 	{
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
@@ -238,6 +238,11 @@ final class Parser
 	}
 
 
+	/**
+	 * @template T of Node
+	 * @param T $node
+	 * @return T
+	 */
 	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
 	{
 		$node->startTokenPos = $start ?? $this->tokens->getPos();

@@ -78,7 +78,7 @@ final class Encoder
 	}
 
 
-	/** @return Node\ArrayItemNode[] */
+	/** @return list<Node\ArrayItemNode> */
 	private function arrayToNodes(mixed $val, bool $blockMode = false): array
 	{
 		$res = [];

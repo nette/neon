@@ -13,7 +13,7 @@ use Nette\Neon\Node;
 /** @internal */
 abstract class ArrayNode extends Node
 {
-	/** @var ArrayItemNode[] */
+	/** @var list<ArrayItemNode> */
 	public array $items = [];
 
 

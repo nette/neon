@@ -16,7 +16,7 @@ use function array_map, implode;
 final class EntityChainNode extends Node
 {
 	public function __construct(
-		/** @var EntityNode[] */
+		/** @var list<EntityNode> */
 		public array $chain = [],
 	) {
 	}

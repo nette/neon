@@ -17,7 +17,7 @@ final class TokenStream
 
 
 	public function __construct(
-		/** @var Token[] */
+		/** @var list<Token> */
 		public array $tokens,
 	) {
 	}
@@ -35,7 +35,7 @@ final class TokenStream
 	}
 
 
-	/** @return Token[] */
+	/** @return list<Token> */
 	public function getTokens(): array
 	{
 		return $this->tokens;

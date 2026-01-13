@@ -16,7 +16,7 @@ final class EntityNode extends Node
 {
 	public function __construct(
 		public Node $value,
-		/** @var ArrayItemNode[] */
+		/** @var list<ArrayItemNode> */
 		public array $attributes = [],
 	) {
 	}
