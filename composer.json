@@ -33,7 +33,7 @@
 	"bin": ["bin/neon-lint"],
 	"scripts": {
 		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s -C"
+		"tester": "tester tests -s"
 	},
 	"extra": {
 		"branch-alias": {
