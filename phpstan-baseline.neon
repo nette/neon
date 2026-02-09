@@ -43,12 +43,6 @@ parameters:
 			path: src/Neon/Parser.php
 
 		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
 			message: '#^Property Nette\\Neon\\Node\:\:\$endLine \(int\|null\) does not accept int\|false\.$#'
 			identifier: assign.propertyType
 			count: 1
