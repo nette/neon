@@ -13,7 +13,7 @@ use function in_array, str_replace, strlen, strrpos, substr, substr_count;
 /** @internal */
 final class TokenStream
 {
-	private int $pos = 0;
+	private int $index = 0;
 
 
 	public function __construct(
@@ -23,15 +23,15 @@ final class TokenStream
 	}
 
 
-	public function getPos(): int
+	public function getIndex(): int
 	{
-		return $this->pos;
+		return $this->index;
 	}
 
 
-	public function seek(int $position): void
+	public function seek(int $index): void
 	{
-		$this->pos = $position;
+		$this->index = $index;
 	}
 
 
@@ -46,15 +46,15 @@ final class TokenStream
 	 * Skips comments and whitespace, then checks whether the next token matches one of the given types.
 	 * With no arguments, checks whether any token remains.
 	 */
-	public function isNext(int|string ...$types): bool
+	public function is(int|string ...$types): bool
 	{
-		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], strict: true)) {
-			$this->pos++;
+		while (in_array($this->tokens[$this->index]->type ?? null, [Token::Comment, Token::Whitespace], strict: true)) {
+			$this->index++;
 		}
 
 		return $types
-			? in_array($this->tokens[$this->pos]->type ?? null, $types, strict: true)
-			: isset($this->tokens[$this->pos]);
+			? in_array($this->tokens[$this->index]->type ?? null, $types, strict: true)
+			: isset($this->tokens[$this->index]);
 	}
 
 
@@ -62,10 +62,10 @@ final class TokenStream
 	 * Consumes and returns the next token if it matches one of the given types, or null otherwise.
 	 * With no arguments, consumes any next token.
 	 */
-	public function consume(int|string ...$types): ?Token
+	public function tryConsume(int|string ...$types): ?Token
 	{
-		return $this->isNext(...$types)
-			? $this->tokens[$this->pos++]
+		return $this->is(...$types)
+			? $this->tokens[$this->index++]
 			: null;
 	}
 
@@ -76,9 +76,9 @@ final class TokenStream
 	 */
 	public function getIndentation(): string
 	{
-		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], strict: true)
-			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::Whitespace
-			? $this->tokens[$this->pos - 1]->value
+		return in_array($this->tokens[$this->index - 2]->type ?? null, [Token::Newline, null], strict: true)
+			&& ($this->tokens[$this->index - 1]->type ?? null) === Token::Whitespace
+			? $this->tokens[$this->index - 1]->value
 			: '';
 	}
 
@@ -86,7 +86,7 @@ final class TokenStream
 	/** Throws a parsing exception with position information from the current or given token. */
 	public function error(?string $message = null, ?int $pos = null): never
 	{
-		$pos ??= $this->pos;
+		$pos ??= $this->index;
 		$input = '';
 		foreach ($this->tokens as $i => $token) {
 			if ($i >= $pos) {
