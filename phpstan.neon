@@ -39,7 +39,7 @@ parameters:
 
 		-   # Exhaustive type narrowing in LiteralNode::toString() — last branch reached only for int|bool|null
 			message: '#^(Result of \|\| is always true|Strict comparison using === between null and null will always evaluate to true)\.$#'
-			count: 1
+			count: 2
 			path: src/Neon/Node/LiteralNode.php
 
 		# Parser state machine — loops and conditions whose runtime behavior PHPStan can't track

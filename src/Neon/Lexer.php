@@ -49,12 +49,13 @@ final class Lexer
 	/** Tokenizes a NEON string into a TokenStream. Normalizes CR line endings. */
 	public function tokenize(string $input): TokenStream
 	{
-		$input = str_replace("\r", '', $input);
-		$pattern = '~(' . implode(')|(', self::Patterns) . ')~Amixu';
-		$res = preg_match_all($pattern, $input, $matches, PREG_SET_ORDER);
-		if ($res === false) {
+		if (!preg_match('##u', $input)) {
 			throw new Exception('Invalid UTF-8 sequence.');
 		}
+
+		$input = str_replace("\r", '', $input);
+		$pattern = '~(' . implode(')|(', self::Patterns) . ')~Amixu';
+		preg_match_all($pattern, $input, $matches, PREG_SET_ORDER);
 
 		$types = array_keys(self::Patterns);
 		$offset = 0;
