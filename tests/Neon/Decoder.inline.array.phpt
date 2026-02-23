@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Neon\Neon::decode inline hash and array.
  */
-
-declare(strict_types=1);
 
 use Nette\Neon\Neon;
 use Tester\Assert;

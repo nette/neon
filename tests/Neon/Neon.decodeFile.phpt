@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Neon\Neon::encode.
  */
-
-declare(strict_types=1);
 
 use Nette\Neon\Neon;
 use Tester\Assert;

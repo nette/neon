@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: decode entity
  */
-
-declare(strict_types=1);
 
 use Nette\Neon\Entity;
 use Nette\Neon\Neon;
