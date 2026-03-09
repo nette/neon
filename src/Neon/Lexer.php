@@ -8,7 +8,6 @@
 namespace Nette\Neon;
 
 use function array_keys, count, implode, preg_match, preg_match_all, str_replace, strlen, substr;
-use const PREG_SET_ORDER;
 
 
 /** @internal */
@@ -47,6 +46,7 @@ final class Lexer
 	];
 
 
+	/** Tokenizes a NEON string into a TokenStream. Normalizes CR line endings. */
 	public function tokenize(string $input): TokenStream
 	{
 		$input = str_replace("\r", '', $input);
@@ -76,6 +76,7 @@ final class Lexer
 	}
 
 
+	/** Checks whether the string must be quoted when encoding to NEON. */
 	public static function requiresDelimiters(string $s): bool
 	{
 		return preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $s)

@@ -19,6 +19,7 @@ final class Parser
 	private array $posToLine = [];
 
 
+	/** Parses a token stream into an AST. */
 	public function parse(TokenStream $tokens): Node
 	{
 		$this->tokens = $tokens;

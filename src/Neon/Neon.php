@@ -9,7 +9,7 @@ namespace Nette\Neon;
 
 
 /**
- * Simple parser & generator for Nette Object Notation.
+ * Facade for parsing and encoding the NEON format.
  * @see https://neon.nette.org
  */
 final class Neon
@@ -24,7 +24,7 @@ final class Neon
 
 
 	/**
-	 * Returns value converted to NEON.
+	 * Encodes a PHP value to a NEON string.
 	 */
 	public static function encode(mixed $value, bool $blockMode = false, string $indentation = "\t"): string
 	{
@@ -36,7 +36,7 @@ final class Neon
 
 
 	/**
-	 * Converts given NEON to PHP value.
+	 * Parses a NEON string and returns the corresponding PHP value.
 	 */
 	public static function decode(string $input): mixed
 	{
@@ -46,7 +46,7 @@ final class Neon
 
 
 	/**
-	 * Converts given NEON file to PHP value.
+	 * Parses a NEON file and returns the corresponding PHP value. Strips the UTF-8 BOM if present.
 	 */
 	public static function decodeFile(string $file): mixed
 	{

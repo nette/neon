@@ -42,6 +42,10 @@ final class TokenStream
 	}
 
 
+	/**
+	 * Skips comments and whitespace, then checks whether the next token matches one of the given types.
+	 * With no arguments, checks whether any token remains.
+	 */
 	public function isNext(int|string ...$types): bool
 	{
 		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], strict: true)) {
@@ -54,6 +58,10 @@ final class TokenStream
 	}
 
 
+	/**
+	 * Consumes and returns the next token if it matches one of the given types, or null otherwise.
+	 * With no arguments, consumes any next token.
+	 */
 	public function consume(int|string ...$types): ?Token
 	{
 		return $this->isNext(...$types)
@@ -62,6 +70,10 @@ final class TokenStream
 	}
 
 
+	/**
+	 * Returns the whitespace indentation of the token at the current position,
+	 * i.e. the whitespace token immediately following a newline (or at the start).
+	 */
 	public function getIndentation(): string
 	{
 		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], strict: true)

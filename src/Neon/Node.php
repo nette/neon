@@ -9,6 +9,8 @@ namespace Nette\Neon;
 
 
 /**
+ * Base class for all AST nodes produced by the NEON parser.
+ *
  * @implements \IteratorAggregate<Node>
  */
 abstract class Node implements \IteratorAggregate
@@ -19,9 +21,11 @@ abstract class Node implements \IteratorAggregate
 	public ?int $endLine = null;
 
 
+	/** Converts the node to its PHP value. */
 	abstract public function toValue(): mixed;
 
 
+	/** Converts the node back to its NEON representation. */
 	abstract public function toString(): string;
 
 

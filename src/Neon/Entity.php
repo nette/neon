@@ -9,7 +9,7 @@ namespace Nette\Neon;
 
 
 /**
- * Representation of NEON entity 'foo(bar=1)'
+ * Representation of a NEON entity, e.g. Column(type: int).
  */
 final class Entity extends \stdClass
 {

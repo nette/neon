@@ -67,14 +67,14 @@ final class ArrayItemNode extends Node
 	}
 
 
-	/** @return never */
+	/** @return never Use itemsToArray() on the parent array node instead. */
 	public function toValue(): mixed
 	{
 		throw new \LogicException;
 	}
 
 
-	/** @return never */
+	/** @return never Use itemsToBlockString() or itemsToInlineString() instead. */
 	public function toString(): string
 	{
 		throw new \LogicException;

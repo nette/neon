@@ -23,9 +23,7 @@ final class Encoder
 	public string $indentation = "\t";
 
 
-	/**
-	 * Returns the NEON representation of a value.
-	 */
+	/** Encodes a PHP value to a NEON string. */
 	public function encode(mixed $val): string
 	{
 		$node = $this->valueToNode($val, $this->blockMode);
@@ -33,6 +31,7 @@ final class Encoder
 	}
 
 
+	/** Converts a PHP value to its AST node representation. */
 	public function valueToNode(mixed $val, bool $blockMode = false): Node
 	{
 		if ($val instanceof \DateTimeInterface) {

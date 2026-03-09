@@ -10,7 +10,6 @@ namespace Nette\Neon\Node;
 use Nette;
 use Nette\Neon\Node;
 use function json_decode, json_encode, preg_match, preg_replace, preg_replace_callback, str_contains, str_replace, strlen, substr;
-use const JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE;
 
 
 /** @internal */
@@ -34,6 +33,7 @@ final class StringNode extends Node
 	}
 
 
+	/** Parses a raw NEON string token (including its delimiters) and returns the decoded string value. */
 	public static function parse(string $s): string
 	{
 		if (preg_match('#^...\n++([\t ]*+)#', $s, $m)) { // multiline

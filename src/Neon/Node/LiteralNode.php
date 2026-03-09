@@ -68,6 +68,7 @@ final class LiteralNode extends Node
 	}
 
 
+	/** Converts a base-N digit string to an integer, or to a decimal string if it exceeds PHP_INT_MAX. */
 	public static function baseConvert(string $number, int $base): string|int
 	{
 		if (strlen($number) < 16) {
