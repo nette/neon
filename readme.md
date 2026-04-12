@@ -70,7 +70,7 @@ Integration
 ===========
 
 - NetBeans (has built-in support)
-- PhpStorm ([plugin](https://plugins.jetbrains.com/plugin/7060?pr))
+- PhpStorm ([plugin](https://plugins.jetbrains.com/plugin/28338-neon))
 - Visual Studio Code ([plugin](https://marketplace.visualstudio.com/items?itemName=Kasik96.latte))
 - Sublime Text 3 ([plugin](https://github.com/FilipStryk/Nette-Latte-Neon-for-Sublime-Text-3))
 - Sublime Text 2 ([plugin](https://github.com/Michal-Mikolas/Nette-package-for-Sublime-Text-2))
