@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function array_key_exists, count, end, is_scalar, min, strlen, strncmp, substr, substr_count;
+use function array_key_exists, count, end, is_scalar, min, strlen, strncmp, substr;
 
 
 /** @internal */
@@ -15,15 +15,11 @@ final class Parser
 {
 	private TokenStream $stream;
 
-	/** @var list<int> */
-	private array $posToLine = [];
-
 
 	/** Parses a token stream into an AST. */
 	public function parse(TokenStream $tokens): Node
 	{
 		$this->stream = $tokens;
-		$this->initLines();
 
 		while ($this->stream->tryConsume(Token::Newline));
 		$node = $this->parseBlock($this->stream->getIndentation());
@@ -245,22 +241,10 @@ final class Parser
 	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
 	{
 		$node->startTokenPos = $start ?? $this->stream->getIndex();
-		$node->startLine = $this->posToLine[$node->startTokenPos];
+		$node->start = $this->stream->tokens[$node->startTokenPos]->position;
 		$node->endTokenPos = $end ?? $node->startTokenPos;
-		$node->endLine = $this->posToLine[$node->endTokenPos + 1] ?? end($this->posToLine);
+		$token = $this->stream->tokens[$node->startTokenPos + 1] ?? $this->stream->tokens[$node->startTokenPos];
+		$node->end = $token->position;
 		return $node;
-	}
-
-
-	private function initLines(): void
-	{
-		$this->posToLine = [];
-		$line = 1;
-		foreach ($this->stream->tokens as $token) {
-			$this->posToLine[] = $line;
-			$line += substr_count($token->text, "\n");
-		}
-
-		$this->posToLine[] = $line;
 	}
 }
