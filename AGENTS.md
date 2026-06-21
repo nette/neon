@@ -35,7 +35,7 @@ of NEON.
 composer tester
 vendor/bin/tester tests/Neon/ -s -C
 
-# Static analysis (PHPStan level 6)
+# Static analysis (PHPStan level 8)
 composer phpstan
 
 # Lint NEON files

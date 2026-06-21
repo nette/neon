@@ -25,6 +25,13 @@ Assert::exception(
 
 
 Assert::exception(
+	fn() => Neon::decode("a: \xC3\x28"),
+	Nette\Neon\Exception::class,
+	'Invalid UTF-8 sequence.',
+);
+
+
+Assert::exception(
 	fn() => Neon::decode("- Dave,\n- Rimmer,\n- Kryten,\n"),
 	Nette\Neon\Exception::class,
 	"Unexpected ',' on line 1 at column 7",
