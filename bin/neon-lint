@@ -78,6 +78,11 @@ class NeonLinter
 		}
 
 		$s = file_get_contents($file);
+		if ($s === false) {
+			$this->writeError('ERROR', $file, 'cannot read file');
+			return false;
+		}
+
 		if (str_starts_with($s, "\xEF\xBB\xBF")) {
 			$this->writeError('WARNING', $file, 'contains BOM');
 			$s = substr($s, 3);

@@ -98,7 +98,7 @@ final class TokenStream
 		}
 
 		$line = substr_count($input, "\n") + 1;
-		$col = self::charLength(substr($input, strrpos("\n" . $input, "\n"))) + 1;
+		$col = self::charLength(substr($input, (int) strrpos("\n" . $input, "\n"))) + 1;
 		$token = $this->tokens[$pos] ?? null;
 		if ($message === null) {
 			if ($token === null) {

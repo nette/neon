@@ -277,6 +277,7 @@ final class Parser
 	private function parseBracesItems(): Node\InlineArrayNode
 	{
 		$token = $this->tokens->consume();
+		assert($token !== null);
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
 		$res = new Node\InlineArrayNode($token->value);
 		$this->injectPos($res, $this->tokens->getPos() - 1);
@@ -344,7 +345,7 @@ final class Parser
 			return;
 		} elseif (array_key_exists(PHP_INT_MAX, $arr)) {
 			$pos = $item->value->startTokenPos;
-			$type = $this->tokens->getTokens()[$pos]->type ?? null;
+			$type = $pos === null ? null : $this->tokens->getTokens()[$pos]->type ?? null;
 			$this->tokens->error(
 				'Implicit key overflow',
 				in_array($type, [null, Token::Whitespace, Token::Newline, Token::Comment], true) ? $item->startTokenPos : $pos,
