@@ -1,8 +1,9 @@
 parameters:
-	level: 6
+	level: 8
 
 	paths:
 		- src
+		- bin/neon-lint
 
 	ignoreErrors:
 		# Traverser can set items to null via by-reference iteration; array_filter() removes those nulls
@@ -19,40 +20,67 @@ parameters:
 			count: 1
 			path: src/Neon/Node/ArrayNode.php
 
-		-   # EntityChainNode constructor narrows list<Node> to list<EntityNode> at runtime
+		-
+			message: '#^Property Nette\\Neon\\Node\\EntityChainNode\:\:\$chain \(list\<Nette\\Neon\\Node\\EntityNode\>\) does not accept non\-empty\-list\<Nette\\Neon\\Node\>\.$#'
 			identifier: assign.propertyType
-			message: '#^Property Nette\\Neon\\Node\\EntityChainNode::\$chain \(list<Nette\\Neon\\Node\\EntityNode>\) does not accept non-empty-list<Nette\\Neon\\Node>\.$#'
 			count: 1
 			path: src/Neon/Encoder.php
 
-		-   # `throw` after explicit branch return — defensive safety net for exhaustive match
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
-			message: '#^Unreachable statement - code above always terminates\.$#'
 			count: 1
 			path: src/Neon/Node.php
 
-		-   # `$str + 0` PHP idiom for string-to-number conversion in LiteralNode::toValue()
-			identifier: binaryOp.invalid
+		-
 			message: '#^Binary operation "\*" between string and 1 results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: src/Neon/Node/LiteralNode.php
 
-		-   # Exhaustive type narrowing in LiteralNode::toString() — last branch reached only for int|bool|null
+		-   # Exhaustive type narrowing in LiteralNode::toString() � last branch reached only for int|bool|null
 			message: '#^(Result of \|\| is always true|Strict comparison using === between null and null will always evaluate to true)\.$#'
 			count: 1
 			path: src/Neon/Node/LiteralNode.php
 
-		# Parser state machine — loops and conditions whose runtime behavior PHPStan can't track
-		-   # while loops driven by Lexer position mutations
-			message: '#^While loop condition is always (false|true)\.$#'
-			count: 2
-			path: src/Neon/Parser.php
-		-   # `throw` after `break` — safety net inside while(true) state machine
-			identifier: deadCode.unreachable
-			message: '#^Unreachable statement - code above always terminates\.$#'
+		-
+			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: src/Neon/Node/LiteralNode.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
 			count: 1
 			path: src/Neon/Parser.php
-		-   # defensive `&&` and `if` checks after token validation
-			message: '#^(Left side of && is always true|If condition is always true)\.$#'
-			count: 2
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: src/Neon/Parser.php
+
+		-
+			message: '#^Property Nette\\Neon\\Node\:\:\$endLine \(int\|null\) does not accept int\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Neon/Parser.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Neon/Parser.php
+
+		-
+			message: '#^While loop condition is always false\.$#'
+			identifier: while.alwaysFalse
+			count: 1
+			path: src/Neon/Parser.php
+
+		-
+			message: '#^While loop condition is always true\.$#'
+			identifier: while.alwaysTrue
+			count: 1
 			path: src/Neon/Parser.php

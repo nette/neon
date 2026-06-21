@@ -15,7 +15,8 @@ NEON linter
 -----------
 ';
 
-if ($argc < 2) {
+$argv = (array) ($_SERVER['argv'] ?? []);
+if (count($argv) < 2) {
 	echo "Usage: neon-lint [--debug] <path>\n";
 	exit(1);
 }
@@ -25,7 +26,7 @@ if ($debug) {
 	echo "Debug mode\n";
 }
 
-$path = end($argv);
+$path = (string) end($argv);
 
 try {
 	$linter = new NeonLinter(debug: $debug);
@@ -76,6 +77,11 @@ class NeonLinter
 		}
 
 		$s = file_get_contents($file);
+		if ($s === false) {
+			$this->writeError('ERROR', $file, 'cannot read file');
+			return false;
+		}
+
 		if (str_starts_with($s, "\xEF\xBB\xBF")) {
 			$this->writeError('WARNING', $file, 'contains BOM');
 			$s = substr($s, 3);

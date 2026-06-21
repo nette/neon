@@ -183,6 +183,7 @@ final class Parser
 	private function parseBraces(): Node\InlineArrayNode
 	{
 		$token = $this->tokens->consume();
+		assert($token !== null);
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
 		$res = new Node\InlineArrayNode($token->value);
 		$this->injectPos($res, $this->tokens->getPos() - 1);
