@@ -47,22 +47,18 @@ vendor/bin/neon-lint <path>
 
 ## Working in this repo
 
-- **The node AST is the editable middle layer.** `parseToNode()` exposes it, and
-  each node records `startTokenPos`/`endTokenPos` so it can be mapped back to its
-  exact source slice. But `toString()` re-serializes **canonically** - comments are
-  dropped and the quote/delimiter style is re-derived from the value, so a
-  decode → `toString()` round-trip normalizes rather than preserves the original
-  formatting. (Full format preservation is a planned feature, not yet implemented.)
-  Encoding synthesizes fresh nodes from a plain PHP value.
+- **The node AST is the round-trip pivot.** Decoding retains formatting (positions,
+  delimiters, indentation) so a tree can be edited and re-serialized
+  format-preservingly; encoding synthesizes fresh nodes. Round-trip fidelity is a
+  real, fuzz-tested goal.
 - **The token stream keeps EVERYTHING, trivia included** (whitespace, comments,
   newlines). `Node::$startTokenPos`/`$endTokenPos` index into that **full** array -
   any code walking tokens by index must skip interleaved trivia. This is the central
   trap.
-- **The parser is lookahead, not backtracking.** `TokenStream::isNext()` skips trivia
-  and peeks at the next significant token **without consuming it**; `consume()` is
-  `isNext()` + advance on match; `getIndentation()` reads *backward* through trivia.
-  The one deliberate `seek()` backtrack handles the dash-subblock tab-vs-two-space
-  ambiguity - don't reintroduce general backtracking.
+- **The parser is lookahead, not backtracking.** `is()` peeks past trivia **without
+  consuming**; `tryConsume()` is `is()` + advance; `getIndentation()` reads
+  *backward* through trivia. The one deliberate `seek()` backtrack handles the
+  dash-subblock tab-vs-two-space ambiguity - don't reintroduce general backtracking.
 - **Multiline `'''` strings whose value starts with whitespace corrupt on
   round-trip** - the leading whitespace is swallowed as indentation. Known open bug
   (`StringNode::parse`), not a puzzle to re-diagnose. A sibling encode bug
@@ -70,9 +66,8 @@ vendor/bin/neon-lint <path>
   output that does not parse back.
 - **The encoder reuses the lexer's literal grammar** (`requiresDelimiters`) to decide
   quoting - change the `Literal` pattern and encoder output shifts too.
-- **All lex/parse errors throw `Nette\Neon\Exception`** (a plain `\Exception`
-  subclass) whose message carries `on line N at column N`; there is no structured
-  position object. Encoding invalid UTF-8 emits `E_USER_WARNING` + U+FFFD, not an
-  exception. There is no `SyntaxErrorException` in the code - don't assume it exists.
+- **All lex/parse errors throw `Nette\Neon\Exception` with a `Position`;** encoding
+  invalid UTF-8 emits `E_USER_WARNING` + U+FFFD, not an exception. There is no
+  `SyntaxErrorException` in the code - don't assume it exists.
 - User-facing format documentation (syntax rules, entities, literals, encode/decode
   usage) is manual material and lives in the public web docs, not here.
