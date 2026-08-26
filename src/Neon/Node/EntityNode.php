@@ -8,6 +8,8 @@
 namespace Nette\Neon\Node;
 
 use Nette\Neon\Entity;
+use Nette\Neon\Exception;
+use Nette\Neon\Neon;
 use Nette\Neon\Node;
 
 
@@ -24,10 +26,12 @@ final class EntityNode extends Node
 
 	public function toValue(): Entity
 	{
-		return new Entity(
-			$this->value->toValue(),
-			ArrayItemNode::itemsToArray($this->attributes),
-		);
+		$value = $this->value->toValue();
+		if ($value === Neon::Chain) { // must not be forgeable from input
+			throw new Exception("Entity name '" . Neon::Chain . "' is reserved.");
+		}
+
+		return new Entity($value, ArrayItemNode::itemsToArray($this->attributes));
 	}
 
 

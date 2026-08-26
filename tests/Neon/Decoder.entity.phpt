@@ -62,3 +62,16 @@ Assert::equal(
 	]),
 	Neon::decode('1() 2()'),
 );
+
+// the input must not be able to forge the chain marker
+Assert::exception(
+	fn() => Neon::decode('!!chain(a)'),
+	Nette\Neon\Exception::class,
+	"Entity name '!!chain' is reserved.",
+);
+
+Assert::exception(
+	fn() => Neon::decode('"!!chain"(a)'),
+	Nette\Neon\Exception::class,
+	"Entity name '!!chain' is reserved.",
+);
