@@ -7,7 +7,7 @@
 
 namespace Nette\Neon\Node;
 
-use function count, preg_replace;
+use function count;
 
 
 /** @internal */

@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function array_keys, count, implode, preg_match, preg_match_all, str_replace, strlen, substr;
+use function count, strlen;
 
 
 /** @internal */

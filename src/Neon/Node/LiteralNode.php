@@ -9,7 +9,7 @@ namespace Nette\Neon\Node;
 
 use Nette\Neon\Exception;
 use Nette\Neon\Node;
-use function array_key_exists, base_convert, bcadd, bcmul, extension_loaded, is_bool, is_finite, is_float, is_int, is_numeric, is_string, json_encode, ord, preg_match, str_contains, strlen, substr;
+use function array_key_exists, extension_loaded, is_bool, is_float, is_int, is_string, strlen;
 
 
 /** @internal */
