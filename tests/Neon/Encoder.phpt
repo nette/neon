@@ -8,7 +8,6 @@ use Nette\Neon\Entity;
 use Nette\Neon\Neon;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 

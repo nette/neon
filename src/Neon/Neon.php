@@ -20,7 +20,7 @@ final class Neon
 	public const CHAIN = self::Chain;
 
 	/** @deprecated use parameter $blockMode */
-	public const BLOCK = Encoder::BLOCK;
+	public const BLOCK = true;
 
 
 	/**

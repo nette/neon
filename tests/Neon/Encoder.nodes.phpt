@@ -5,14 +5,13 @@ use Nette\Neon\Entity;
 use Tester\Assert;
 use Tracy\Dumper;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 
 $input = [
 	'map' => ['a' => 'b', 'c' => 'd'],
 	'index' => ['a', 'b', 'c'],
-	'mixed' => ['a', 'b', 4 => 'c',  'd'],
+	'mixed' => ['a', 'b', 4 => 'c', 'd'],
 	'entity' => new Entity('ent', ['a', 'b']),
 	'chain' => new Entity(Neon\Neon::Chain, [
 		new Entity('first', ['a', 'b']),

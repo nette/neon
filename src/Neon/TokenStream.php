@@ -78,8 +78,8 @@ final class TokenStream
 	{
 		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], true)
 			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::Whitespace
-			? $this->tokens[$this->pos - 1]->value
-			: '';
+				? $this->tokens[$this->pos - 1]->value
+				: '';
 	}
 
 
