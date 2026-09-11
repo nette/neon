@@ -2,11 +2,12 @@
 .github/        export-ignore
 .gitignore      export-ignore
 AGENTS.md       export-ignore
-ncs.*           export-ignore
+dresscode.neon  export-ignore
 phpstan*.neon   export-ignore
 docs/           export-ignore
 tests/          export-ignore
 
+*               text=auto
 *.php*          diff=php
 *.sh            text eol=lf
 bin/neon-lint   text eol=lf

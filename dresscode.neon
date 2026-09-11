@@ -1,0 +1,32 @@
+extends:
+	- nette
+	- modernizations
+
+typeAnalysis: phpstan
+
+paths:
+	- src
+	- tests
+	- bin/neon-lint
+
+excludePaths:
+	- fixtures
+	- tests/**/output
+
+fileExtensions:
+	- php
+	- phpt
+
+overrides:
+	-
+		paths: [src]
+		nameResolution: certain
+		extends:
+			- optimizedCalls
+			- deprecations
+		qualification:
+			globalFunction:
+				normally: [imported, bare]
+				optimizedByCompiler: imported
+			globalConstant:
+				computedByCompiler: [imported, fullyQualified]
