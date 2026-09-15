@@ -7,8 +7,6 @@
 
 namespace Nette\Neon;
 
-use function strlen;
-
 
 /** @internal */
 final class TokenStream
@@ -97,8 +95,6 @@ final class TokenStream
 			$input .= $token->value;
 		}
 
-		$line = substr_count($input, "\n") + 1;
-		$col = self::charLength(substr($input, (int) strrpos("\n" . $input, "\n"))) + 1;
 		$token = $this->tokens[$pos] ?? null;
 		if ($message === null) {
 			if ($token === null) {
@@ -109,13 +105,6 @@ final class TokenStream
 			}
 		}
 
-		throw new Exception("$message on line $line at column $col");
-	}
-
-
-	/** Counts UTF-8 characters without requiring the mbstring extension; expects valid UTF-8. */
-	private static function charLength(string $s): int
-	{
-		return strlen($s) - (int) preg_match_all('~[\x80-\xBF]~', $s);
+		throw new Exception($message, new Position()->advance($input));
 	}
 }
