@@ -16,7 +16,8 @@
 	],
 	"require": {
 		"php": "8.4 - 8.6",
-		"ext-json": "*"
+		"ext-json": "*",
+		"ext-mbstring": "*"
 	},
 	"require-dev": {
 		"nette/tester": "^2.4",

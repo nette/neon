@@ -7,8 +7,6 @@
 
 namespace Nette\Neon;
 
-use function strlen;
-
 
 /** @internal */
 final class TokenStream
@@ -96,12 +94,10 @@ final class TokenStream
 			$input .= $token->value;
 		}
 
-		$line = substr_count($input, "\n") + 1;
-		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
 		$token = $this->tokens[$pos] ?? null;
 		$message ??= 'Unexpected ' . ($token === null
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
-		throw new Exception("$message on line $line at column $col");
+		throw new Exception($message, new Position()->advance($input));
 	}
 }
