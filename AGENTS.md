@@ -13,6 +13,12 @@ The decode/encode pipeline shares one context and the traps cluster around
 tokenization and round-tripping (the full token stream, the lookahead parser, the
 multiline-string corruption bug). Read `docs/internals.md` before editing them.
 
+`docs/upgrading.md` records, per released version, every change visible to
+users of the package (renames, removals, deprecations, signatures, behavior,
+configuration), each with its commit hash; internal changes are not in it. It
+is the place to look up the history of a public symbol. Do not write to it; it
+is extended at release time from the git history.
+
 ## Project Overview
 
 **Nette NEON** parses and encodes the NEON format (Nette Object Notation) - a
