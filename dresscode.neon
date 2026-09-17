@@ -12,6 +12,7 @@ paths:
 excludePaths:
 	- fixtures
 	- tests/**/output
+	- tests/neon-spec
 
 fileExtensions:
 	- php

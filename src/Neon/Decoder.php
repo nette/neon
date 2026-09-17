@@ -25,9 +25,7 @@ final class Decoder
 	/** Parses a NEON string and returns the root AST node. */
 	public function parseToNode(string $input): Node
 	{
-		$lexer = new Lexer;
 		$parser = new Parser;
-		$tokens = $lexer->tokenize($input);
-		return $parser->parse($tokens);
+		return $parser->parse(new TokenStream(new Lexer()->tokenize($input)));
 	}
 }

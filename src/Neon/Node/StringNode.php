@@ -37,6 +37,7 @@ final class StringNode extends Node
 	/** Parses a raw NEON string token (including its delimiters) and returns the decoded string value. */
 	public static function parse(string $s): string
 	{
+		$s = str_replace("\r", '', $s);
 		if (preg_match('#^...\n++([\t ]*+)#', $s, $m)) { // multiline
 			$res = substr($s, 3, -3);
 			$res = str_replace("\n" . $m[1], "\n", $res);

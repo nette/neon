@@ -45,9 +45,8 @@ test('nodes know the tokens they were parsed from', function () {
 
 		XX;
 
-	$lexer = new Neon\Lexer;
 	$parser = new Neon\Parser;
-	$stream = $lexer->tokenize($input);
+	$stream = new Neon\TokenStream(new Neon\Lexer()->tokenize($input));
 	$node = $parser->parse($stream);
 
 	Assert::matchFile(
@@ -57,10 +56,11 @@ test('nodes know the tokens they were parsed from', function () {
 
 	$traverser = new Traverser;
 	$traverser->traverse($node, function (Node $node) use ($stream) {
-		@$node->code = ''; // @ dynamic properties are deprecated
-		foreach (array_slice($stream->getTokens(), $node->startTokenPos, $node->endTokenPos - $node->startTokenPos + 1) as $token) {
-			$node->code .= $token->value;
-		}
+		$tokens = array_slice($stream->tokens, $node->startTokenPos, $node->endTokenPos - $node->startTokenPos + 1);
+		$code = implode('', $tokens);
+		$code = substr($code, strlen(implode('', array_column($tokens[0]->leadingTrivia, 'text'))));
+		$code = substr($code, 0, strlen($code) - strlen(implode('', array_column(end($tokens)->trailingTrivia, 'text'))));
+		@$node->code = $code; // @ dynamic properties are deprecated
 
 		unset($node->startTokenPos, $node->endTokenPos);
 	});

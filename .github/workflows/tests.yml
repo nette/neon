@@ -21,6 +21,7 @@ jobs:
                   coverage: none
 
             - run: composer install --no-progress --prefer-dist
+            - run: composer spec
             - run: composer tester
             - if: failure()
               uses: actions/upload-artifact@v4
@@ -41,6 +42,7 @@ jobs:
                   coverage: none
 
             - run: composer install --no-progress --prefer-dist
+            - run: composer spec
             - run: composer tester -- -p phpdbg --coverage ./coverage.xml --coverage-src ./src
               continue-on-error: true
             - uses: coverallsapp/github-action@v2

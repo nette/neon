@@ -27,7 +27,7 @@ Assert::exception(
 Assert::exception(
 	fn() => Neon::decode("a: \xC3\x28"),
 	Nette\Neon\Exception::class,
-	'Invalid UTF-8 sequence.',
+	'Invalid UTF-8 sequence. on line 1 at column 4',
 );
 
 
