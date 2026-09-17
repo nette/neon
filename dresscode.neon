@@ -9,6 +9,9 @@ paths:
 	- tests
 	- bin/neon-lint
 
+excludePaths:
+	- tests/neon-spec
+
 fileExtensions:
 	- php
 	- phpt

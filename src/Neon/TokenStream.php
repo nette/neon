@@ -7,104 +7,170 @@
 
 namespace Nette\Neon;
 
+use function count;
 
-/** @internal */
+
+/**
+ * The tokens as the parser reads them: line endings are trivia, but before a token whose preceding trivia
+ * hold one stands a virtual Newline, which is consumed once.
+ * @internal
+ */
 final class TokenStream
 {
-	private int $pos = 0;
+	/** The kind of the virtual line break, next to the kinds of Token. */
+	public const Newline = 0;
+
+	/** @var int<0, max> */
+	private int $index = 0;
+	private bool $newlineTaken = false;
+
+	/** @var list<bool> whether a line break stands before the token of the index */
+	private array $newlines = [];
 
 
 	public function __construct(
-		/** @var list<Token> */
-		public array $tokens,
+		/** @var non-empty-list<Token> ending with EndOfFile */
+		public readonly array $tokens,
 	) {
-	}
-
-
-	public function getPos(): int
-	{
-		return $this->pos;
-	}
-
-
-	public function seek(int $position): void
-	{
-		$this->pos = $position;
-	}
-
-
-	/** @return list<Token> */
-	public function getTokens(): array
-	{
-		return $this->tokens;
-	}
-
-
-	/**
-	 * Skips comments and whitespace, then checks whether the next token matches one of the given types.
-	 * With no arguments, checks whether any token remains.
-	 */
-	public function isNext(int|string ...$types): bool
-	{
-		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], true)) {
-			$this->pos++;
+		foreach ($tokens as $i => $token) {
+			$this->newlines[] = self::hasLineEnding($i === 0 ? $token->leadingTrivia : $tokens[$i - 1]->trailingTrivia);
 		}
+	}
 
-		return $types
-			? in_array($this->tokens[$this->pos]->type ?? null, $types, true)
-			: isset($this->tokens[$this->pos]);
+
+	/** The kind of the next item: a kind of Token or Newline. */
+	public function peek(): int
+	{
+		return !$this->newlineTaken && $this->newlines[$this->index]
+			? self::Newline
+			: $this->tokens[$this->index]->kind;
+	}
+
+
+	/** Whether the next item is of one of the kinds; without kinds, whether anything but the end follows. */
+	public function is(int ...$kinds): bool
+	{
+		$next = $this->peek();
+		return $kinds ? in_array($next, $kinds, true) : $next !== Token::EndOfFile;
 	}
 
 
 	/**
-	 * Consumes and returns the next token if it matches one of the given types, or null otherwise.
-	 * With no arguments, consumes any next token.
+	 * Consumes a Newline if one is next.
+	 * @phpstan-impure
 	 */
-	public function consume(int|string ...$types): ?Token
+	public function tryConsumeNewline(): bool
 	{
-		return $this->isNext(...$types)
-			? $this->tokens[$this->pos++]
-			: null;
+		if ($this->peek() === self::Newline) {
+			$this->newlineTaken = true;
+			return true;
+		}
+		return false;
 	}
 
 
 	/**
-	 * Returns the whitespace indentation of the token at the current or given position,
-	 * i.e. the whitespace token immediately following a newline (or at the start).
+	 * Consumes the next token if it is of one of the kinds, or of any kind but EndOfFile without kinds.
+	 * @phpstan-impure
 	 */
-	public function getIndentation(?int $pos = null): string
+	public function tryConsume(int ...$kinds): ?Token
 	{
-		$pos ??= $this->pos;
-		return in_array($this->tokens[$pos - 2]->type ?? null, [Token::Newline, null], true)
-			&& ($this->tokens[$pos - 1]->type ?? null) === Token::Whitespace
-			? $this->tokens[$pos - 1]->value
+		$next = $this->peek();
+		if ($next === self::Newline || $next === Token::EndOfFile || ($kinds && !in_array($next, $kinds, true))) {
+			return null;
+		}
+		$this->newlineTaken = false;
+		return $this->tokens[$this->index++];
+	}
+
+
+	/**
+	 * Consumes the next token of one of the kinds, or of any kind but EndOfFile without kinds.
+	 * @throws Exception  when something else is next
+	 * @phpstan-impure
+	 */
+	public function consume(int ...$kinds): Token
+	{
+		return $this->tryConsume(...$kinds) ?? $this->throwUnexpected();
+	}
+
+
+	/** @return array{int<0, max>, bool} */
+	public function mark(): array
+	{
+		return [$this->index, $this->newlineTaken];
+	}
+
+
+	/** @param  array{int<0, max>, bool}  $mark */
+	public function reset(array $mark): void
+	{
+		[$this->index, $this->newlineTaken] = $mark;
+	}
+
+
+	/** The indentation of the next token if it starts a line: the whitespace right after a line ending or the start. */
+	public function getIndentation(): string
+	{
+		$i = $this->index;
+		$leading = $this->tokens[$i]->leadingTrivia;
+		$trailing = $i > 0 ? $this->tokens[$i - 1]->trailingTrivia : [];
+		$n = count($leading);
+		[$last, $before] = $n
+			? [$leading[$n - 1], $leading[$n - 2] ?? $trailing[count($trailing) - 1] ?? null]
+			: [$trailing[count($trailing) - 1] ?? null, $trailing[count($trailing) - 2] ?? null];
+		return $last?->kind === Trivia::Whitespace
+			&& ($before === null ? $i === 0 : $before->kind === Trivia::LineEnding || $before->kind === Trivia::ByteOrderMark)
+			? $last->text
 			: '';
 	}
 
 
-	/** Throws a parsing exception with position information from the current or given token. */
-	public function error(?string $message = null, ?int $pos = null): never
+	/**
+	 * Throws the error at the next item, `Unexpected ...` unless the description is given.
+	 * @throws Exception
+	 */
+	public function throwUnexpected(?string $description = null): never
 	{
-		$pos ??= $this->pos;
-		$input = '';
-		foreach ($this->tokens as $i => $token) {
-			if ($i >= $pos) {
-				break;
-			}
-
-			$input .= $token->value;
+		$next = $this->peek();
+		if ($next === self::Newline) {
+			[$position, $count] = $this->locateNewline();
+			throw new Exception($description ?? "Unexpected '" . str_repeat('<new line>', min($count, 40)) . "'", $position);
 		}
 
-		$token = $this->tokens[$pos] ?? null;
-		if ($message === null) {
-			if ($token === null) {
-				$message = 'Unexpected end';
-			} else {
-				preg_match('~.{0,40}~Asu', $token->value, $m); // truncating at a character boundary keeps the message valid UTF-8
-				$message = "Unexpected '" . str_replace("\n", '<new line>', $m[0] ?? '') . "'";
-			}
-		}
+		$token = $this->tokens[$this->index];
+		throw new Exception(
+			$description ?? ($next === Token::EndOfFile ? 'Unexpected end' : "Unexpected '" . Lexer::quote($token->text) . "'"),
+			$token->origin,
+		);
+	}
 
-		throw new Exception($message, new Position()->advance($input));
+
+	/** @param  list<Trivia>  $trivia */
+	private static function hasLineEnding(array $trivia): bool
+	{
+		return array_any($trivia, fn($t) => $t->kind === Trivia::LineEnding);
+	}
+
+
+	/**
+	 * The position of the line break before the next token, and how many line endings follow one another there.
+	 * @return array{?Position, int}
+	 */
+	private function locateNewline(): array
+	{
+		$i = $this->index;
+		$prev = $this->tokens[$i - 1] ?? null;
+		$position = $prev ? $prev->origin?->advance($prev->text) : new Position;
+		$trivia = [...$prev->trailingTrivia ?? [], ...$this->tokens[$i]->leadingTrivia];
+		$k = 0;
+		while ($trivia[$k]->kind !== Trivia::LineEnding) {
+			$position = $position?->advance($trivia[$k++]->text);
+		}
+		$count = 0;
+		while (($trivia[$k + $count] ?? null)?->kind === Trivia::LineEnding) {
+			$count++;
+		}
+		return [$position, $count];
 	}
 }

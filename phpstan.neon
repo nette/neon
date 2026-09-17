@@ -51,37 +51,7 @@ parameters:
 			path: src/Neon/Node/LiteralNode.php
 
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
 			message: '#^Left side of && is always true\.$#'
 			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
-			message: '#^Property Nette\\Neon\\Node\:\:\$endLine \(int\|null\) does not accept int\|false\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
-			message: '#^While loop condition is always false\.$#'
-			identifier: while.alwaysFalse
-			count: 1
-			path: src/Neon/Parser.php
-
-		-
-			message: '#^While loop condition is always true\.$#'
-			identifier: while.alwaysTrue
 			count: 1
 			path: src/Neon/Parser.php
