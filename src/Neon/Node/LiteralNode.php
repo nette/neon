@@ -9,24 +9,12 @@ namespace Nette\Neon\Node;
 
 use Nette\Neon\Exception;
 use Nette\Neon\Node;
-use function array_key_exists, extension_loaded, is_bool, is_float, is_int, is_string, strlen;
+use function is_bool, is_float, is_int, is_string;
 
 
 /** @internal */
 final class LiteralNode extends Node
 {
-	private const SimpleTypes = [
-		'true' => true, 'True' => true, 'TRUE' => true, 'yes' => true, 'Yes' => true, 'YES' => true,
-		'false' => false, 'False' => false, 'FALSE' => false, 'no' => false, 'No' => false, 'NO' => false,
-		'null' => null, 'Null' => null, 'NULL' => null,
-	];
-
-	private const PatternDatetime = '#\d\d\d\d-\d\d?-\d\d?(?:(?:[Tt]| ++)\d\d?:\d\d:\d\d(?:\.\d*+)? *+(?:Z|[-+]\d\d?(?::?\d\d)?)?)?$#DA';
-	private const PatternHex = '#0x[0-9a-fA-F]++$#DA';
-	private const PatternOctal = '#0o[0-7]++$#DA';
-	private const PatternBinary = '#0b[0-1]++$#DA';
-
-
 	public function __construct(
 		/** @var  bool|int|float|string|\DateTimeInterface|null */
 		public mixed $value,
@@ -38,72 +26,6 @@ final class LiteralNode extends Node
 	public function toValue(): mixed
 	{
 		return $this->value;
-	}
-
-
-	/** @return ($isKey is true ? int|float|string : bool|int|float|string|\DateTimeImmutable|null) */
-	public static function parse(string $value, bool $isKey = false): mixed
-	{
-		if (!$isKey && array_key_exists($value, self::SimpleTypes)) {
-			return self::SimpleTypes[$value];
-
-		} elseif (is_numeric($value)) {
-			return is_int($num = $value * 1) || preg_match('#[.eE]#', $value) ? $num : $value;
-
-		} elseif (preg_match(self::PatternHex, $value)) {
-			return self::baseConvert(substr($value, 2), 16);
-
-		} elseif (preg_match(self::PatternOctal, $value)) {
-			return self::baseConvert(substr($value, 2), 8);
-
-		} elseif (preg_match(self::PatternBinary, $value)) {
-			return self::baseConvert(substr($value, 2), 2);
-
-		} elseif (!$isKey && preg_match(self::PatternDatetime, $value)) {
-			return self::parseDate($value) ?? $value;
-
-		} else {
-			return $value;
-		}
-	}
-
-
-	/** The date, or null if PHP finds it invalid, with an error or a warning such as a day the month does not have. */
-	private static function parseDate(string $value): ?\DateTimeImmutable
-	{
-		try {
-			$date = new \DateTimeImmutable($value);
-		} catch (\Throwable) {
-			return null;
-		}
-
-		$errors = \DateTimeImmutable::getLastErrors();
-		return $errors && ($errors['warning_count'] || $errors['error_count']) ? null : $date;
-	}
-
-
-	/** Converts a base-N digit string to an integer, or to a decimal string if it exceeds PHP_INT_MAX. */
-	public static function baseConvert(string $number, int $base): string|int
-	{
-		if (strlen($number) < 16) {
-			$res = base_convert($number, $base, 10);
-		} elseif (!extension_loaded('bcmath')) {
-			throw new Exception("The number '$number' is too large, enable 'bcmath' extension to handle it.");
-		} else {
-			$res = '0';
-			for ($i = 0; $i < strlen($number); $i++) {
-				$char = $number[$i];
-				$char = match (true) {
-					$char >= 'a' => ord($char) - 87,
-					$char >= 'A' => ord($char) - 55,
-					default => (int) $char,
-				};
-				$res = bcmul($res, (string) $base, 0);
-				$res = bcadd($res, (string) $char, 0);
-			}
-		}
-
-		return is_int($num = $res * 1) ? $num : $res;
 	}
 
 

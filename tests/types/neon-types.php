@@ -49,20 +49,6 @@ function testLiteralNode(Node\LiteralNode $node): void
 }
 
 
-function testLiteralNodeParse(string $value): void
-{
-	assertType('bool|DateTimeImmutable|float|int|string|null', Node\LiteralNode::parse($value));
-	assertType('bool|DateTimeImmutable|float|int|string|null', Node\LiteralNode::parse($value, false));
-	assertType('float|int|string', Node\LiteralNode::parse($value, true));
-}
-
-
-function testLiteralNodeBaseConvert(string $number, int $base): void
-{
-	assertType('int|string', Node\LiteralNode::baseConvert($number, $base));
-}
-
-
 function testEntityNode(Node\EntityNode $node): void
 {
 	assertType(Nette\Neon\Entity::class, $node->toValue());
