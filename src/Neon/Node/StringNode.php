@@ -7,20 +7,13 @@
 
 namespace Nette\Neon\Node;
 
-use Nette;
 use Nette\Neon\Node;
-use function strlen;
 use const JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE;
 
 
 /** @internal */
 final class StringNode extends Node
 {
-	private const EscapeSequences = [
-		't' => "\t", 'n' => "\n", 'r' => "\r", 'f' => "\x0C", 'b' => "\x08", '"' => '"', '\\' => '\\', '/' => '/', '_' => "\u{A0}",
-	];
-
-
 	public function __construct(
 		public string $value,
 		public string $indentation = "\t",
@@ -31,42 +24,6 @@ final class StringNode extends Node
 	public function toValue(): string
 	{
 		return $this->value;
-	}
-
-
-	/** Parses a raw NEON string token (including its delimiters) and returns the decoded string value. */
-	public static function parse(string $s): string
-	{
-		$s = str_replace("\r", '', $s);
-		if (preg_match('#^...\n++([\t ]*+)#', $s, $m)) { // multiline
-			$res = substr($s, 3, -3);
-			$res = str_replace("\n" . $m[1], "\n", $res);
-			$res = preg_replace('#^\n|\n[\t ]*+$#D', '', $res);
-		} else {
-			$res = substr($s, 1, -1);
-			if ($s[0] === "'") {
-				$res = str_replace("''", "'", $res);
-			}
-		}
-
-		if ($s[0] === "'") {
-			return $res;
-		}
-
-		return preg_replace_callback(
-			'#\\\(?:ud[89ab][0-9a-f]{2}\\\ud[c-f][0-9a-f]{2}|u[0-9a-f]{4}|.)#i',
-			function (array $m): string {
-				$sq = $m[0];
-				if (isset(self::EscapeSequences[$sq[1]])) {
-					return self::EscapeSequences[$sq[1]];
-				} elseif ($sq[1] === 'u' && strlen($sq) >= 6) {
-					return json_decode('"' . $sq . '"') ?? throw new Nette\Neon\Exception("Invalid UTF-8 sequence $sq");
-				} else {
-					throw new Nette\Neon\Exception("Invalid escaping sequence $sq");
-				}
-			},
-			$res,
-		);
 	}
 
 

@@ -213,14 +213,16 @@ final class Parser
 	{
 		if ($token = $this->stream->tryConsume(Token::String)) {
 			try {
-				$node = new Node\StringNode(Node\StringNode::parse($token->text));
+				$node = new Node\StringNode(Scalars::evaluateString($token->text));
 				$this->injectPos($node, $this->getIndex() - 1);
 			} catch (Exception $e) {
 				throw new Exception($e->getMessage(), $token->origin);
 			}
 		} elseif ($token = $this->stream->tryConsume(Token::Literal)) {
 			$pos = $this->getIndex() - 1;
-			$node = new Node\LiteralNode(Node\LiteralNode::parse($token->text, $this->stream->is(Token::Colon, Token::Equals)));
+			$node = new Node\LiteralNode(
+				$this->stream->is(Token::Colon, Token::Equals) ? Scalars::literalKey($token->text) : Scalars::evaluateLiteral($token->text),
+			);
 			$this->injectPos($node, $pos);
 
 		} elseif ($this->stream->is(Token::OpenBracket, Token::OpenParen, Token::OpenBrace)) {
@@ -244,7 +246,7 @@ final class Parser
 		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
 
 		while ($token = $this->stream->tryConsume(Token::Literal)) {
-			$valueNode = new Node\LiteralNode(Node\LiteralNode::parse($token->text));
+			$valueNode = new Node\LiteralNode(Scalars::evaluateLiteral($token->text));
 			$this->injectPos($valueNode, $this->getIndex() - 1);
 			if ($this->stream->is(Token::OpenParen)) {
 				$attributes = $this->parseBraces();
