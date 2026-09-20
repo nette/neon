@@ -70,3 +70,9 @@ test('nodes know the tokens they were parsed from', function () {
 		Dumper::toText($node, [Dumper::HASH => false, Dumper::DEPTH => 20]),
 	);
 });
+
+
+test('500 levels of nesting are allowed, 501 are too deep', function () {
+	Assert::noError(fn() => Neon\Neon::decode(str_repeat('[', 500) . str_repeat(']', 500)));
+	Assert::exception(fn() => Neon\Neon::decode(str_repeat('[', 501) . str_repeat(']', 501)), Neon\Exception::class, 'Too deep nesting on line 1 at column 501');
+});

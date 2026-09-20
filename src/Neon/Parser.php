@@ -13,6 +13,9 @@ use function array_key_exists, count, is_scalar, strlen;
 /** @internal */
 final class Parser
 {
+	public const MaxDepth = 500;
+	private const TooDeep = 'Too deep nesting';
+
 	private const Pairs = [
 		Token::OpenBracket => Token::CloseBracket,
 		Token::OpenBrace => Token::CloseBrace,
@@ -20,12 +23,14 @@ final class Parser
 	];
 
 	private TokenStream $stream;
+	private int $depth = 0;
 
 
 	/** Parses a token stream into an AST. */
 	public function parse(TokenStream $stream): Node
 	{
 		$this->stream = $stream;
+		$this->depth = 0;
 
 		while ($this->stream->tryConsumeNewline());
 		$node = $this->parseBlock($this->stream->getIndentation());
@@ -41,6 +46,17 @@ final class Parser
 
 	private function parseBlock(string $indent, bool $onlyBullets = false): Node
 	{
+		$depth = $this->depth;
+		try {
+			return $this->parseBlockItems($indent, $onlyBullets);
+		} finally {
+			$this->depth = $depth;
+		}
+	}
+
+
+	private function parseBlockItems(string $indent, bool $onlyBullets): Node
+	{
 		$res = new Node\BlockArrayNode($indent);
 		$this->injectPos($res);
 		$keyCheck = [];
@@ -48,8 +64,10 @@ final class Parser
 		while (true) {
 			$item = new Node\ArrayItemNode;
 			$this->injectPos($item);
-			if ($this->stream->tryConsume(Token::Dash)) {
-				// continue
+			if ($bullet = $this->stream->tryConsume(Token::Dash)) {
+				if (!$res->items) {
+					$this->enter($bullet);
+				}
 			} elseif (!$this->stream->is() || $onlyBullets) {
 				return $res->items
 					? $res
@@ -60,6 +78,9 @@ final class Parser
 				if ($this->stream->tryConsume(Token::Colon, Token::Equals)) {
 					$this->checkArrayKey($value, $keyCheck);
 					$item->key = $value;
+					if (!$res->items) {
+						$this->enter($this->stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
+					}
 				} else {
 					if ($res->items) {
 						$this->stream->throwUnexpected();
@@ -184,7 +205,19 @@ final class Parser
 
 	private function parseBraces(): Node\InlineArrayNode
 	{
-		$token = $this->stream->consume();
+		$depth = $this->depth;
+		try {
+			return $this->parseBracesItems();
+		} finally {
+			$this->depth = $depth;
+		}
+	}
+
+
+	private function parseBracesItems(): Node\InlineArrayNode
+	{
+		$token = $this->stream->consume(Token::OpenBracket, Token::OpenBrace, Token::OpenParen);
+		$this->enter($token);
 		$endBrace = self::Pairs[$token->kind];
 		$res = new Node\InlineArrayNode($token->text);
 		$this->injectPos($res, $this->getIndex() - 1);
@@ -221,6 +254,15 @@ final class Parser
 			} elseif (!$this->stream->is($endBrace)) {
 				$this->stream->throwUnexpected();
 			}
+		}
+	}
+
+
+	/** One level deeper into arrays. */
+	private function enter(Token $token): void
+	{
+		if (++$this->depth > self::MaxDepth) {
+			throw new Exception(self::TooDeep, $token->origin);
 		}
 	}
 
