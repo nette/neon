@@ -32,12 +32,6 @@ final class EntityChainNode extends Node
 	}
 
 
-	public function toString(): string
-	{
-		return implode('', array_map(fn($entity) => $entity->toString(), $this->chain));
-	}
-
-
 	public function &getIterator(): \Generator
 	{
 		foreach ($this->chain as &$item) {

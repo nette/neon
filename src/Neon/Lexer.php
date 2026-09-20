@@ -166,14 +166,6 @@ final class Lexer
 	}
 
 
-	/** Checks whether the string must be quoted when encoding to NEON. */
-	public static function requiresDelimiters(string $s): bool
-	{
-		return preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $s)
-			|| !self::isLiteral($s);
-	}
-
-
 	/** Text quoted by `Unexpected '...'`: cut to 40 code points, a line ending counting as one, shown as <new line>. */
 	public static function quote(string $text): string
 	{

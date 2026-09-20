@@ -27,28 +27,4 @@ final class LiteralNode extends Node
 	{
 		return $this->value;
 	}
-
-
-	public function toString(): string
-	{
-		if ($this->value instanceof \DateTimeInterface) {
-			return $this->value->format('Y-m-d H:i:s O');
-
-		} elseif (is_string($this->value)) {
-			return $this->value;
-
-		} elseif (is_float($this->value)) {
-			if (!is_finite($this->value)) {
-				throw new Exception('INF and NAN cannot be encoded to NEON');
-			}
-			$res = json_encode($this->value);
-			return str_contains($res, '.') ? $res : $res . '.0';
-
-		} elseif (is_int($this->value) || is_bool($this->value) || $this->value === null) {
-			return json_encode($this->value);
-
-		} else {
-			throw new \LogicException;
-		}
-	}
 }

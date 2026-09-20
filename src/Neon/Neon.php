@@ -24,14 +24,12 @@ final class Neon
 
 
 	/**
-	 * Encodes a PHP value to a NEON string.
+	 * Writes a PHP value as NEON, inline or as blocks.
+	 * @throws Exception  for a value that cannot be written as NEON
 	 */
 	public static function encode(mixed $value, bool $blockMode = false, string $indentation = "\t"): string
 	{
-		$encoder = new Encoder;
-		$encoder->blockMode = $blockMode;
-		$encoder->indentation = $indentation;
-		return $encoder->encode($value);
+		return new Encoder($blockMode, $indentation)->encode($value);
 	}
 
 

@@ -11,16 +11,4 @@ namespace Nette\Neon\Node;
 /** @internal */
 final class InlineArrayNode extends ArrayNode
 {
-	public function __construct(
-		public string $bracket,
-	) {
-	}
-
-
-	public function toString(): string
-	{
-		return $this->bracket
-			. ArrayItemNode::itemsToInlineString($this->items)
-			. ['[' => ']', '{' => '}', '(' => ')'][$this->bracket];
-	}
 }

@@ -57,7 +57,7 @@ final class Parser
 
 	private function parseBlockItems(string $indent, bool $onlyBullets): Node
 	{
-		$res = new Node\BlockArrayNode($indent);
+		$res = new Node\BlockArrayNode;
 		$this->injectPos($res);
 		$keyCheck = [];
 
@@ -123,10 +123,6 @@ final class Parser
 				if ($this->stream->is() && !$this->stream->is(TokenStream::Newline)) {
 					$this->stream->throwUnexpected();
 				}
-			}
-
-			if ($item->value instanceof Node\BlockArrayNode) {
-				$item->value->indentation = substr($item->value->indentation, strlen($indent));
 			}
 
 			$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
@@ -219,7 +215,7 @@ final class Parser
 		$token = $this->stream->consume(Token::OpenBracket, Token::OpenBrace, Token::OpenParen);
 		$this->enter($token);
 		$endBrace = self::Pairs[$token->kind];
-		$res = new Node\InlineArrayNode($token->text);
+		$res = new Node\InlineArrayNode;
 		$this->injectPos($res, $this->getIndex() - 1);
 		$keyCheck = [];
 

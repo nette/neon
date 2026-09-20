@@ -15,7 +15,6 @@ Nette\Neon\Node\BlockArrayNode
    |   \t    - entity(a: 1)\n
    |   \t    - entity(a: 1 ...    two\n
    |   """'
-   indentation: ''
    items: array (8)
    |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  code: string
@@ -31,7 +30,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  endLine: 3
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- a'
-   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- a'
@@ -73,7 +71,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  '- [k,\n
    |  |  |  |   \t    \t    l, m:\n
    |  |  |  |   \t    n]'
-   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: string
@@ -86,7 +83,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  '[k,\n
    |  |  |  |  |  |  |   \t    \t    l, m:\n
    |  |  |  |  |  |  |   \t    n]'
-   |  |  |  |  |  |  bracket: '['
    |  |  |  |  |  |  items: array (4)
    |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  |  |  |  code: 'k'
@@ -186,7 +182,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  'sub:\n
    |  |  |  |   \t    \t    a: 1\n
    |  |  |  |   \t    \t    b: 2'
-   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: string
@@ -204,7 +199,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  code: string
    |  |  |  |  |  |  |  'a: 1\n
    |  |  |  |  |  |  |   \t    \t    b: 2'
-   |  |  |  |  |  |  indentation: '\t    '
    |  |  |  |  |  |  items: array (2)
    |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  |  |  |  code: 'a: 1'
@@ -278,7 +272,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- entity(a: 1)\n
    |  |  |  |   \t    - entity(a: 1)foo()bar'
-   |  |  |  indentation: '\t    '
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- entity(a: 1)'
@@ -414,7 +407,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  'a: 1\n
    |  |  |  |     b: 2'
-   |  |  |  indentation: '  '
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: 'a: 1'
@@ -469,7 +461,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  key: null
    |  |  value: Nette\Neon\Node\BlockArrayNode
    |  |  |  code: '- c'
-   |  |  |  indentation: '\t    '
    |  |  |  items: array (1)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- c'
@@ -509,7 +500,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  code: string
    |  |  |  |  '- a\n
    |  |  |  |   - b'
-   |  |  |  indentation: ''
    |  |  |  items: array (2)
    |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
    |  |  |  |  |  code: '- a'
@@ -569,7 +559,6 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  value: string
    |  |  |  |  'one\n
    |  |  |  |   two'
-   |  |  |  indentation: '\t    '
    |  |  |  startTokenPos: unset
    |  |  |  endTokenPos: unset
    |  |  |  startLine: 23
