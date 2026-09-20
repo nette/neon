@@ -36,45 +36,8 @@ final class ArrayItemNode extends Node
 	}
 
 
-	/** @param  list<self>  $items */
-	public static function itemsToInlineString(array $items): string
-	{
-		$res = '';
-		foreach ($items as $item) {
-			$res .= ($res === '' ? '' : ', ')
-				. ($item->key ? $item->key->toString() . ': ' : '')
-				. $item->value->toString();
-		}
-
-		return $res;
-	}
-
-
-	/** @param  list<self>  $items */
-	public static function itemsToBlockString(array $items): string
-	{
-		$res = '';
-		foreach ($items as $item) {
-			$v = $item->value->toString();
-			$res .= ($item->key ? $item->key->toString() . ':' : '-')
-				. ($item->value instanceof BlockArrayNode && $item->value->items
-					? "\n" . $v . (substr($v, -2, 1) === "\n" ? '' : "\n")
-					: ' ' . $v . "\n");
-		}
-
-		return $res;
-	}
-
-
 	/** Use itemsToArray() on the parent array node instead. */
 	public function toValue(): never
-	{
-		throw new \LogicException;
-	}
-
-
-	/** Use itemsToBlockString() or itemsToInlineString() instead. */
-	public function toString(): never
 	{
 		throw new \LogicException;
 	}

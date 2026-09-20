@@ -194,8 +194,8 @@ Assert::same(
 );
 
 
-// Invalid UTF-8 is replaced with U+FFFD and triggers warning
-Assert::error(function () {
-	$result = Neon::encode("\x80");
-	Assert::same("\u{FFFD}", $result);
-}, E_USER_WARNING, 'Invalid UTF-8 sequence in string, replaced with U+FFFD');
+Assert::exception(
+	fn() => Neon::encode(['a' => ['x', "\x80"]]),
+	Nette\Neon\Exception::class,
+	'Cannot encode: a string is not valid UTF-8 at a.1',
+);

@@ -7,25 +7,8 @@
 
 namespace Nette\Neon\Node;
 
-use function count;
-
 
 /** @internal */
 final class BlockArrayNode extends ArrayNode
 {
-	public function __construct(
-		public string $indentation = '',
-	) {
-	}
-
-
-	public function toString(): string
-	{
-		if (count($this->items) === 0) {
-			return '[]';
-		}
-
-		$res = ArrayItemNode::itemsToBlockString($this->items);
-		return preg_replace('#^(?=.)#m', $this->indentation, $res);
-	}
 }

@@ -21,28 +21,10 @@ parameters:
 			path: src/Neon/Node/ArrayNode.php
 
 		-
-			message: '#^Property Nette\\Neon\\Node\\EntityChainNode\:\:\$chain \(list\<Nette\\Neon\\Node\\EntityNode\>\) does not accept non\-empty\-list\<Nette\\Neon\\Node\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Neon/Encoder.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1
 			path: src/Neon/Node.php
-
-		-   # Exhaustive type narrowing in LiteralNode::toString() - last branch is runtime validation, reached only for int|bool|null
-			message: '#^Result of \|\| is always true\.$#'
-			identifier: booleanOr.alwaysTrue
-			count: 1
-			path: src/Neon/Node/LiteralNode.php
-
-		-   # dtto - after is_int/is_bool the remaining type is null
-			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
-			identifier: identical.alwaysTrue
-			count: 1
-			path: src/Neon/Node/LiteralNode.php
 
 		-
 			message: '#^Left side of && is always true\.$#'

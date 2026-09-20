@@ -32,15 +32,6 @@ final class EntityNode extends Node
 	}
 
 
-	public function toString(): string
-	{
-		return $this->value->toString()
-			. '('
-			. ($this->attributes ? ArrayItemNode::itemsToInlineString($this->attributes) : '')
-			. ')';
-	}
-
-
 	public function &getIterator(): \Generator
 	{
 		yield $this->value;

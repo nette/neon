@@ -25,10 +25,6 @@ abstract class Node implements \IteratorAggregate
 	abstract public function toValue(): mixed;
 
 
-	/** Converts the node back to its NEON representation. */
-	abstract public function toString(): string;
-
-
 	public function &getIterator(): \Generator
 	{
 		return;

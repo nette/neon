@@ -48,11 +48,6 @@ test('nodes know the tokens they were parsed from', function () {
 	$stream = new Neon\TokenStream(new Neon\Lexer()->tokenize($input));
 	$node = $parser->parse($stream);
 
-	Assert::matchFile(
-		__DIR__ . '/fixtures/parser.nodes.neon',
-		$node->toString(),
-	);
-
 	$traverser = new Traverser;
 	$traverser->traverse($node, function (Node $node) use ($stream) {
 		$tokens = array_slice($stream->tokens, $node->startTokenPos, $node->endTokenPos - $node->startTokenPos + 1);
