@@ -33,7 +33,8 @@ final class Encoder
 
 
 	public function __construct(
-		private readonly bool $blockMode = false,
+		/** @var bool|\Closure(mixed, list<string>): bool */
+		private readonly bool|\Closure $blockMode = false,
 		private readonly string $indentation = "\t",
 	) {
 		if (!preg_match('~^[\t ]+$~D', $indentation)) {
@@ -48,7 +49,7 @@ final class Encoder
 	public function encode(mixed $value): string
 	{
 		$array = $this->materialize($value);
-		if ($array === null || !$this->blockMode) {
+		if ($array === null || !$this->isBlock($value)) {
 			return $this->inline($value, $array);
 		} elseif (!$array[0]) {
 			return $array[1] ? '{}' : '[]';
@@ -66,7 +67,7 @@ final class Encoder
 			$prefix = $hidden ? '-' : $this->formatKey($key) . ':';
 			$this->path[] = $key;
 			$nested = $this->materialize($value);
-			if ($nested && $nested[0]) {
+			if ($nested && $nested[0] && $this->isBlock($value)) {
 				$text = self::indent($this->block($value, $nested[0]), $this->indentation);
 				$res .= $prefix . "\n" . $text . (str_ends_with($text, "\n\n") ? '' : "\n");
 			} else {
@@ -251,6 +252,13 @@ final class Encoder
 			return [$res, true];
 		}
 		return null;
+	}
+
+
+	/** Whether the array is written as a block. */
+	private function isBlock(mixed $value): bool
+	{
+		return $this->blockMode instanceof \Closure ? ($this->blockMode)($value, $this->path) : $this->blockMode;
 	}
 
 
