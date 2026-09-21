@@ -24,10 +24,12 @@ final class Neon
 
 
 	/**
-	 * Writes a PHP value as NEON, inline or as blocks.
+	 * Writes a PHP value as NEON, inline or as blocks. A closure $blockMode(value, keys on the way) is asked for every
+	 * array and writes it as a block if true.
+	 * @param  bool|\Closure(mixed, list<string>): bool  $blockMode
 	 * @throws Exception  for a value that cannot be written as NEON
 	 */
-	public static function encode(mixed $value, bool $blockMode = false, string $indentation = "\t"): string
+	public static function encode(mixed $value, bool|\Closure $blockMode = false, string $indentation = "\t"): string
 	{
 		return new Encoder($blockMode, $indentation)->encode($value);
 	}

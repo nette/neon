@@ -140,6 +140,24 @@ test('floats do not depend on the precision settings or the locale', function ()
 });
 
 
+test('blocks chosen by a closure', function () {
+	$value = ['a' => ['b' => [1, 2]], 'c' => 3, 'roles' => ['guest', 'member']];
+	Assert::same("a: {b: [1, 2]}\nc: 3\nroles: [guest, member]\n", Neon::encode($value, fn($v, array $path) => !$path));
+
+	$paths = [];
+	$block = function (mixed $value, array $path) use (&$paths): bool {
+		$paths[] = implode('.', $path);
+		return !is_array($value) || !array_is_list($value);
+	};
+	Assert::same("a:\n\tb: [1, 2]\n\nc: 3\nroles: [guest, member]\n", Neon::encode($value, $block));
+	Assert::same(['', 'a', 'a.b', 'roles'], $paths);
+	Assert::same('[1]', Neon::encode([1], fn() => false));
+
+	Assert::exception(fn() => Neon::encode([], false, ''), InvalidArgumentException::class);
+	Assert::exception(fn() => Neon::encode([], false, "\n"), InvalidArgumentException::class);
+});
+
+
 test('strings that a literal would read otherwise are quoted', function () {
 	Assert::same(
 		"['-.5', '+.5', '2020-01-01', '0x10', a b, '', ' a', 'a ', 'a:', a:b, 'a #', \"\\u0000\"]",
