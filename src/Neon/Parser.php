@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function array_key_exists, count, is_scalar, strlen;
+use function array_key_exists, count, is_scalar, is_string, strlen;
 
 
 /** @internal */
@@ -45,7 +45,8 @@ final class Parser
 	}
 
 
-	private function parseBlock(string $indent, bool $onlyBullets = false): Node
+	/** @param  string|\Closure(string): string  $indent */
+	private function parseBlock(string|\Closure $indent, bool $onlyBullets = false): Node
 	{
 		$depth = $this->depth;
 		try {
@@ -56,8 +57,49 @@ final class Parser
 	}
 
 
-	private function parseBlockItems(string $indent, bool $onlyBullets): Node
+	/**
+	 * A block opened on the line of a dash is indented by a tab if the line where its indentation is first
+	 * compared starts with one, by two spaces otherwise.
+	 * @param  string|\Closure(string): string  $base
+	 */
+	private function parseDashBlock(string|\Closure $base): Node
 	{
+		$resolved = $line = null;
+		$indent = function (string $next) use ($base, &$resolved, &$line): string {
+			if ($resolved === null) {
+				$base = $this->resolve($base, $next);
+				$resolved = $base . (str_starts_with($next, $base . "\t") ? "\t" : '  ');
+				$line = $this->stream->mark();
+			}
+			return $resolved;
+		};
+
+		try {
+			return $this->parseBlock($indent);
+		} catch (Exception $e) {
+			if (!$this->tooDeep && $resolved !== null && str_ends_with($resolved, "\t") && $line) {
+				$this->stream->reset($line);
+				$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
+			}
+			throw $e;
+		}
+	}
+
+
+	/**
+	 * The indentation of a block, decided for a block opened on the line of a dash by the indentation of the next line.
+	 * @param  string|\Closure(string): string  $indent
+	 */
+	private function resolve(string|\Closure $indent, string $next): string
+	{
+		return is_string($indent) ? $indent : $indent($next);
+	}
+
+
+	/** @param  string|\Closure(string): string  $pending */
+	private function parseBlockItems(string|\Closure $pending, bool $onlyBullets): Node
+	{
+		$stream = $this->stream;
 		$res = new Node\BlockArrayNode;
 		$this->injectPos($res);
 		$keyCheck = [];
@@ -65,26 +107,26 @@ final class Parser
 		while (true) {
 			$item = new Node\ArrayItemNode;
 			$this->injectPos($item);
-			if ($bullet = $this->stream->tryConsume(Token::Dash)) {
+			if ($bullet = $stream->tryConsume(Token::Dash)) {
 				if (!$res->items) {
 					$this->enter($bullet);
 				}
-			} elseif (!$this->stream->is() || $onlyBullets) {
+			} elseif (!$stream->is() || $onlyBullets) {
 				return $res->items
 					? $res
 					: $this->injectPos(new Node\LiteralNode(null));
 
 			} else {
 				$value = $this->parseValue();
-				if ($this->stream->tryConsume(Token::Colon, Token::Equals)) {
+				if ($stream->tryConsume(Token::Colon, Token::Equals)) {
 					$this->checkArrayKey($value, $keyCheck);
 					$item->key = $value;
 					if (!$res->items) {
-						$this->enter($this->stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
+						$this->enter($stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
 					}
 				} else {
 					if ($res->items) {
-						$this->stream->throwUnexpected();
+						$stream->throwUnexpected();
 					}
 
 					return $value;
@@ -95,15 +137,12 @@ final class Parser
 			$item->value = $none = new Node\LiteralNode(null);
 			$this->injectPos($item->value);
 
-			if ($this->stream->tryConsumeNewline()) {
-				while ($this->stream->tryConsumeNewline());
-				$nextIndent = $this->stream->getIndentation();
-
-				if (!$this->stream->is()) {
-					// trailing whitespace before the end of input is not indentation
-
-				} elseif (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-					$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
+			if ($stream->tryConsumeNewline()) {
+				while ($stream->tryConsumeNewline());
+				$nextIndent = $stream->getIndentation();
+				$indent = $this->resolve($pending, $nextIndent);
+				if (!self::isComparable($nextIndent, $indent)) {
+					$stream->throwUnexpected('Invalid combination of tabs and spaces');
 
 				} elseif (strlen($nextIndent) > strlen($indent)) { // open new block
 					$item->value = $this->parseBlock($nextIndent);
@@ -115,18 +154,19 @@ final class Parser
 
 					return $res;
 
-				} elseif ($item->key !== null && $this->stream->is(Token::Dash)) { // special dash subblock
+				} elseif ($item->key !== null && $stream->is(Token::Dash)) { // special dash subblock
 					$item->value = $this->parseBlock($indent, onlyBullets: true);
 				}
-			} elseif ($item->key === null) {  // open new block after dash
-				$item->value = $this->parseDashBlock($indent);
+			} elseif ($item->key === null) { // open new block after dash
+				$item->value = $this->parseDashBlock($pending);
 
-			} elseif ($this->stream->is()) {
+			} elseif ($stream->is()) {
 				$item->value = $this->parseValue();
-				if ($this->stream->is() && !$this->stream->is(TokenStream::Newline)) {
-					$this->stream->throwUnexpected();
+				if (!$stream->is(TokenStream::Newline, Token::EndOfFile)) {
+					$stream->throwUnexpected();
 				}
 			}
+
 
 			if ($bullet) {
 				$first = $this->stream->tokens[$item->value->startTokenPos ?? throw new \LogicException('The value has no position.')];
@@ -136,71 +176,22 @@ final class Parser
 			$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
 			$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-			while ($this->stream->tryConsumeNewline());
-			if (!$this->stream->is()) {
+			while ($stream->tryConsumeNewline());
+			if (!$stream->is()) {
 				return $res;
 			}
 
-			$nextIndent = $this->stream->getIndentation();
-			if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-				$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
+			$nextIndent = $stream->getIndentation();
+			$indent = $this->resolve($pending, $nextIndent);
+			if (!self::isComparable($nextIndent, $indent)) {
+				$stream->throwUnexpected('Invalid combination of tabs and spaces');
 
 			} elseif (strlen($nextIndent) > strlen($indent)) {
-				$this->stream->throwUnexpected('Bad indentation');
+				$stream->throwUnexpected('Bad indentation');
 
 			} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 				return $res;
 			}
-		}
-	}
-
-
-	/** Opens the block after a dash: two spaces if the next line extends the indentation by a space, a tab otherwise. */
-	private function parseDashBlock(string $indent): Node
-	{
-		$line = $this->findNextLine();
-		if ($line !== null && str_starts_with($line[1], $indent . ' ')) {
-			return $this->parseBlock($indent . '  ');
-		}
-
-		try {
-			return $this->parseBlock($indent . "\t");
-		} catch (Exception $e) {
-			if ($line === null || $this->stream->mark()[0] < $line[0][0] || $this->tooDeep) {
-				throw $e;
-			}
-
-			$this->stream->reset($line[0]);
-			$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
-		}
-	}
-
-
-	/**
-	 * Returns the mark and the indentation of the first token of the next line outside inline structures, or null.
-	 * @return ?array{array{int<0, max>, bool}, string}
-	 */
-	private function findNextLine(): ?array
-	{
-		$stream = $this->stream;
-		$start = $stream->mark();
-		try {
-			$depth = 0;
-			while (($next = $stream->peek()) !== TokenStream::Newline || $depth > 0) {
-				if ($next === Token::EndOfFile) {
-					return null;
-				} elseif ($next === TokenStream::Newline) {
-					$stream->tryConsumeNewline();
-				} else {
-					$kind = $stream->consume()->kind;
-					$depth += isset(self::Pairs[$kind]) ? 1 : (in_array($kind, self::Pairs, true) ? -1 : 0);
-				}
-			}
-
-			while ($stream->tryConsumeNewline());
-			return $stream->is() ? [$stream->mark(), $stream->getIndentation()] : null;
-		} finally {
-			$stream->reset($start);
 		}
 	}
 
@@ -375,6 +366,13 @@ final class Parser
 		$last = $tokens[$node->endTokenPos];
 		$node->endLine = $last->origin?->advance($last->text)->line;
 		return $node;
+	}
+
+
+	private static function isComparable(string $a, string $b): bool
+	{
+		$n = min(strlen($a), strlen($b));
+		return strncmp($a, $b, $n) === 0;
 	}
 
 
