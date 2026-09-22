@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function array_key_exists, count, is_scalar, strlen;
+use function array_key_exists, count, is_scalar, is_string, strlen;
 
 
 /** @internal */
@@ -15,6 +15,7 @@ final class Parser
 {
 	public const MaxDepth = 500;
 	private const TooDeep = 'Too deep nesting';
+	private const InvalidIndentation = 'Invalid combination of tabs and spaces';
 
 	private const Pairs = [
 		Token::OpenBracket => Token::CloseBracket,
@@ -44,7 +45,8 @@ final class Parser
 	}
 
 
-	private function parseBlock(string $indent, bool $onlyBullets = false): Node
+	/** @param  string|\Closure(string): string  $indent */
+	private function parseBlock(string|\Closure $indent, bool $onlyBullets = false): Node
 	{
 		$depth = $this->depth;
 		try {
@@ -55,8 +57,51 @@ final class Parser
 	}
 
 
-	private function parseBlockItems(string $indent, bool $onlyBullets): Node
+	/**
+	 * A block opened on the line of a dash is indented by a tab if the line where its indentation is first
+	 * compared starts with one, by two spaces otherwise. 3.x tries the tab and then the spaces, which costs time
+	 * exponential in nested dashes; the spaces fail on that line whenever the tab was chosen, so a block
+	 * that fails with the tab fails as the spaces would.
+	 * @param  string|\Closure(string): string  $base
+	 */
+	private function parseDashBlock(string|\Closure $base): Node
 	{
+		$resolved = $line = null;
+		$indent = function (string $next) use ($base, &$resolved, &$line): string {
+			if ($resolved === null) {
+				$base = $this->resolve($base, $next);
+				$resolved = $base . (str_starts_with($next, $base . "\t") ? "\t" : '  ');
+				$line = $this->stream->mark();
+			}
+			return $resolved;
+		};
+
+		try {
+			return $this->parseBlock($indent);
+		} catch (Exception $e) {
+			if ($e->getDescription() !== self::TooDeep && $resolved !== null && str_ends_with($resolved, "\t") && $line) {
+				$this->stream->reset($line);
+				$this->stream->throwUnexpected(self::InvalidIndentation);
+			}
+			throw $e;
+		}
+	}
+
+
+	/**
+	 * The indentation of a block, decided for a block opened on the line of a dash by the indentation of the next line.
+	 * @param  string|\Closure(string): string  $indent
+	 */
+	private function resolve(string|\Closure $indent, string $next): string
+	{
+		return is_string($indent) ? $indent : $indent($next);
+	}
+
+
+	/** @param  string|\Closure(string): string  $pending */
+	private function parseBlockItems(string|\Closure $pending, bool $onlyBullets): Node
+	{
+		$stream = $this->stream;
 		$res = new Node\BlockArrayNode;
 		$this->injectPos($res);
 		$keyCheck = [];
@@ -64,26 +109,26 @@ final class Parser
 		while (true) {
 			$item = new Node\ArrayItemNode;
 			$this->injectPos($item);
-			if ($bullet = $this->stream->tryConsume(Token::Dash)) {
+			if ($bullet = $stream->tryConsume(Token::Dash)) {
 				if (!$res->items) {
 					$this->enter($bullet);
 				}
-			} elseif (!$this->stream->is() || $onlyBullets) {
+			} elseif (!$stream->is() || $onlyBullets) {
 				return $res->items
 					? $res
 					: $this->injectPos(new Node\LiteralNode(null));
 
 			} else {
 				$value = $this->parseValue();
-				if ($this->stream->tryConsume(Token::Colon, Token::Equals)) {
+				if ($stream->tryConsume(Token::Colon, Token::Equals)) {
 					$this->checkArrayKey($value, $keyCheck);
 					$item->key = $value;
 					if (!$res->items) {
-						$this->enter($this->stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
+						$this->enter($stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
 					}
 				} else {
 					if ($res->items) {
-						$this->stream->throwUnexpected();
+						$stream->throwUnexpected();
 					}
 
 					return $value;
@@ -94,12 +139,12 @@ final class Parser
 			$item->value = new Node\LiteralNode(null);
 			$this->injectPos($item->value);
 
-			if ($this->stream->tryConsumeNewline()) {
-				while ($this->stream->tryConsumeNewline());
-				$nextIndent = $this->stream->getIndentation();
-
-				if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-					$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
+			if ($stream->tryConsumeNewline()) {
+				while ($stream->tryConsumeNewline());
+				$nextIndent = $stream->getIndentation();
+				$indent = $this->resolve($pending, $nextIndent);
+				if (!self::isComparable($nextIndent, $indent)) {
+					$stream->throwUnexpected(self::InvalidIndentation);
 
 				} elseif (strlen($nextIndent) > strlen($indent)) { // open new block
 					$item->value = $this->parseBlock($nextIndent);
@@ -107,38 +152,35 @@ final class Parser
 				} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 					return $res;
 
-				} elseif ($item->key !== null && $this->stream->is(Token::Dash)) { // special dash subblock
+				} elseif ($item->key !== null && $stream->is(Token::Dash)) { // special dash subblock
 					$item->value = $this->parseBlock($indent, onlyBullets: true);
 				}
-			} elseif ($item->key === null) {  // open new block after dash
-				$save = $this->stream->mark();
-				try {
-					$item->value = $this->parseBlock($indent . "\t");
-				} catch (Exception) {
-					$this->stream->reset($save);
-					$item->value = $this->parseBlock($indent . '  ');
-				}
-			} elseif ($this->stream->is()) {
+			} elseif ($item->key === null) { // open new block after dash
+				$item->value = $this->parseDashBlock($pending);
+
+			} elseif ($stream->is()) {
 				$item->value = $this->parseValue();
-				if ($this->stream->is() && !$this->stream->is(TokenStream::Newline)) {
-					$this->stream->throwUnexpected();
+				if (!$stream->is(TokenStream::Newline, Token::EndOfFile)) {
+					$stream->throwUnexpected();
 				}
 			}
+
 
 			$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
 			$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
 
-			while ($this->stream->tryConsumeNewline());
-			if (!$this->stream->is()) {
+			while ($stream->tryConsumeNewline());
+			if (!$stream->is()) {
 				return $res;
 			}
 
-			$nextIndent = $this->stream->getIndentation();
-			if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
-				$this->stream->throwUnexpected('Invalid combination of tabs and spaces');
+			$nextIndent = $stream->getIndentation();
+			$indent = $this->resolve($pending, $nextIndent);
+			if (!self::isComparable($nextIndent, $indent)) {
+				$stream->throwUnexpected(self::InvalidIndentation);
 
 			} elseif (strlen($nextIndent) > strlen($indent)) {
-				$this->stream->throwUnexpected('Bad indentation');
+				$stream->throwUnexpected('Bad indentation');
 
 			} elseif (strlen($nextIndent) < strlen($indent)) { // close block
 				return $res;
@@ -294,6 +336,13 @@ final class Parser
 		$last = $tokens[$node->endTokenPos];
 		$node->endLine = $last->origin?->advance($last->text)->line;
 		return $node;
+	}
+
+
+	private static function isComparable(string $a, string $b): bool
+	{
+		$n = min(strlen($a), strlen($b));
+		return strncmp($a, $b, $n) === 0;
 	}
 
 

@@ -70,4 +70,14 @@ test('nodes know the tokens they were parsed from', function () {
 test('500 levels of nesting are allowed, 501 are too deep', function () {
 	Assert::noError(fn() => Neon\Neon::decode(str_repeat('[', 500) . str_repeat(']', 500)));
 	Assert::exception(fn() => Neon\Neon::decode(str_repeat('[', 501) . str_repeat(']', 501)), Neon\Exception::class, 'Too deep nesting on line 1 at column 501');
+	Assert::exception(fn() => Neon\Neon::decode(str_repeat('- ', 501) . 'a'), Neon\Exception::class, 'Too deep nesting on line 1 at column 1001');
+});
+
+
+test('a block on the line of a dash takes the indentation of its next line, in linear time', function () {
+	Assert::same([['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4]], Neon\Neon::decode("- a: 1\n\tb: 2\n- c: 3\n  d: 4\n"));
+
+	$start = hrtime(true);
+	Assert::exception(fn() => Neon\Neon::decode(str_repeat('- ', 300) . "a: 1\n" . str_repeat(' ', 3) . 'b: 2'), Neon\Exception::class, 'Bad indentation on line 2 at column 4');
+	Assert::true(hrtime(true) - $start < 1e9);
 });
