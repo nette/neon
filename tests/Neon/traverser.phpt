@@ -91,14 +91,14 @@ test('a visitor changes the nodes in place', function () {
 	$node = parse('a: foo(1, 2, 3)');
 	$node = (new Traverser)->traverse($node, function (Node $node) {
 		if ($node instanceof Node\EntityNode) {
-			foreach ($node->attributes as $i => $attr) {
+			foreach ($node->attributes->items as $i => $attr) {
 				$attr->key ??= new Node\LiteralNode("key$i");
 			}
 		}
 	});
 	Assert::equal([
 		'a' => new Neon\Entity('foo', ['key0' => 1, 'key1' => 2, 'key2' => 3]),
-	], $node->toValue());
+	], new Neon\Evaluator()->evaluate($node));
 });
 
 
@@ -112,5 +112,5 @@ test('a replacement returned by the visitor takes the place of the node', functi
 	Assert::notSame($node->items[0]->key, $newNode->items[0]->key);
 	Assert::notSame($node->items[0]->value, $newNode->items[0]->value);
 	Assert::notSame($node->items[0]->value->value, $newNode->items[0]->value->value);
-	Assert::notSame($node->items[0]->value->attributes[0], $newNode->items[0]->value->attributes[0]);
+	Assert::notSame($node->items[0]->value->attributes, $newNode->items[0]->value->attributes);
 });

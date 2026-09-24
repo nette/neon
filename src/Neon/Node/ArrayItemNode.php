@@ -8,6 +8,7 @@
 namespace Nette\Neon\Node;
 
 use Nette\Neon\Node;
+use function is_scalar;
 
 
 /** @internal */
@@ -17,29 +18,11 @@ final class ArrayItemNode extends Node
 	public Node $value;
 
 
-	/**
-	 * @param  list<self>  $items
-	 * @return mixed[]
-	 */
-	public static function itemsToArray(array $items): array
+	/** The canonical key, or null for an item without a key. */
+	public function getKeyValue(): ?string
 	{
-		$res = [];
-		foreach ($items as $item) {
-			if ($item->key === null) {
-				$res[] = $item->value->toValue();
-			} else {
-				$res[(string) $item->key->toValue()] = $item->value->toValue();
-			}
-		}
-
-		return $res;
-	}
-
-
-	/** Use itemsToArray() on the parent array node instead. */
-	public function toValue(): never
-	{
-		throw new \LogicException;
+		$key = $this->key instanceof LiteralNode || $this->key instanceof StringNode ? $this->key->value : null;
+		return is_scalar($key) ? (string) $key : null;
 	}
 
 

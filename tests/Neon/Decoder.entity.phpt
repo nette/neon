@@ -66,11 +66,11 @@ Assert::equal(
 Assert::exception(
 	fn() => Neon::decode('!!chain(a)'),
 	Nette\Neon\Exception::class,
-	"Entity name '!!chain' is reserved.",
+	"Entity name '!!chain' is reserved on line 1 at column 1",
 );
 
 Assert::exception(
 	fn() => Neon::decode('"!!chain"(a)'),
 	Nette\Neon\Exception::class,
-	"Entity name '!!chain' is reserved.",
+	"Entity name '!!chain' is reserved on line 1 at column 1",
 );

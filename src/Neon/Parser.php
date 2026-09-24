@@ -229,16 +229,18 @@ final class Parser
 			return $node;
 		}
 
+		$this->checkEntityHead($node);
 		$attributes = $this->parseBraces();
-		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes->items), $node->startTokenPos, $attributes->endTokenPos);
+		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes), $node->startTokenPos, $attributes->endTokenPos);
 
 		while ($token = $this->stream->tryConsume(Token::Literal)) {
 			$valueNode = new Node\LiteralNode(Scalars::evaluateLiteral($token->text));
 			$this->injectPos($valueNode, $this->getIndex() - 1);
+			$this->checkEntityHead($valueNode);
 			if ($this->stream->is(Token::OpenParen)) {
 				$attributes = $this->parseBraces();
 				$entities[] = $this->injectPos(
-					new Node\EntityNode($valueNode, $attributes->items),
+					new Node\EntityNode($valueNode, $attributes),
 					$valueNode->startTokenPos,
 					$attributes->endTokenPos,
 				);
@@ -317,6 +319,17 @@ final class Parser
 		if (++$this->depth > self::MaxDepth) {
 			$this->tooDeep = true;
 			throw new Exception('Too deep nesting', $token->origin);
+		}
+	}
+
+
+	private function checkEntityHead(Node $node): void
+	{
+		if (($node instanceof Node\StringNode || $node instanceof Node\LiteralNode) && $node->value === Neon::Chain) {
+			throw new Exception(
+				"Entity name '" . Neon::Chain . "' is reserved",
+				$this->stream->tokens[$node->startTokenPos ?? throw new \LogicException('The node has no position.')]->origin,
+			);
 		}
 	}
 

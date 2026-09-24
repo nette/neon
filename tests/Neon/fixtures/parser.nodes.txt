@@ -285,27 +285,33 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  startLine: 15
    |  |  |  |  |  |  |  endLine: 15
-   |  |  |  |  |  |  attributes: array (1)
-   |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
-   |  |  |  |  |  |  |  |  code: 'a: 1'
-   |  |  |  |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
-   |  |  |  |  |  |  |  |  |  code: 'a'
-   |  |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  attributes: Nette\Neon\Node\InlineArrayNode
+   |  |  |  |  |  |  |  code: '(a: 1)'
+   |  |  |  |  |  |  |  items: array (1)
+   |  |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  |  |  |  |  code: 'a: 1'
+   |  |  |  |  |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  |  |  code: 'a'
+   |  |  |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  startLine: 15
+   |  |  |  |  |  |  |  |  |  |  endLine: 15
+   |  |  |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  |  |  code: '1'
+   |  |  |  |  |  |  |  |  |  |  value: 1
+   |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  startLine: 15
+   |  |  |  |  |  |  |  |  |  |  endLine: 15
    |  |  |  |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  |  startLine: 15
    |  |  |  |  |  |  |  |  |  endLine: 15
-   |  |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
-   |  |  |  |  |  |  |  |  |  code: '1'
-   |  |  |  |  |  |  |  |  |  value: 1
-   |  |  |  |  |  |  |  |  |  startTokenPos: unset
-   |  |  |  |  |  |  |  |  |  endTokenPos: unset
-   |  |  |  |  |  |  |  |  |  startLine: 15
-   |  |  |  |  |  |  |  |  |  endLine: 15
-   |  |  |  |  |  |  |  |  startTokenPos: unset
-   |  |  |  |  |  |  |  |  endTokenPos: unset
-   |  |  |  |  |  |  |  |  startLine: 15
-   |  |  |  |  |  |  |  |  endLine: 15
+   |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  startLine: 15
+   |  |  |  |  |  |  |  endLine: 15
    |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  startLine: 15
@@ -319,7 +325,7 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  key: null
    |  |  |  |  |  value: Nette\Neon\Node\EntityChainNode
    |  |  |  |  |  |  code: 'entity(a: 1)foo()bar'
-   |  |  |  |  |  |  chain: array (3)
+   |  |  |  |  |  |  entities: array (3)
    |  |  |  |  |  |  |  0 => Nette\Neon\Node\EntityNode
    |  |  |  |  |  |  |  |  code: 'entity(a: 1)'
    |  |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
@@ -329,27 +335,33 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  |  startLine: 16
    |  |  |  |  |  |  |  |  |  endLine: 16
-   |  |  |  |  |  |  |  |  attributes: array (1)
-   |  |  |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
-   |  |  |  |  |  |  |  |  |  |  code: 'a: 1'
-   |  |  |  |  |  |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
-   |  |  |  |  |  |  |  |  |  |  |  code: 'a'
-   |  |  |  |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  |  |  attributes: Nette\Neon\Node\InlineArrayNode
+   |  |  |  |  |  |  |  |  |  code: '(a: 1)'
+   |  |  |  |  |  |  |  |  |  items: array (1)
+   |  |  |  |  |  |  |  |  |  |  0 => Nette\Neon\Node\ArrayItemNode
+   |  |  |  |  |  |  |  |  |  |  |  code: 'a: 1'
+   |  |  |  |  |  |  |  |  |  |  |  key: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  |  |  |  |  code: 'a'
+   |  |  |  |  |  |  |  |  |  |  |  |  value: 'a'
+   |  |  |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  |  |  startLine: 16
+   |  |  |  |  |  |  |  |  |  |  |  |  endLine: 16
+   |  |  |  |  |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
+   |  |  |  |  |  |  |  |  |  |  |  |  code: '1'
+   |  |  |  |  |  |  |  |  |  |  |  |  value: 1
+   |  |  |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  |  |  |  startLine: 16
+   |  |  |  |  |  |  |  |  |  |  |  |  endLine: 16
    |  |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  |  |  |  startLine: 16
    |  |  |  |  |  |  |  |  |  |  |  endLine: 16
-   |  |  |  |  |  |  |  |  |  |  value: Nette\Neon\Node\LiteralNode
-   |  |  |  |  |  |  |  |  |  |  |  code: '1'
-   |  |  |  |  |  |  |  |  |  |  |  value: 1
-   |  |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
-   |  |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
-   |  |  |  |  |  |  |  |  |  |  |  startLine: 16
-   |  |  |  |  |  |  |  |  |  |  |  endLine: 16
-   |  |  |  |  |  |  |  |  |  |  startTokenPos: unset
-   |  |  |  |  |  |  |  |  |  |  endTokenPos: unset
-   |  |  |  |  |  |  |  |  |  |  startLine: 16
-   |  |  |  |  |  |  |  |  |  |  endLine: 16
+   |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  startLine: 16
+   |  |  |  |  |  |  |  |  |  endLine: 16
    |  |  |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  startLine: 16
@@ -363,7 +375,13 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  |  startLine: 16
    |  |  |  |  |  |  |  |  |  endLine: 16
-   |  |  |  |  |  |  |  |  attributes: array (0)
+   |  |  |  |  |  |  |  |  attributes: Nette\Neon\Node\InlineArrayNode
+   |  |  |  |  |  |  |  |  |  code: '()'
+   |  |  |  |  |  |  |  |  |  items: array (0)
+   |  |  |  |  |  |  |  |  |  startTokenPos: unset
+   |  |  |  |  |  |  |  |  |  endTokenPos: unset
+   |  |  |  |  |  |  |  |  |  startLine: 16
+   |  |  |  |  |  |  |  |  |  endLine: 16
    |  |  |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  startLine: 16
@@ -377,7 +395,7 @@ Nette\Neon\Node\BlockArrayNode
    |  |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  |  startLine: 16
    |  |  |  |  |  |  |  |  |  endLine: 16
-   |  |  |  |  |  |  |  |  attributes: array (0)
+   |  |  |  |  |  |  |  |  attributes: null
    |  |  |  |  |  |  |  |  startTokenPos: unset
    |  |  |  |  |  |  |  |  endTokenPos: unset
    |  |  |  |  |  |  |  |  startLine: 16

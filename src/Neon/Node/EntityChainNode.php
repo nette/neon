@@ -7,7 +7,6 @@
 
 namespace Nette\Neon\Node;
 
-use Nette\Neon;
 use Nette\Neon\Node;
 
 
@@ -16,27 +15,16 @@ final class EntityChainNode extends Node
 {
 	public function __construct(
 		/** @var list<EntityNode> */
-		public array $chain = [],
+		public array $entities = [],
 	) {
-	}
-
-
-	public function toValue(): Neon\Entity
-	{
-		$entities = [];
-		foreach ($this->chain as $item) {
-			$entities[] = $item->toValue();
-		}
-
-		return new Neon\Entity(Neon\Neon::Chain, $entities);
 	}
 
 
 	public function &getIterator(): \Generator
 	{
-		foreach ($this->chain as &$item) {
+		foreach ($this->entities as &$item) {
 			yield $item;
 		}
-		$this->chain = array_values(array_filter($this->chain));
+		$this->entities = array_values(array_filter($this->entities));
 	}
 }

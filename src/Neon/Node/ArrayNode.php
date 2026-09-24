@@ -7,7 +7,7 @@
 
 namespace Nette\Neon\Node;
 
-use Nette\Neon\Node;
+use Nette\Neon\{Exception, Node, Scalars};
 
 
 /** @internal */
@@ -17,10 +17,23 @@ abstract class ArrayNode extends Node
 	public array $items = [];
 
 
-	/** @return mixed[] */
-	public function toValue(): array
+	/**
+	 * The key of each item, explicit or implicit: an item without a key gets the greatest integer key so far plus one.
+	 * @return list<string>
+	 * @throws Exception  for an implicit key beyond the 64-bit range
+	 */
+	public function getItemKeys(): array
 	{
-		return ArrayItemNode::itemsToArray($this->items);
+		$max = null;
+		$res = [];
+		foreach ($this->items as $item) {
+			$key = $item->getKeyValue()
+				?? Scalars::nextImplicitKey($max)
+				?? throw new Exception('Implicit key overflow');
+			$max = Scalars::maxIntegerKey($max, $key);
+			$res[] = $key;
+		}
+		return $res;
 	}
 
 

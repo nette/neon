@@ -10,10 +10,6 @@ parameters:
 		-
 			identifier: arrayFilter.same
 			count: 1
-			path: src/Neon/Node/EntityNode.php
-		-
-			identifier: arrayFilter.same
-			count: 1
 			path: src/Neon/Node/EntityChainNode.php
 		-
 			identifier: arrayFilter.same

@@ -21,10 +21,6 @@ abstract class Node implements \IteratorAggregate
 	public ?int $endLine = null;
 
 
-	/** Converts the node to its PHP value. */
-	abstract public function toValue(): mixed;
-
-
 	public function &getIterator(): \Generator
 	{
 		return;

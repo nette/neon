@@ -17,8 +17,7 @@ final class Decoder
 	/** Parses a NEON string and returns the corresponding PHP value. */
 	public function decode(string $input): mixed
 	{
-		$node = $this->parseToNode($input);
-		return $node->toValue();
+		return new Evaluator()->evaluate($this->parseToNode($input));
 	}
 
 
