@@ -19,9 +19,4 @@ final class StringNode extends Node
 	) {
 	}
 
-
-	public function toValue(): string
-	{
-		return $this->value;
-	}
 }

@@ -21,7 +21,7 @@ final class Entity extends \stdClass
 	}
 
 
-	/** @param  mixed[]  $properties */
+	/** @param  array{value: mixed, attributes: mixed[]}  $properties */
 	public static function __set_state(array $properties): self
 	{
 		return new self($properties['value'], $properties['attributes']);

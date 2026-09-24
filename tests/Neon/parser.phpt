@@ -60,9 +60,9 @@ test('nodes know the tokens they were parsed from', function () {
 		unset($node->startTokenPos, $node->endTokenPos);
 	});
 
-	Assert::matchFile(
-		__DIR__ . '/fixtures/parser.nodes.txt',
-		Dumper::toText($node, [Dumper::HASH => false, Dumper::DEPTH => 20]),
+	Assert::same(
+		rtrim(str_replace("\r\n", "\n", (string) file_get_contents(__DIR__ . '/fixtures/parser.nodes.txt'))),
+		rtrim(Dumper::toText($node, [Dumper::HASH => false, Dumper::DEPTH => 20])),
 	);
 });
 

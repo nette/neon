@@ -21,10 +21,4 @@ final class LiteralNode extends Node
 	) {
 	}
 
-
-	/** @return bool|int|float|string|\DateTimeInterface|null */
-	public function toValue(): mixed
-	{
-		return $this->value;
-	}
 }

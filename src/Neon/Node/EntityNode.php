@@ -7,9 +7,6 @@
 
 namespace Nette\Neon\Node;
 
-use Nette\Neon\Entity;
-use Nette\Neon\Exception;
-use Nette\Neon\Neon;
 use Nette\Neon\Node;
 
 
@@ -18,30 +15,16 @@ final class EntityNode extends Node
 {
 	public function __construct(
 		public Node $value,
-		/** @var list<ArrayItemNode> */
-		public array $attributes = [],
+		public ?InlineArrayNode $attributes = null,
 	) {
-	}
-
-
-	public function toValue(): Entity
-	{
-		$value = $this->value->toValue();
-		if ($value === Neon::Chain) { // must not be forgeable from input
-			throw new Exception("Entity name '" . Neon::Chain . "' is reserved.");
-		}
-
-		return new Entity($value, ArrayItemNode::itemsToArray($this->attributes));
 	}
 
 
 	public function &getIterator(): \Generator
 	{
 		yield $this->value;
-
-		foreach ($this->attributes as &$item) {
-			yield $item;
+		if ($this->attributes) {
+			yield $this->attributes;
 		}
-		$this->attributes = array_values(array_filter($this->attributes));
 	}
 }

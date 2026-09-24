@@ -37,40 +37,10 @@ function testDecoder(string $input): void
 }
 
 
-function testStringNode(Node\StringNode $node): void
-{
-	assertType('string', $node->toValue());
-}
 
 
-function testLiteralNode(Node\LiteralNode $node): void
-{
-	assertType('bool|DateTimeInterface|float|int|string|null', $node->toValue());
-}
 
 
-function testEntityNode(Node\EntityNode $node): void
-{
-	assertType(Nette\Neon\Entity::class, $node->toValue());
-}
-
-
-function testEntityChainNode(Node\EntityChainNode $node): void
-{
-	assertType(Nette\Neon\Entity::class, $node->toValue());
-}
-
-
-function testBlockArrayNode(Node\BlockArrayNode $node): void
-{
-	assertType('array<mixed>', $node->toValue());
-}
-
-
-function testInlineArrayNode(Node\InlineArrayNode $node): void
-{
-	assertType('array<mixed>', $node->toValue());
-}
 
 
 function testTraverser(Node $node): void
