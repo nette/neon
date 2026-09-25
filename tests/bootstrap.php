@@ -15,3 +15,4 @@ date_default_timezone_set('Europe/Prague');
 
 require __DIR__ . '/helpers/corpus.php';
 require __DIR__ . '/helpers/typed.php';
+require __DIR__ . '/helpers/dumper.php';

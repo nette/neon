@@ -7,10 +7,16 @@
 
 namespace Nette\Neon;
 
-use function array_key_exists, count, is_scalar, is_string, strlen;
+use Nette\Neon\Nodes\{
+	ArrayItemNode, BlockArrayNode, DocumentNode, EntityChainNode, EntityNode, InlineArrayNode, LiteralNode, StringNode, ValueNode,
+};
+use function count, is_string, strlen;
 
 
-/** @internal */
+/**
+ * The parser of nette/neon 3.x on tokens with trivia, reading line breaks as the virtual Newline of the stream.
+ * @internal
+ */
 final class Parser
 {
 	public const MaxDepth = 500;
@@ -26,27 +32,31 @@ final class Parser
 	private bool $tooDeep = false;
 
 
-	/** Parses a token stream into an AST. */
-	public function parse(TokenStream $stream): Node
+	/**
+	 * @throws Exception  for input that is not NEON
+	 */
+	public function parse(string $input, bool $origin = true): DocumentNode
 	{
-		$this->stream = $stream;
+		$this->stream = $stream = new TokenStream(new Lexer()->tokenize($input, $origin));
 		$this->depth = 0;
 		$this->tooDeep = false;
 
-		while ($this->stream->tryConsumeNewline());
-		$node = $this->parseBlock($this->stream->getIndentation());
+		while ($stream->tryConsumeNewline());
+		$value = $this->parseBlock($stream->getIndentation());
 
-		while ($this->stream->tryConsumeNewline());
-		if ($this->stream->is()) {
-			$this->stream->throwUnexpected();
+		while ($stream->tryConsumeNewline());
+		if ($stream->is()) {
+			$stream->throwUnexpected();
 		}
 
-		return $node;
+		$document = new DocumentNode($value, $stream->tokens[count($stream->tokens) - 1]);
+		$this->verify($document);
+		return $document;
 	}
 
 
 	/** @param  string|\Closure(string): string  $indent */
-	private function parseBlock(string|\Closure $indent, bool $onlyBullets = false): Node
+	private function parseBlock(string|\Closure $indent, bool $onlyBullets = false): ?ValueNode
 	{
 		$depth = $this->depth;
 		try {
@@ -62,7 +72,7 @@ final class Parser
 	 * compared starts with one, by two spaces otherwise.
 	 * @param  string|\Closure(string): string  $base
 	 */
-	private function parseDashBlock(string|\Closure $base): Node
+	private function parseDashBlock(string|\Closure $base): ?ValueNode
 	{
 		$resolved = $line = null;
 		$indent = function (string $next) use ($base, &$resolved, &$line): string {
@@ -97,45 +107,36 @@ final class Parser
 
 
 	/** @param  string|\Closure(string): string  $pending */
-	private function parseBlockItems(string|\Closure $pending, bool $onlyBullets): Node
+	private function parseBlockItems(string|\Closure $pending, bool $onlyBullets): ?ValueNode
 	{
 		$stream = $this->stream;
-		$res = new Node\BlockArrayNode;
-		$this->injectPos($res);
-		$keyCheck = [];
+		$items = [];
+		$keys = self::createKeys();
 
 		while (true) {
-			$item = new Node\ArrayItemNode;
-			$this->injectPos($item);
-			if ($bullet = $stream->tryConsume(Token::Dash)) {
-				if (!$res->items) {
+			$bullet = $stream->tryConsume(Token::Dash);
+			$key = $colon = $value = null;
+
+			if ($bullet) {
+				if (!$items) {
 					$this->enter($bullet);
 				}
 			} elseif (!$stream->is() || $onlyBullets) {
-				return $res->items
-					? $res
-					: $this->injectPos(new Node\LiteralNode(null));
-
+				return $items ? new BlockArrayNode($items) : null;
 			} else {
-				$value = $this->parseValue();
-				if ($stream->tryConsume(Token::Colon, Token::Equals)) {
-					$this->checkArrayKey($value, $keyCheck);
-					$item->key = $value;
-					if (!$res->items) {
-						$this->enter($stream->tokens[$value->startTokenPos ?? throw new \LogicException('The key has no position.')]);
+				$head = $this->parseValue();
+				if ($colon = $stream->tryConsume(Token::Colon, Token::Equals)) {
+					$key = $this->addKey($keys, $head);
+					if (!$items) {
+						$this->enter($key->token);
 					}
 				} else {
-					if ($res->items) {
+					if ($items) {
 						$stream->throwUnexpected();
 					}
-
-					return $value;
+					return $head;
 				}
 			}
-
-			$res->items[] = $item;
-			$item->value = $none = new Node\LiteralNode(null);
-			$this->injectPos($item->value);
 
 			if ($stream->tryConsumeNewline()) {
 				while ($stream->tryConsumeNewline());
@@ -143,120 +144,98 @@ final class Parser
 				$indent = $this->resolve($pending, $nextIndent);
 				if (!self::isComparable($nextIndent, $indent)) {
 					$stream->throwUnexpected('Invalid combination of tabs and spaces');
-
 				} elseif (strlen($nextIndent) > strlen($indent)) { // open new block
-					$item->value = $this->parseBlock($nextIndent);
-
+					$value = $this->parseBlock($nextIndent);
 				} elseif (strlen($nextIndent) < strlen($indent)) { // close block
-					if ($bullet) {
-						$this->checkImplicitKey($bullet, $keyCheck);
-					}
-
-					return $res;
-
-				} elseif ($item->key !== null && $stream->is(Token::Dash)) { // special dash subblock
-					$item->value = $this->parseBlock($indent, onlyBullets: true);
+					$items[] = $this->createItem($keys, $bullet, $key, $colon, null);
+					return new BlockArrayNode($items);
+				} elseif ($key !== null && $stream->is(Token::Dash)) { // special dash subblock
+					$value = $this->parseBlock($indent, onlyBullets: true);
 				}
-			} elseif ($item->key === null) { // open new block after dash
-				$item->value = $this->parseDashBlock($pending);
+
+			} elseif ($key === null) { // open new block after dash
+				$value = $this->parseDashBlock($pending);
 
 			} elseif ($stream->is()) {
-				$item->value = $this->parseValue();
+				$value = $this->parseValue();
 				if (!$stream->is(TokenStream::Newline, Token::EndOfFile)) {
 					$stream->throwUnexpected();
 				}
 			}
 
-
-			if ($bullet) {
-				$first = $this->stream->tokens[$item->value->startTokenPos ?? throw new \LogicException('The value has no position.')];
-				$this->checkImplicitKey($item->value === $none || $first->kind === Token::EndOfFile ? $bullet : $first, $keyCheck);
-			}
-
-			$this->injectPos($res, $res->startTokenPos, $item->value->endTokenPos);
-			$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
+			$items[] = $this->createItem($keys, $bullet, $key, $colon, $value);
 
 			while ($stream->tryConsumeNewline());
 			if (!$stream->is()) {
-				return $res;
+				return new BlockArrayNode($items);
 			}
 
 			$nextIndent = $stream->getIndentation();
 			$indent = $this->resolve($pending, $nextIndent);
 			if (!self::isComparable($nextIndent, $indent)) {
 				$stream->throwUnexpected('Invalid combination of tabs and spaces');
-
 			} elseif (strlen($nextIndent) > strlen($indent)) {
 				$stream->throwUnexpected('Bad indentation');
-
 			} elseif (strlen($nextIndent) < strlen($indent)) { // close block
-				return $res;
+				return new BlockArrayNode($items);
 			}
 		}
 	}
 
 
-	private function parseValue(): Node
+	private function parseValue(): ValueNode
 	{
-		if ($token = $this->stream->tryConsume(Token::String)) {
-			try {
-				$node = new Node\StringNode(Scalars::evaluateString($token->text));
-				$this->injectPos($node, $this->getIndex() - 1);
-			} catch (Exception $e) {
-				throw new Exception($e->getMessage(), $token->origin);
-			}
-		} elseif ($token = $this->stream->tryConsume(Token::Literal)) {
-			$pos = $this->getIndex() - 1;
-			$node = new Node\LiteralNode(
-				$this->stream->is(Token::Colon, Token::Equals) ? Scalars::literalKey($token->text) : Scalars::evaluateLiteral($token->text),
-			);
-			$this->injectPos($node, $pos);
-
-		} elseif ($this->stream->is(Token::OpenBracket, Token::OpenParen, Token::OpenBrace)) {
-			$node = $this->parseBraces();
-
-		} else {
-			$this->stream->throwUnexpected();
+		$stream = $this->stream;
+		switch ($stream->peek()) {
+			case Token::String:
+				$token = $stream->consume();
+				try {
+					Scalars::evaluateString($token->text);
+				} catch (Exception $e) {
+					throw new Exception($e->getDescription(), $token->origin);
+				}
+				$node = new StringNode($token);
+				break;
+			case Token::Literal:
+				$node = new LiteralNode($stream->consume());
+				break;
+			case Token::OpenBracket:
+			case Token::OpenParen:
+			case Token::OpenBrace:
+				$node = $this->parseBraces();
+				break;
+			default:
+				$stream->throwUnexpected();
 		}
 
-		return $this->parseEntity($node);
+		return $stream->peek() === Token::OpenParen ? $this->parseEntity($node) : $node;
 	}
 
 
-	private function parseEntity(Node $node): Node
+	/** An entity or a chain whose head is the node, followed by an opening parenthesis. */
+	private function parseEntity(StringNode|LiteralNode|InlineArrayNode $node): ValueNode
 	{
-		if (!$this->stream->is(Token::OpenParen)) {
-			return $node;
-		}
-
+		$stream = $this->stream;
 		$this->checkEntityHead($node);
-		$attributes = $this->parseBraces();
-		$entities[] = $this->injectPos(new Node\EntityNode($node, $attributes), $node->startTokenPos, $attributes->endTokenPos);
-
-		while ($token = $this->stream->tryConsume(Token::Literal)) {
-			$valueNode = new Node\LiteralNode(Scalars::evaluateLiteral($token->text));
-			$this->injectPos($valueNode, $this->getIndex() - 1);
-			$this->checkEntityHead($valueNode);
-			if ($this->stream->is(Token::OpenParen)) {
-				$attributes = $this->parseBraces();
-				$entities[] = $this->injectPos(
-					new Node\EntityNode($valueNode, $attributes),
-					$valueNode->startTokenPos,
-					$attributes->endTokenPos,
-				);
+		$entities = [new EntityNode($node, $this->parseBraces())];
+		while ($token = $stream->tryConsume(Token::Literal)) {
+			$head = new LiteralNode($token);
+			$this->checkEntityHead($head);
+			if ($stream->is(Token::OpenParen)) {
+				$entities[] = new EntityNode($head, $this->parseBraces());
 			} else {
-				$entities[] = $this->injectPos(new Node\EntityNode($valueNode), $valueNode->startTokenPos);
+				$entities[] = new EntityNode($head, null);
 				break;
 			}
 		}
 
 		return count($entities) === 1
 			? $entities[0]
-			: $this->injectPos(new Node\EntityChainNode($entities), $node->startTokenPos, end($entities)->endTokenPos);
+			: new EntityChainNode($entities);
 	}
 
 
-	private function parseBraces(): Node\InlineArrayNode
+	private function parseBraces(): InlineArrayNode
 	{
 		$depth = $this->depth;
 		try {
@@ -267,47 +246,36 @@ final class Parser
 	}
 
 
-	private function parseBracesItems(): Node\InlineArrayNode
+	private function parseBracesItems(): InlineArrayNode
 	{
-		$token = $this->stream->consume(Token::OpenBracket, Token::OpenBrace, Token::OpenParen);
-		$this->enter($token);
-		$endBrace = self::Pairs[$token->kind];
-		$res = new Node\InlineArrayNode;
-		$this->injectPos($res, $this->getIndex() - 1);
-		$keyCheck = [];
+		$stream = $this->stream;
+		$open = $stream->consume(Token::OpenBracket, Token::OpenBrace, Token::OpenParen);
+		$this->enter($open);
+		$end = self::Pairs[$open->kind];
+		$items = [];
+		$keys = self::createKeys();
 
 		while (true) {
-			while ($this->stream->tryConsumeNewline());
-			if ($this->stream->tryConsume($endBrace)) {
-				$this->injectPos($res, $res->startTokenPos, $this->getIndex() - 1);
-				return $res;
+			while ($stream->tryConsumeNewline());
+			if ($close = $stream->tryConsume($end)) {
+				return new InlineArrayNode($open, $items, $close);
 			}
 
-			$res->items[] = $item = new Node\ArrayItemNode;
-			$this->injectPos($item, $this->getIndex());
-			$value = $this->parseValue();
-
-			if ($this->stream->tryConsume(Token::Colon, Token::Equals)) {
-				$this->checkArrayKey($value, $keyCheck);
-				$item->key = $value;
-				$item->value = $this->stream->is(TokenStream::Newline, Token::Comma, $endBrace)
-					? $this->injectPos(new Node\LiteralNode(null), $this->getIndex())
-					: $this->parseValue();
+			$head = $this->parseValue();
+			if ($colon = $stream->tryConsume(Token::Colon, Token::Equals)) {
+				$key = $this->addKey($keys, $head);
+				$value = $stream->is(TokenStream::Newline, Token::Comma, $end) ? null : $this->parseValue();
 			} else {
-				$first = $this->stream->tokens[$item->startTokenPos ?? throw new \LogicException('The item has no position.')];
-				$this->checkImplicitKey($first, $keyCheck);
-				$item->value = $value;
+				$key = null;
+				$value = $head;
 			}
 
-			$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
-
-			$before = $this->stream->mark();
-			while ($this->stream->tryConsumeNewline());
-			$this->stream->tryConsume(Token::Comma);
-			if ($before !== $this->stream->mark()) {
-				continue;
-			} elseif (!$this->stream->is($endBrace)) {
-				$this->stream->throwUnexpected();
+			$before = $stream->mark();
+			while ($stream->tryConsumeNewline());
+			$comma = $stream->tryConsume(Token::Comma);
+			$items[] = $this->createItem($keys, null, $key, $colon, $value, $comma);
+			if ($before === $stream->mark() && !$stream->is($end)) {
+				$stream->throwUnexpected();
 			}
 		}
 	}
@@ -323,62 +291,81 @@ final class Parser
 	}
 
 
-	private function checkEntityHead(Node $node): void
+	private function checkEntityHead(ValueNode $node): void
 	{
-		if (($node instanceof Node\StringNode || $node instanceof Node\LiteralNode) && $node->value === Neon::Chain) {
-			throw new Exception(
-				"Entity name '" . Neon::Chain . "' is reserved",
-				$this->stream->tokens[$node->startTokenPos ?? throw new \LogicException('The node has no position.')]->origin,
-			);
+		$name = match (true) {
+			$node instanceof StringNode => Scalars::evaluateString($node->token->text),
+			$node instanceof LiteralNode => $node->token->text,
+			default => null,
+		};
+		if ($name === Neon::Chain) {
+			throw new Exception("Entity name '" . Neon::Chain . "' is reserved", $node->getFirstToken()->origin);
 		}
 	}
 
 
-	/** @param  array<bool>  $arr  explicit keys are true */
-	private function checkArrayKey(Node $key, array &$arr): void
+	/** Every token of the stream is in the tree exactly once, in the order of the stream. */
+	private function verify(DocumentNode $document): void
 	{
-		$token = $this->stream->tokens[$key->startTokenPos ?? throw new \LogicException('The key has no position.')];
-		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
-			throw new Exception('Unacceptable key', $token->origin);
+		if ($document->getTokens() !== $this->stream->tokens) {
+			throw new \LogicException('Internal error: the tree does not hold the tokens of the input in order.');
 		}
-
-		$k = (string) $key->value;
-		if ($arr[$k] ?? false) {
-			throw new Exception("Duplicated key '$k'", $token->origin);
-		}
-
-		$arr[$k] = true;
 	}
 
 
 	/**
-	 * Gives an item without a key the next implicit key; an overflow is reported at the given token.
-	 * @param  array<bool>  $arr
+	 * The explicit keys seen in one array, its greatest integer key so far and the last key added.
+	 * @return array{seen: array<string, true>, max: ?string, last: string}
 	 */
-	private function checkImplicitKey(Token $token, array &$arr): void
+	private static function createKeys(): array
 	{
-		if (array_key_exists(PHP_INT_MAX, $arr)) {
-			throw new Exception('Implicit key overflow', $token->origin);
-		}
-
-		$arr[] = false;
+		return ['seen' => [], 'max' => null, 'last' => ''];
 	}
 
 
 	/**
-	 * @template T of Node
-	 * @param T $node
-	 * @return T
+	 * Checks an explicit key for duplicates.
+	 * @param  array{seen: array<string, true>, max: ?string, last: string}  $keys
 	 */
-	private function injectPos(Node $node, ?int $start = null, ?int $end = null): Node
+	private function addKey(array &$keys, ValueNode $node): StringNode|LiteralNode
 	{
-		$tokens = $this->stream->tokens;
-		$node->startTokenPos = $start ?? $this->getIndex();
-		$node->startLine = $tokens[$node->startTokenPos]->origin?->line;
-		$node->endTokenPos = $end ?? $node->startTokenPos;
-		$last = $tokens[$node->endTokenPos];
-		$node->endLine = $last->origin?->advance($last->text)->line;
+		if (!$node instanceof StringNode && !$node instanceof LiteralNode) {
+			throw new Exception('Unacceptable key', $node->getFirstToken()->origin);
+		}
+
+		$key = $node instanceof StringNode
+			? Scalars::evaluateString($node->token->text)
+			: Scalars::literalKey($node->token->text);
+		if (isset($keys['seen'][$key])) {
+			throw new Exception("Duplicated key '$key'", $node->token->origin);
+		}
+		$keys['seen'][$key] = true;
+		$keys['last'] = $key;
 		return $node;
+	}
+
+
+	/**
+	 * Makes the item and accounts its key, explicit or implicit.
+	 * @param  array{seen: array<string, true>, max: ?string, last: string}  $keys
+	 */
+	private function createItem(
+		array &$keys,
+		?Token $bullet,
+		StringNode|LiteralNode|null $key,
+		?Token $colon,
+		?ValueNode $value,
+		?Token $separator = null,
+	): ArrayItemNode
+	{
+		$item = new ArrayItemNode($bullet, $key, $colon, $value, $separator);
+		$keys['max'] = $key
+			? Scalars::maxIntegerKey($keys['max'], $keys['last']) // the key addKey() has seen
+			: Scalars::nextImplicitKey($keys['max']) ?? throw new Exception(
+				'Implicit key overflow',
+				($value ?? $item)->getFirstToken()->origin,
+			);
+		return $item;
 	}
 
 
@@ -386,12 +373,5 @@ final class Parser
 	{
 		$n = min(strlen($a), strlen($b));
 		return strncmp($a, $b, $n) === 0;
-	}
-
-
-	/** @return int<0, max> */
-	private function getIndex(): int
-	{
-		return $this->stream->mark()[0];
 	}
 }

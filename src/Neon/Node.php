@@ -9,21 +9,59 @@ namespace Nette\Neon;
 
 
 /**
- * Base class for all AST nodes produced by the NEON parser.
- *
- * @implements \IteratorAggregate<Node>
+ * A node of the lossless syntax tree; every token of the source is reachable through the children, and
+ * printing the tree gives the source back.
  */
-abstract class Node implements \IteratorAggregate
+abstract class Node implements \Stringable
 {
-	public ?int $startTokenPos = null;
-	public ?int $endTokenPos = null;
-	public ?int $startLine = null;
-	public ?int $endLine = null;
+	/** @var list<string>  the names of the properties holding the children, in the order of the source */
+	public const Slots = [];
 
 
-	public function &getIterator(): \Generator
+	/**
+	 * The children in the order of the source, without the empty slots.
+	 * @return list<Node|Token>
+	 */
+	abstract public function getChildren(): array;
+
+
+	/** @return list<Token> */
+	public function getTokens(): array
 	{
-		return;
-		yield;
+		$res = [];
+		$this->collectTokens($res);
+		return $res;
+	}
+
+
+	abstract public function getFirstToken(): Token;
+
+
+	abstract public function getLastToken(): Token;
+
+
+	/** The source text of the node, with the trivia of its tokens. */
+	public function print(): string
+	{
+		return implode('', $this->getTokens());
+	}
+
+
+	public function __toString(): string
+	{
+		return $this->print();
+	}
+
+
+	/** @param  list<Token>  $res */
+	private function collectTokens(array &$res): void
+	{
+		foreach ($this->getChildren() as $child) {
+			if ($child instanceof Token) {
+				$res[] = $child;
+			} else {
+				$child->collectTokens($res);
+			}
+		}
 	}
 }

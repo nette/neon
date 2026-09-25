@@ -14,6 +14,7 @@ namespace Nette\Neon;
  */
 final class Neon
 {
+	/** The value of an entity that represents a chain; its attributes are the links. */
 	public const Chain = '!!chain';
 
 	#[\Deprecated('use Neon::Chain')]
@@ -36,30 +37,52 @@ final class Neon
 
 
 	/**
-	 * Parses a NEON string and returns the corresponding PHP value.
+	 * Parses NEON and returns the corresponding PHP value.
+	 * @throws Exception  for input that is not NEON
 	 */
 	public static function decode(string $input): mixed
 	{
-		$decoder = new Decoder;
-		return $decoder->decode($input);
+		return new Evaluator()->evaluate(self::parse($input)->value);
 	}
 
 
 	/**
-	 * Parses a NEON file and returns the corresponding PHP value. Strips the UTF-8 BOM if present.
+	 * Parses a NEON file and returns the corresponding PHP value.
+	 * @throws Exception  for a file that cannot be read or is not NEON
 	 */
 	public static function decodeFile(string $file): mixed
+	{
+		return self::decode(self::readFile($file));
+	}
+
+
+	/**
+	 * Parses NEON into the lossless syntax tree.
+	 * @throws Exception  for input that is not NEON
+	 */
+	public static function parse(string $input): Nodes\DocumentNode
+	{
+		return new Parser()->parse($input);
+	}
+
+
+	/**
+	 * Parses a NEON file into the lossless syntax tree.
+	 * @throws Exception  for a file that cannot be read or is not NEON
+	 */
+	public static function parseFile(string $file): Nodes\DocumentNode
+	{
+		return self::parse(self::readFile($file));
+	}
+
+
+	private static function readFile(string $file): string
 	{
 		$input = @file_get_contents($file); // @ is escalated to exception
 		if ($input === false) {
 			$error = preg_replace('#^\w+\(.*?\): #', '', error_get_last()['message'] ?? '');
 			throw new Exception("Unable to read file '$file'. $error");
 		}
-
-		if (str_starts_with($input, "\u{FEFF}")) { // BOM
-			$input = substr($input, 3);
-		}
-
-		return self::decode($input);
+		return $input;
 	}
 }

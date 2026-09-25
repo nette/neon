@@ -4,113 +4,57 @@
  * Test: the Traverser.
  */
 
-use Nette\Neon;
-use Nette\Neon\{Node, Traverser};
+use Nette\Neon\{Neon, Node, Traverser};
+use Nette\Neon\Nodes\{ArrayItemNode, LiteralNode};
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
 
-function parse(string $input): Node
+function name(Node $node): string
 {
-	return (new Neon\Decoder)->parseToNode($input);
+	return $node instanceof LiteralNode ? $node->token->text : substr(strrchr($node::class, '\\') ?: '', 1);
 }
 
 
 test('order of enter and leave', function () {
-	$node = parse('a: 1');
+	$document = Neon::parse("a: [b, c]\nd: e");
 	$log = [];
 	(new Traverser)->traverse(
-		$node,
-		function (Node $node) use (&$log) { $log[] = ['enter', $node::class]; },
-		function (Node $node) use (&$log) { $log[] = ['leave', $node::class]; },
+		$document,
+		function (Node $node) use (&$log) { $log[] = '> ' . name($node); },
+		function (Node $node) use (&$log) { $log[] = '< ' . name($node); },
 	);
-	Assert::equal([
-		['enter', Node\BlockArrayNode::class],
-		['enter', Node\ArrayItemNode::class],
-		['enter', Node\LiteralNode::class],
-		['leave', Node\LiteralNode::class],
-		['enter', Node\LiteralNode::class],
-		['leave', Node\LiteralNode::class],
-		['leave', Node\ArrayItemNode::class],
-		['leave', Node\BlockArrayNode::class],
+	Assert::same([
+		'> DocumentNode', '> BlockArrayNode',
+		'> ArrayItemNode', '> a', '< a', '> InlineArrayNode',
+		'> ArrayItemNode', '> b', '< b', '< ArrayItemNode',
+		'> ArrayItemNode', '> c', '< c', '< ArrayItemNode',
+		'< InlineArrayNode', '< ArrayItemNode',
+		'> ArrayItemNode', '> d', '< d', '> e', '< e', '< ArrayItemNode',
+		'< BlockArrayNode', '< DocumentNode',
 	], $log);
 });
 
 
 test('skipping children and stopping', function () {
-	$node = parse('a: 1');
+	$document = Neon::parse("a: [b, c]\nd: e");
 	$log = [];
-	(new Traverser)->traverse(
-		$node,
-		function (Node $node) use (&$log) {
-			$log[] = ['enter', $node::class];
-			return $node instanceof Node\ArrayItemNode ? Traverser::DontTraverseChildren : null;
-		},
-		function (Node $node) use (&$log) { $log[] = ['leave', $node::class]; },
-	);
-	Assert::equal([
-		['enter', Node\BlockArrayNode::class],
-		['enter', Node\ArrayItemNode::class],
-		['leave', Node\ArrayItemNode::class],
-		['leave', Node\BlockArrayNode::class],
-	], $log);
-
-	$log = [];
-	(new Traverser)->traverse(
-		$node,
-		function (Node $node) use (&$log) {
-			$log[] = ['enter', $node::class];
-			return $node instanceof Node\ArrayItemNode ? Traverser::StopTraversal : null;
-		},
-		function (Node $node) use (&$log) { $log[] = ['leave', $node::class]; },
-	);
-	Assert::equal([
-		['enter', Node\BlockArrayNode::class],
-		['enter', Node\ArrayItemNode::class],
-	], $log);
-
-	$log = [];
-	(new Traverser)->traverse(
-		$node,
-		null,
-		function (Node $node) use (&$log) {
-			$log[] = ['leave', $node::class];
-			return $node instanceof Node\ArrayItemNode ? Traverser::StopTraversal : null;
-		},
-	);
-	Assert::equal([
-		['leave', Node\LiteralNode::class],
-		['leave', Node\LiteralNode::class],
-		['leave', Node\ArrayItemNode::class],
-	], $log);
-});
-
-
-test('a visitor changes the nodes in place', function () {
-	$node = parse('a: foo(1, 2, 3)');
-	$node = (new Traverser)->traverse($node, function (Node $node) {
-		if ($node instanceof Node\EntityNode) {
-			foreach ($node->attributes->items as $i => $attr) {
-				$attr->key ??= new Node\LiteralNode("key$i");
-			}
+	(new Traverser)->traverse($document, function (Node $node) use (&$log) {
+		$log[] = name($node);
+		if ($node instanceof ArrayItemNode && $node->getKeyValue() === 'a') {
+			return Traverser::DontTraverseChildren;
+		} elseif ($node instanceof LiteralNode && $node->token->text === 'd') {
+			return Traverser::StopTraversal;
 		}
+		return null;
 	});
-	Assert::equal([
-		'a' => new Neon\Entity('foo', ['key0' => 1, 'key1' => 2, 'key2' => 3]),
-	], new Neon\Evaluator()->evaluate($node));
-});
+	Assert::same(['DocumentNode', 'BlockArrayNode', 'ArrayItemNode', 'ArrayItemNode', 'd'], $log);
 
-
-test('a replacement returned by the visitor takes the place of the node', function () {
-	$node = parse('a: foo(1, 2, 3)');
-	$newNode = (new Traverser)->traverse($node, fn(Node $node) => clone $node);
-
-	Assert::equal($node, $newNode);
-	Assert::notSame($node, $newNode);
-	Assert::notSame($node->items[0], $newNode->items[0]);
-	Assert::notSame($node->items[0]->key, $newNode->items[0]->key);
-	Assert::notSame($node->items[0]->value, $newNode->items[0]->value);
-	Assert::notSame($node->items[0]->value->value, $newNode->items[0]->value->value);
-	Assert::notSame($node->items[0]->value->attributes, $newNode->items[0]->value->attributes);
+	$log = [];
+	(new Traverser)->traverse($document, null, function (Node $node) use (&$log) {
+		$log[] = name($node);
+		return $node instanceof ArrayItemNode ? Traverser::StopTraversal : null;
+	});
+	Assert::same(['a', 'b', 'ArrayItemNode'], $log);
 });
