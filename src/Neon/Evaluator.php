@@ -19,38 +19,40 @@ class Evaluator
 	/**
 	 * @throws Exception  for a tree whose value is not valid
 	 */
-	final public function evaluate(?Node $node, Place $place = Place::Value): mixed
+	final public function evaluate(?Nodes\ValueNode $node, Place $place = Place::Value): mixed
 	{
 		return match (true) {
 			$node === null => null,
-			$node instanceof Node\LiteralNode => $this->evaluateLiteral($node, $place),
-			$node instanceof Node\StringNode => $this->evaluateString($node, $place),
-			$node instanceof Node\EntityNode => $this->evaluateEntity($node, $place),
-			$node instanceof Node\EntityChainNode => new Entity(
+			$node instanceof Nodes\LiteralNode => $this->evaluateLiteral($node, $place),
+			$node instanceof Nodes\StringNode => $this->evaluateString($node, $place),
+			$node instanceof Nodes\EntityNode => $this->evaluateEntity($node, $place),
+			$node instanceof Nodes\EntityChainNode => new Entity(
 				Neon::Chain,
-				array_map(fn(Node\EntityNode $link) => $this->evaluateEntity($link, Place::ChainLink), $node->entities),
+				array_map(fn(Nodes\EntityNode $link) => $this->evaluateEntity($link, Place::ChainLink), $node->entities),
 			),
-			$node instanceof Node\ArrayNode => $this->evaluateArray($node),
+			$node instanceof Nodes\ArrayNode => $this->evaluateArray($node),
 			default => throw new \LogicException('Unknown node ' . $node::class),
 		};
 	}
 
 
 	/** The value of a literal; as a key, its canonical key. */
-	protected function evaluateLiteral(Node\LiteralNode $node, Place $place): mixed
+	protected function evaluateLiteral(Nodes\LiteralNode $node, Place $place): mixed
 	{
-		return $node->value;
+		return $place === Place::Key
+			? Scalars::literalKey($node->token->text)
+			: Scalars::evaluateLiteral($node->token->text);
 	}
 
 
-	protected function evaluateString(Node\StringNode $node, Place $place): mixed
+	protected function evaluateString(Nodes\StringNode $node, Place $place): mixed
 	{
-		return $node->value;
+		return Scalars::evaluateString($node->token->text);
 	}
 
 
 	/** An entity standing as a value, or as a link of a chain. */
-	protected function evaluateEntity(Node\EntityNode $node, Place $place): mixed
+	protected function evaluateEntity(Nodes\EntityNode $node, Place $place): mixed
 	{
 		return new Entity(
 			$this->evaluate($node->value, Place::EntityHead),
@@ -60,7 +62,7 @@ class Evaluator
 
 
 	/** The value of an item of an array, null for an item without one. */
-	protected function evaluateItem(Node\ArrayItemNode $item): mixed
+	protected function evaluateItem(Nodes\ArrayItemNode $item): mixed
 	{
 		return $this->evaluate($item->value);
 	}
@@ -71,7 +73,7 @@ class Evaluator
 	 * @return mixed[]
 	 * @throws Exception  when two different keys of the document project to one
 	 */
-	final protected function evaluateArray(Node\ArrayNode $node): array
+	final protected function evaluateArray(Nodes\ArrayNode $node): array
 	{
 		$res = $origins = [];
 		$keys = $node->getItemKeys();
@@ -80,7 +82,7 @@ class Evaluator
 			if (!is_int($key) && !is_string($key)) {
 				throw new \LogicException('The key of an item must be int or string, ' . get_debug_type($key) . ' given.');
 			} elseif (($origins[$key] ?? $keys[$i]) !== $keys[$i]) {
-				throw new Exception("Duplicated key '$key'");
+				throw new Exception("Duplicated key '$key'", $item->getFirstToken()->origin);
 			}
 			$origins[$key] = $keys[$i];
 			$res[$key] = $this->evaluateItem($item);

@@ -5,18 +5,29 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
-namespace Nette\Neon\Node;
+namespace Nette\Neon\Nodes;
 
+use Nette\Neon\Evaluator;
 use Nette\Neon\Exception;
-use Nette\Neon\Node;
 use Nette\Neon\Scalars;
+use function is_array;
 
 
-/** @internal */
-abstract class ArrayNode extends Node
+/**
+ * A block or an inline array; its items change only through its methods.
+ */
+abstract class ArrayNode extends ValueNode
 {
 	/** @var list<ArrayItemNode> */
-	public array $items = [];
+	public protected(set) array $items = [];
+
+
+	/** @return mixed[] */
+	public function toValue(): array
+	{
+		$value = new Evaluator()->evaluate($this);
+		return is_array($value) ? $value : throw new \LogicException('An array evaluates to an array.');
+	}
 
 
 	/**
@@ -31,7 +42,7 @@ abstract class ArrayNode extends Node
 		foreach ($this->items as $item) {
 			$key = $item->getKeyValue()
 				?? Scalars::nextImplicitKey($max)
-				?? throw new Exception('Implicit key overflow');
+				?? throw new Exception('Implicit key overflow', $item->getFirstToken()->origin);
 			$max = Scalars::maxIntegerKey($max, $key);
 			$res[] = $key;
 		}
@@ -39,11 +50,9 @@ abstract class ArrayNode extends Node
 	}
 
 
-	public function &getIterator(): \Generator
+	/** @param  list<ArrayItemNode>  $items */
+	protected function setItems(array $items): void
 	{
-		foreach ($this->items as &$item) {
-			yield $item;
-		}
-		$this->items = array_values(array_filter($this->items));
+		$this->items = $items;
 	}
 }

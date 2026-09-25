@@ -14,37 +14,34 @@ final class Traverser
 	public const DontTraverseChildren = 1;
 	public const StopTraversal = 2;
 
-	/** @var callable(Node): (Node|int|null)|null */
+	/** @var callable(Node): ?int|null */
 	private $enter;
 
-	/** @var callable(Node): (Node|int|null)|null */
+	/** @var callable(Node): ?int|null */
 	private $leave;
 
-	private ?bool $stop = null;
+	private bool $stop = false;
 
 
 	/**
-	 * @param  callable(Node): (Node|int|null)|null  $enter
-	 * @param  callable(Node): (Node|int|null)|null  $leave
+	 * @param  callable(Node): ?int|null  $enter
+	 * @param  callable(Node): ?int|null  $leave
 	 */
-	public function traverse(Node $node, ?callable $enter = null, ?callable $leave = null): Node
+	public function traverse(Node $node, ?callable $enter = null, ?callable $leave = null): void
 	{
 		$this->enter = $enter;
 		$this->leave = $leave;
 		$this->stop = false;
-		return $this->traverseNode($node);
+		$this->traverseNode($node);
 	}
 
 
-	private function traverseNode(Node $node): Node
+	private function traverseNode(Node $node): void
 	{
 		$children = true;
 		if ($this->enter) {
 			$res = ($this->enter)($node);
-			if ($res instanceof Node) {
-				$node = $res;
-
-			} elseif ($res === self::DontTraverseChildren) {
+			if ($res === self::DontTraverseChildren) {
 				$children = false;
 
 			} elseif ($res === self::StopTraversal) {
@@ -54,23 +51,18 @@ final class Traverser
 		}
 
 		if ($children) {
-			foreach ($node as &$subnode) {
-				$subnode = $this->traverseNode($subnode);
-				if ($this->stop) {
-					break;
+			foreach ($node->getChildren() as $child) {
+				if ($child instanceof Node) {
+					$this->traverseNode($child);
+					if ($this->stop) {
+						break;
+					}
 				}
 			}
 		}
 
-		if (!$this->stop && $this->leave) {
-			$res = ($this->leave)($node);
-			if ($res instanceof Node) {
-				$node = $res;
-			} elseif ($res === self::StopTraversal) {
-				$this->stop = true;
-			}
+		if (!$this->stop && $this->leave && ($this->leave)($node) === self::StopTraversal) {
+			$this->stop = true;
 		}
-
-		return $node;
 	}
 }

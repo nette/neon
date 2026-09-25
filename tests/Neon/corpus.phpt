@@ -8,9 +8,52 @@ use Nette\Neon\Exception;
 use Nette\Neon\Neon;
 use Tester\Assert;
 use Tests\Corpus;
+use Tests\Dumper;
 use Tests\Typed;
 
 require __DIR__ . '/../bootstrap.php';
+
+
+function error(string $input): string
+{
+	try {
+		Neon::decode($input);
+	} catch (Exception $e) {
+		return $e->getDescription() . "\n" . $e->position?->line . ':' . $e->position?->column . "\n";
+	}
+	return 'accepted';
+}
+
+
+test('decode', function () {
+	foreach (Corpus::load('decode') as $case) {
+		if ($case->runsHere()) {
+			$input = (string) $case->read('.neon');
+			$document = Neon::parse($input);
+			Assert::same($input, $document->print(), $case->name);
+			$expected = Typed::toPhp(json_decode((string) $case->read('.json'), true, flags: JSON_THROW_ON_ERROR));
+			$actual = $document->toValue();
+			Assert::true(Typed::same($expected, $actual), $case->name . ': ' . var_export($actual, true));
+		}
+	}
+});
+
+
+foreach (['cst', 'roundtrip'] as $category) {
+	test($category, function () use ($category) {
+		foreach (Corpus::load($category) as $case) {
+			if ($case->runsHere()) {
+				$input = (string) $case->read('.neon');
+				$document = Neon::parse($input);
+				Assert::same($input, $document->print(), $case->name);
+				Assert::same($case->read('.dump'), Dumper::dump($document), $case->name);
+				if ($category === 'roundtrip') {
+					$document->toValue();
+				}
+			}
+		}
+	});
+}
 
 
 test('encode', function () {
@@ -27,6 +70,15 @@ test('encode', function () {
 			}
 			Assert::same($case->read('.neon'), Neon::encode($value, false, $indentation), $case->name);
 			Assert::same($case->read('.block.neon'), Neon::encode($value, $blockMode, $indentation), $case->name . ' block');
+		}
+	}
+});
+
+
+test('errors', function () {
+	foreach (Corpus::load('errors') as $case) {
+		if ($case->runsHere()) {
+			Assert::same($case->read('.error'), error((string) $case->read('.neon')), $case->name);
 		}
 	}
 });

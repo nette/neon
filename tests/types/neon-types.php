@@ -4,10 +4,8 @@
  * PHPStan type tests.
  */
 
-use Nette\Neon\Decoder;
 use Nette\Neon\Neon;
-use Nette\Neon\Node;
-use Nette\Neon\Traverser;
+use Nette\Neon\Nodes;
 use function PHPStan\Testing\assertType;
 
 
@@ -29,22 +27,56 @@ function testNeonEncode(mixed $value): void
 }
 
 
-function testDecoder(string $input): void
+function testNeonParse(string $input): void
 {
-	$decoder = new Decoder;
-	assertType('mixed', $decoder->decode($input));
-	assertType(Node::class, $decoder->parseToNode($input));
+	assertType(Nodes\DocumentNode::class, Neon::parse($input));
+	assertType(Nodes\DocumentNode::class, Neon::parseFile($input));
 }
 
 
-
-
-
-
-
-
-function testTraverser(Node $node): void
+function testDocumentNode(Nodes\DocumentNode $node): void
 {
-	$traverser = new Traverser;
-	assertType(Node::class, $traverser->traverse($node));
+	assertType('mixed', $node->toValue());
+}
+
+
+function testStringNode(Nodes\StringNode $node): void
+{
+	assertType('string', $node->toValue());
+}
+
+
+function testLiteralNode(Nodes\LiteralNode $node): void
+{
+	assertType('bool|DateTimeImmutable|float|int|string|null', $node->toValue());
+}
+
+
+function testEntityNode(Nodes\EntityNode $node): void
+{
+	assertType(Nette\Neon\Entity::class, $node->toValue());
+}
+
+
+function testEntityChainNode(Nodes\EntityChainNode $node): void
+{
+	assertType(Nette\Neon\Entity::class, $node->toValue());
+}
+
+
+function testBlockArrayNode(Nodes\BlockArrayNode $node): void
+{
+	assertType('array<mixed>', $node->toValue());
+}
+
+
+function testInlineArrayNode(Nodes\InlineArrayNode $node): void
+{
+	assertType('array<mixed>', $node->toValue());
+}
+
+
+function testArrayItemNode(Nodes\ArrayItemNode $node): void
+{
+	assertType('string|null', $node->getKeyValue());
 }
