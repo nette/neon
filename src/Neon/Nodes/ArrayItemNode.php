@@ -29,6 +29,7 @@ final class ArrayItemNode extends Node
 		public protected(set) ?ValueNode $value,
 		public protected(set) ?Token $separator = null,
 	) {
+		$this->adopt($bullet, $key, $colon, $value, $separator);
 	}
 
 

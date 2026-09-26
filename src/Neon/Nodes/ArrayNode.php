@@ -53,6 +53,7 @@ abstract class ArrayNode extends ValueNode
 	/** @param  list<ArrayItemNode>  $items */
 	protected function setItems(array $items): void
 	{
+		$this->adopt(...$items);
 		$this->items = $items;
 	}
 }

@@ -25,6 +25,7 @@ final class EntityNode extends ValueNode
 		public protected(set) StringNode|LiteralNode|InlineArrayNode $value,
 		public protected(set) ?InlineArrayNode $attributes,
 	) {
+		$this->adopt($value, $attributes);
 	}
 
 

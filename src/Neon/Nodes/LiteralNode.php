@@ -23,6 +23,7 @@ final class LiteralNode extends ValueNode
 	public function __construct(
 		public protected(set) Token $token,
 	) {
+		$this->adopt($token);
 	}
 
 

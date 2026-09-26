@@ -26,6 +26,7 @@ final class EntityChainNode extends ValueNode
 		/** @var non-empty-list<EntityNode> */
 		public protected(set) array $entities,
 	) {
+		$this->adopt(...$entities);
 	}
 
 

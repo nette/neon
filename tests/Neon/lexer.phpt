@@ -138,6 +138,15 @@ test('a failure of PCRE is not a syntax error', function () {
 });
 
 
+test('the guarded properties cannot be written', function () {
+	$token = Token::fromText('a');
+	Assert::exception(fn() => $token->text = 'b', Error::class, '%a%private(set)%a%');
+	Assert::exception(fn() => $token->leadingTrivia = [], Error::class, '%a%private(set)%a%');
+	Assert::exception(fn() => $token->kind = Token::Colon, Error::class);
+	Assert::exception(fn() => serialize($token), LogicException::class);
+});
+
+
 test('Position', function () {
 	Assert::same('on line 2 at column 3', (string) new Position(2, 3, 9));
 	Assert::equal(new Position(2, 3, 5), new Position()->advance("ž\r\nžž"));
