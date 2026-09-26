@@ -23,6 +23,7 @@ final class DocumentNode extends Node
 		public protected(set) ?ValueNode $value,
 		public protected(set) Token $endOfFile,
 	) {
+		$this->adopt($value, $endOfFile);
 	}
 
 

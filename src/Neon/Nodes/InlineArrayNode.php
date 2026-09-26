@@ -27,6 +27,7 @@ final class InlineArrayNode extends ArrayNode
 		array $items,
 		public protected(set) Token $closeBracket,
 	) {
+		$this->adopt($openBracket, $closeBracket);
 		$this->setItems($items);
 	}
 

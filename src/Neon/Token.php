@@ -7,6 +7,8 @@
 
 namespace Nette\Neon;
 
+use function count;
+
 
 /**
  * A token of the source with the trivia around it: the leading trivia up to the line ending before it,
@@ -52,11 +54,14 @@ final class Token implements \Stringable
 	/** @var list<Trivia> */
 	public private(set) array $trailingTrivia;
 
+	/** The node the token belongs to; only the tree writes it. */
+	public private(set) ?Node $parent = null;
+
 
 	/**
 	 * @param  list<Trivia>  $leadingTrivia
 	 * @param  list<Trivia>  $trailingTrivia
-	 * @internal the lexer makes the tokens as it reads them, unchecked
+	 * @internal the lexer makes the tokens as it reads them, unchecked; elsewhere a token is made by fromText()
 	 */
 	public function __construct(
 		/** One of the constants of the class, by which it is told apart from the text in `is()`. */
@@ -69,6 +74,23 @@ final class Token implements \Stringable
 	) {
 		$this->leadingTrivia = $leadingTrivia;
 		$this->trailingTrivia = $trailingTrivia;
+	}
+
+
+	/** The token the scanner reads the text as; the empty text is EndOfFile, anything but one token is refused. */
+	public static function fromText(string $text): self
+	{
+		return self::scan($text) ?? throw new \InvalidArgumentException(var_export($text, true) . ' is not one token.');
+	}
+
+
+	/**
+	 * Writes the parent as it is.
+	 * @internal only the tree writes it: the constructors of the nodes, the clone, the builder and the editor
+	 */
+	public function writeParent(?Node $parent): void
+	{
+		$this->parent = $parent;
 	}
 
 
@@ -91,5 +113,34 @@ final class Token implements \Stringable
 			$res .= $trivia->text;
 		}
 		return $res;
+	}
+
+
+	/** A copy without a parent; the text, the trivia and the origin are the same. */
+	public function __clone()
+	{
+		$this->parent = null;
+	}
+
+
+	/** @return never */
+	public function __serialize(): array
+	{
+		throw new \LogicException('A token cannot be serialized; serialize the text of the document instead.');
+	}
+
+
+	private static function scan(string $text): ?self
+	{
+		try {
+			$tokens = new Lexer()->tokenize($text, origin: false);
+		} catch (Exception) {
+			return null;
+		}
+		return match (true) {
+			$text === '' => $tokens[0],
+			count($tokens) === 2 && !$tokens[0]->leadingTrivia && !$tokens[0]->trailingTrivia && !$tokens[1]->leadingTrivia => $tokens[0],
+			default => null,
+		};
 	}
 }
