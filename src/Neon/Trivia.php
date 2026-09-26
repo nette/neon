@@ -40,9 +40,31 @@ final readonly class Trivia
 	}
 
 
+	/** The trivia the text is: one run of spaces and tabs, one line ending, one comment, or a byte order mark. */
+	public static function fromText(string $text): self
+	{
+		$kind = self::classify($text) ?? throw new \InvalidArgumentException(var_export($text, true) . ' is not one trivia.');
+		return new self($kind, $text);
+	}
+
+
+	/** A trivia of the same kind with another text. */
+	public function withText(string $text): self
+	{
+		return new self($this->kind, $text);
+	}
+
+
 	public function is(int ...$kinds): bool
 	{
 		return in_array($this->kind, $kinds, true);
+	}
+
+
+	/** The text of a comment without `#`, trimmed; an empty string for other trivia. */
+	public function getCommentText(): string
+	{
+		return $this->kind === self::Comment ? trim(substr($this->text, 1)) : '';
 	}
 
 

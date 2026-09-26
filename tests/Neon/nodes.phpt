@@ -22,11 +22,11 @@ function literal(string $text): LiteralNode
 }
 
 
-/** `[a,b:c]` */
+/** `[a, b: c]` */
 function inline(): InlineArrayNode
 {
-	$comma = Token::fromText(',');
-	$colon = Token::fromText(':');
+	$comma = Token::fromText(',')->setTrailingTrivia([Trivia::fromText(' ')]);
+	$colon = Token::fromText(':')->setTrailingTrivia([Trivia::fromText(' ')]);
 	return new InlineArrayNode(Token::fromText('['), [
 		new ArrayItemNode(null, null, null, literal('a'), $comma),
 		new ArrayItemNode(null, literal('b'), $colon, literal('c')),
@@ -37,12 +37,30 @@ function inline(): InlineArrayNode
 test('a tree built by hand prints and knows its parents', function () {
 	$array = inline();
 	$document = new DocumentNode($array, Token::fromText(''));
-	Assert::same('[a,b:c]', $document->print());
-	Assert::same('[a,b:c]', (string) $array);
+	Assert::same('[a, b: c]', $document->print());
+	Assert::same('[a, b: c]', (string) $array);
 	Assert::same($document, $array->parent);
 	Assert::same($array, $array->items[0]->parent);
 	Assert::same($array->items[0], $array->items[0]->value?->parent);
 	Assert::same(['0', 'b'], $array->getItemKeys());
+});
+
+
+test('arguments are given as lists', function () {
+	$token = Token::fromText('x');
+	Assert::exception(fn() => $token->setLeadingTrivia([0 => Trivia::fromText(' '), 2 => Trivia::fromText("\n")]), InvalidArgumentException::class, 'Trivia are given as a list.');
+	Assert::same([], $token->leadingTrivia);
+});
+
+
+test('an instance of trivia stands in a list once, so that replaceTrivia() replaces the one meant', function () {
+	$document = Neon::parse("a: 1\nb: 2\n");
+	$token = $document->value?->items[1]->key?->getFirstToken();
+	$eol = Trivia::fromText("\n");
+	$token?->setLeadingTrivia([$eol, $eol]);
+	Assert::notSame($token?->leadingTrivia[0], $token?->leadingTrivia[1]);
+	$token?->replaceTrivia($eol, Trivia::fromText("\r\n"));
+	Assert::same("a: 1\n\r\n\nb: 2\n", $document->print());
 });
 
 
@@ -67,5 +85,5 @@ test('clone is deep and detached', function () {
 
 	$item = clone $document->value?->items[1];
 	Assert::null($item?->parent);
-	Assert::same('b:c', $item?->print());
+	Assert::same('b: c', $item?->print());
 });

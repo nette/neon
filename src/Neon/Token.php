@@ -7,6 +7,7 @@
 
 namespace Nette\Neon;
 
+use Nette\Neon\Nodes\DocumentNode;
 use function count;
 
 
@@ -84,6 +85,77 @@ final class Token implements \Stringable
 	}
 
 
+	/** Replaces the text by another one of the same kind; whether the document still means the same is up to the caller. */
+	public function setText(string $text): static
+	{
+		if (self::scan($text)?->kind !== $this->kind) {
+			throw new \InvalidArgumentException(var_export($text, true) . " is not one token of kind {$this->kindName()}.");
+		}
+		$this->text = $text;
+		return $this;
+	}
+
+
+	/**
+	 * Sets the leading trivia in the canonical form; in a document they also have to fit the token before.
+	 * @param  list<Trivia>  $trivia
+	 */
+	public function setLeadingTrivia(array $trivia): static
+	{
+		self::checkTrivia($trivia, leading: true, endOfFile: $this->kind === self::EndOfFile);
+		[$before] = $this->findNeighbours();
+		if ($before && $trivia && !self::hasLineEnding($before->trailingTrivia)) {
+			throw new \InvalidArgumentException('Leading trivia must follow a line ending; on the same line they are the trailing trivia of the token before.');
+		} elseif ($before && $trivia && $trivia[0]->kind === Trivia::ByteOrderMark) {
+			throw new \InvalidArgumentException('A byte order mark may only stand at the start of the input.');
+		}
+		$this->assignTrivia('leadingTrivia', $trivia);
+		return $this;
+	}
+
+
+	/**
+	 * Sets the trailing trivia in the canonical form; in a document they also have to fit the token after.
+	 * @param  list<Trivia>  $trivia
+	 */
+	public function setTrailingTrivia(array $trivia): static
+	{
+		self::checkTrivia($trivia, leading: false, endOfFile: $this->kind === self::EndOfFile);
+		[, $after] = $this->findNeighbours();
+		if ($after && $after->leadingTrivia && !self::hasLineEnding($trivia)) {
+			throw new \InvalidArgumentException('Trailing trivia without a line ending must not be followed by leading trivia.');
+		} elseif ($after && $after->kind !== self::EndOfFile && $trivia && end($trivia)->kind === Trivia::Comment) {
+			throw new \InvalidArgumentException('A comment must be followed by a line ending.');
+		}
+		$this->assignTrivia('trailingTrivia', $trivia);
+		return $this;
+	}
+
+
+	/**
+	 * Writes the leading trivia in the canonical form, whatever the token before them.
+	 * @param  list<Trivia>  $trivia
+	 * @internal only the builder and the editor write through it, and see to both sides of a line themselves
+	 */
+	public function writeLeadingTrivia(array $trivia): void
+	{
+		self::checkTrivia($trivia, leading: true, endOfFile: $this->kind === self::EndOfFile);
+		$this->assignTrivia('leadingTrivia', $trivia);
+	}
+
+
+	/**
+	 * Writes the trailing trivia in the canonical form, whatever the token after them.
+	 * @param  list<Trivia>  $trivia
+	 * @internal only the builder and the editor write through it, and see to both sides of a line themselves
+	 */
+	public function writeTrailingTrivia(array $trivia): void
+	{
+		self::checkTrivia($trivia, leading: false, endOfFile: $this->kind === self::EndOfFile);
+		$this->assignTrivia('trailingTrivia', $trivia);
+	}
+
+
 	/**
 	 * Writes the parent as it is.
 	 * @internal only the tree writes it: the constructors of the nodes, the clone, the builder and the editor
@@ -91,6 +163,19 @@ final class Token implements \Stringable
 	public function writeParent(?Node $parent): void
 	{
 		$this->parent = $parent;
+	}
+
+
+	/** Replaces a trivia, found by identity, in the leading or the trailing trivia. */
+	public function replaceTrivia(Trivia $old, Trivia $new): static
+	{
+		$replace = fn(Trivia $trivia) => $trivia === $old ? $new : $trivia;
+		if (in_array($old, $this->leadingTrivia, true)) {
+			return $this->setLeadingTrivia(array_map($replace, $this->leadingTrivia));
+		} elseif (in_array($old, $this->trailingTrivia, true)) {
+			return $this->setTrailingTrivia(array_map($replace, $this->trailingTrivia));
+		}
+		throw new \InvalidArgumentException('The trivia does not belong to the token.');
 	}
 
 
@@ -130,6 +215,26 @@ final class Token implements \Stringable
 	}
 
 
+	/** @param  list<Trivia>  $trivia */
+	private function assignTrivia(string $side, array $trivia): void
+	{
+		$seen = [];
+		foreach ($trivia as $i => $t) { // an instance stands in a list once, so that replaceTrivia() finds the one meant
+			if (isset($seen[$id = spl_object_id($t)])) {
+				$trivia[$i] = new Trivia($t->kind, $t->text);
+			}
+			$seen[$id] = true;
+		}
+		$this->$side = $trivia;
+	}
+
+
+	private function kindName(): string
+	{
+		return self::Names[$this->kind];
+	}
+
+
 	private static function scan(string $text): ?self
 	{
 		try {
@@ -142,5 +247,110 @@ final class Token implements \Stringable
 			count($tokens) === 2 && !$tokens[0]->leadingTrivia && !$tokens[0]->trailingTrivia && !$tokens[1]->leadingTrivia => $tokens[0],
 			default => null,
 		};
+	}
+
+
+	/**
+	 * The rules of the canonical form that a list of trivia tells by itself.
+	 * @param  list<Trivia>  $list
+	 */
+	private static function checkTrivia(array $list, bool $leading, bool $endOfFile): void
+	{
+		if (!array_is_list($list)) {
+			throw new \InvalidArgumentException('Trivia are given as a list.');
+		}
+		$list = array_map(static fn(Trivia $trivia) => $trivia, $list); // the type of each one checked
+		if (!$leading && $endOfFile && $list) {
+			throw new \InvalidArgumentException('EndOfFile has no trailing trivia.');
+		}
+		foreach ($list as $i => $trivia) {
+			$next = $list[$i + 1] ?? null;
+			if ($trivia->kind === Trivia::Whitespace && $next?->kind === Trivia::Whitespace) {
+				throw new \InvalidArgumentException('Two whitespace trivia must not stand next to each other.');
+			} elseif ($trivia->kind === Trivia::ByteOrderMark && (!$leading || $i > 0)) {
+				throw new \InvalidArgumentException('A byte order mark may only be the first leading trivia.');
+			} elseif ($trivia->kind === Trivia::LineEnding && !$leading && $next) {
+				throw new \InvalidArgumentException('A line ending must be the last of the trailing trivia.');
+			} elseif (
+				$trivia->kind === Trivia::Comment
+				&& $next?->kind !== Trivia::LineEnding
+				&& ($next || ($leading && !$endOfFile))
+			) {
+				throw new \InvalidArgumentException('A comment must be followed by a line ending.');
+			} elseif (str_ends_with($trivia->text, "\r") && $next && str_starts_with($next->text, "\n")) {
+				throw new \InvalidArgumentException('A carriage return before a line feed would make one line ending of the two.');
+			}
+		}
+	}
+
+
+	/** @param  list<Trivia>  $trivia */
+	private static function hasLineEnding(array $trivia): bool
+	{
+		return array_any($trivia, fn($t) => $t->kind === Trivia::LineEnding);
+	}
+
+
+	private function findDocument(): ?DocumentNode
+	{
+		$root = $this->parent;
+		while ($root?->parent) {
+			$root = $root->parent;
+		}
+		return $root instanceof DocumentNode ? $root : null;
+	}
+
+
+	/** @return array{?self, ?self} the tokens before and after this one in a document; none outside one */
+	private function findNeighbours(): array
+	{
+		return $this->findDocument()
+			? [$this->findNeighbour(backward: true), $this->findNeighbour(backward: false)]
+			: [null, null];
+	}
+
+
+	/**
+	 * The token of the tree right before or after this one.
+	 * @internal
+	 */
+	public function findNeighbour(bool $backward): ?self
+	{
+		foreach ($this->iterateNeighbours($backward) as $token) {
+			return $token;
+		}
+		return null;
+	}
+
+
+	/**
+	 * The tokens of the tree before or after this one, the nearest first, read lazily from the nodes around it.
+	 * @return \Generator<self>
+	 * @internal
+	 */
+	public function iterateNeighbours(bool $backward): \Generator
+	{
+		$child = $this;
+		for ($node = $this->parent; $node; $child = $node, $node = $node->parent) {
+			$children = $node->getChildren();
+			$i = (int) array_search($child, $children, true);
+			foreach ($backward ? array_reverse(array_slice($children, 0, $i)) : array_slice($children, $i + 1) as $sibling) {
+				yield from self::iterateTokens($sibling, $backward);
+			}
+		}
+	}
+
+
+	/** @return \Generator<self> */
+	private static function iterateTokens(Node|self $node, bool $backward): \Generator
+	{
+		if ($node instanceof self) {
+			yield $node;
+			return;
+		}
+		$children = $node->getChildren();
+		foreach ($backward ? array_reverse($children) : $children as $child) {
+			yield from self::iterateTokens($child, $backward);
+		}
 	}
 }
