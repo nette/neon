@@ -4,3 +4,9 @@ parameters:
 	paths:
 		- src
 		- bin/neon-lint
+
+	ignoreErrors:
+		- # runtime validation of lists that callers without static analysis pass
+			identifier: function.alreadyNarrowedType
+			message: '#^Call to function array_is_list\(\)#'
+			path: src/Neon/Token.php

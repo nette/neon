@@ -141,12 +141,71 @@ test('a failure of PCRE is not a syntax error', function () {
 });
 
 
+test('Token::fromText() and setText()', function () {
+	Assert::same(Token::Literal, Token::fromText('abc')->kind);
+	Assert::same(Token::Colon, Token::fromText(':')->kind);
+	Assert::same(Token::String, Token::fromText("'a'")->kind);
+	Assert::same(Token::EndOfFile, Token::fromText('')->kind);
+	Assert::exception(fn() => Token::fromText('a b c,'), InvalidArgumentException::class);
+	Assert::exception(fn() => Token::fromText(' a'), InvalidArgumentException::class);
+	Assert::exception(fn() => Token::fromText('#a'), InvalidArgumentException::class);
+	Assert::exception(fn() => Token::fromText("\xED\xA0\x80"), InvalidArgumentException::class);
+
+	$token = Token::fromText('abc');
+	Assert::same('x y', $token->setText('x y')->text);
+	Assert::exception(fn() => $token->setText("'q'"), InvalidArgumentException::class);
+	Assert::true($token->is(Token::Literal));
+	Assert::true($token->is('x y'));
+	Assert::false($token->is(Token::String, 'abc'));
+});
+
+
 test('the guarded properties cannot be written', function () {
 	$token = Token::fromText('a');
 	Assert::exception(fn() => $token->text = 'b', Error::class, '%a%private(set)%a%');
 	Assert::exception(fn() => $token->leadingTrivia = [], Error::class, '%a%private(set)%a%');
 	Assert::exception(fn() => $token->kind = Token::Colon, Error::class);
 	Assert::exception(fn() => serialize($token), LogicException::class);
+});
+
+
+test('canonical form of trivia', function () {
+	$token = Token::fromText('a');
+	$space = Trivia::fromText(' ');
+	$comment = Trivia::fromText('# c');
+	$eol = Trivia::fromText("\n");
+
+	Assert::noError(fn() => $token->setTrailingTrivia([$space, $comment, $eol]));
+	Assert::exception(fn() => $token->setTrailingTrivia([$eol, $space]), InvalidArgumentException::class, '%a%last%a%');
+	Assert::exception(fn() => $token->setTrailingTrivia([$space, $space]), InvalidArgumentException::class, '%a%next to each other%a%');
+	Assert::exception(fn() => $token->setLeadingTrivia([$comment]), InvalidArgumentException::class, '%a%followed by a line ending%a%');
+	Assert::exception(
+		fn() => $token->setLeadingTrivia([$eol, Trivia::fromText("\u{FEFF}")]),
+		InvalidArgumentException::class,
+		'%a%byte order mark%a%',
+	);
+	Assert::exception(fn() => Trivia::fromText("\n\n"), InvalidArgumentException::class);
+	Assert::exception(fn() => new Trivia(Trivia::Comment, 'abc'), InvalidArgumentException::class);
+	Assert::same('c', $comment->getCommentText());
+
+	$endsWithCr = Trivia::fromText("# c\r"); // a lone CR is text of the comment
+	Assert::noError(fn() => $token->setTrailingTrivia([$space, $endsWithCr]));
+	Assert::exception(
+		fn() => $token->setTrailingTrivia([$space, $endsWithCr, $eol]),
+		InvalidArgumentException::class,
+		'%a%one line ending%a%',
+	);
+	Assert::noError(fn() => $token->setTrailingTrivia([$space, $endsWithCr, Trivia::fromText("\r\n")]));
+});
+
+
+test('a list of trivia holds an instance once, so replaceTrivia() changes the one meant', function () {
+	[$a, $b] = new Lexer()->tokenize("a\n\n\nb");
+	Assert::same(2, count($b->leadingTrivia));
+	Assert::notSame($b->leadingTrivia[0], $b->leadingTrivia[1]);
+	Assert::same($a->trailingTrivia[0], $b->leadingTrivia[0]); // equal trivia of different tokens may be one instance
+	$b->replaceTrivia($b->leadingTrivia[1], Trivia::fromText("\r\n"));
+	Assert::same(["\n", "\r\n"], array_map(fn(Trivia $t) => $t->text, $b->leadingTrivia));
 });
 
 
