@@ -3,7 +3,6 @@ parameters:
 
 	paths:
 		- src
-		- bin/neon-lint
 
 	ignoreErrors:
 		- # runtime validation of lists that callers without static analysis pass
