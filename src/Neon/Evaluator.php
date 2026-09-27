@@ -89,7 +89,7 @@ class Evaluator
 			if (!is_int($key) && !is_string($key)) {
 				throw new \LogicException('The key of an item must be int or string, ' . get_debug_type($key) . ' given.');
 			} elseif (($origins[$key] ?? $keys[$i]) !== $keys[$i]) {
-				throw new Exception("Duplicated key '$key'", $item->getFirstToken()->origin);
+				throw new Exception("Duplicated key '$key'", $item->getPosition());
 			}
 			$origins[$key] = $keys[$i];
 			$res[$key] = $this->evaluateItem($item);

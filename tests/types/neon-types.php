@@ -4,7 +4,7 @@
  * PHPStan type tests.
  */
 
-use Nette\Neon\{Neon, Nodes};
+use Nette\Neon\{Neon, Node, Nodes};
 use function PHPStan\Testing\assertType;
 
 
@@ -77,5 +77,14 @@ function testInlineArrayNode(Nodes\InlineArrayNode $node): void
 
 function testArrayItemNode(Nodes\ArrayItemNode $node): void
 {
+	assertType('mixed', $node->getValue());
 	assertType('string|null', $node->getKeyValue());
+}
+
+
+function testFind(Node $node): void
+{
+	assertType('list<Nette\Neon\Nodes\StringNode>', $node->find(Nodes\StringNode::class));
+	assertType('Nette\Neon\Nodes\StringNode|null', $node->findFirst(Nodes\StringNode::class));
+	assertType('Nette\Neon\Nodes\ArrayItemNode|null', $node->findAncestor(Nodes\ArrayItemNode::class));
 }

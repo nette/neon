@@ -5,7 +5,7 @@
  */
 
 use Nette\Neon\{Exception, Neon};
-use Nette\Neon\Nodes\BlockArrayNode;
+use Nette\Neon\Nodes\{ArrayItemNode, BlockArrayNode};
 use Tester\Assert;
 use Tests\Dumper;
 
@@ -64,4 +64,5 @@ test('a block on the line of a dash takes the indentation of its next line, in l
 		'Bad indentation on line 2 at column 4',
 	);
 	Assert::true(hrtime(true) - $start < 1e9);
+	Assert::type(ArrayItemNode::class, Neon::parse(str_repeat('- ', 300) . 'a')->findFirst(ArrayItemNode::class));
 });

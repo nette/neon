@@ -29,6 +29,22 @@ abstract class ArrayNode extends ValueNode
 
 
 	/**
+	 * The item with the canonical key, as the value of the document would find it.
+	 */
+	public function findItem(string|int $key): ?ArrayItemNode
+	{
+		$keys = $this->getItemKeys();
+		$found = null;
+		foreach ($this->items as $i => $item) {
+			if ($keys[$i] === (string) $key) {
+				$found = $item; // a later explicit key overwrites the earlier one
+			}
+		}
+		return $found;
+	}
+
+
+	/**
 	 * The key of each item, explicit or implicit: an item without a key gets the greatest integer key so far plus one.
 	 * @return list<string>
 	 * @throws Exception  for an implicit key beyond the 64-bit range
@@ -40,7 +56,7 @@ abstract class ArrayNode extends ValueNode
 		foreach ($this->items as $item) {
 			$key = $item->getKeyValue()
 				?? Scalars::nextImplicitKey($max)
-				?? throw new Exception('Implicit key overflow', $item->getFirstToken()->origin);
+				?? throw new Exception('Implicit key overflow', $item->getPosition());
 			$max = Scalars::maxIntegerKey($max, $key);
 			$res[] = $key;
 		}
