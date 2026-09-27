@@ -4,8 +4,8 @@
  * Test: the parser, the dump and the printer.
  */
 
-use Nette\Neon\{Exception, Neon};
-use Nette\Neon\Nodes\{ArrayItemNode, BlockArrayNode};
+use Nette\Neon\{Exception, Neon, Printer};
+use Nette\Neon\Nodes\{ArrayItemNode, BlockArrayNode, LiteralNode};
 use Tester\Assert;
 use Tests\Dumper;
 
@@ -18,10 +18,21 @@ test('the tree holds every token, the trivia stay with the tokens', function () 
 	Assert::same($input, $document->print());
 	Assert::type(BlockArrayNode::class, $document->value);
 	Assert::same(['a', 'b'], $document->value->getItemKeys());
+	Assert::same('a: 1', Printer::printText($document->value->items[0]));
 	Assert::same(
 		'Literal "1" >[Whitespace " ", Comment "# one", LineEnding "\n"]',
 		Dumper::dumpToken($document->value->items[0]->value->getFirstToken()),
 	);
+});
+
+
+test('positions of all tokens in one walk', function () {
+	$document = Neon::parse("a: [ž, b]\n");
+	$positions = Printer::locateAll($document);
+	$literals = $document->find(LiteralNode::class);
+	Assert::same('1:5', $positions[$literals[1]->token]->line . ':' . $positions[$literals[1]->token]->column);
+	Assert::same('1:8', $positions[$literals[2]->token]->line . ':' . $positions[$literals[2]->token]->column);
+	Assert::equal($literals[2]->getPosition(), $positions[$literals[2]->token]);
 });
 
 
