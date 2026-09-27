@@ -43,6 +43,13 @@ test('a tree built by hand prints and knows its parents', function () {
 	Assert::same($array, $array->items[0]->parent);
 	Assert::same($array->items[0], $array->items[0]->value?->parent);
 	Assert::same(['0', 'b'], $array->getItemKeys());
+	Assert::same($array->items[1], $array->findItem('b'));
+	Assert::same(2, count($document->find(ArrayItemNode::class)));
+	Assert::same($array->items[1], $document->findFirst(ArrayItemNode::class, fn(ArrayItemNode $item) => $item->key !== null));
+	Assert::same($array->items[1], $array->items[0]->getNextSibling());
+	Assert::same($array, $array->items[0]->value?->findAncestor(InlineArrayNode::class));
+	Assert::false($document->isMultiLine());
+	Assert::same(8, $array->items[1]->value?->getPosition()?->column);
 });
 
 

@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function is_array;
+use function count, is_array;
 
 
 /**
@@ -45,6 +45,13 @@ abstract class Node implements \Stringable
 	abstract public function getLastToken(): Token;
 
 
+	/** The current position of the first token, computed by a walk from the root. */
+	public function getPosition(): ?Position
+	{
+		return $this->getFirstToken()->getPosition();
+	}
+
+
 	/** The source text of the node, with the trivia of its tokens. */
 	public function print(): string
 	{
@@ -55,6 +62,121 @@ abstract class Node implements \Stringable
 	public function __toString(): string
 	{
 		return $this->print();
+	}
+
+
+	/** Whether the node spans more than one line, its outer trivia not counted. */
+	public function isMultiLine(): bool
+	{
+		$tokens = $this->getTokens();
+		$last = count($tokens) - 1;
+		foreach ($tokens as $i => $token) {
+			if (($i > 0 && self::hasLineEnding($token->leadingTrivia))
+				|| str_contains($token->text, "\n")
+				|| ($i < $last && self::hasLineEnding($token->trailingTrivia))
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public function hasLeadingComment(): bool
+	{
+		return (bool) $this->getLeadingComments();
+	}
+
+
+	/**
+	 * The comments in the leading trivia of the first token.
+	 * @return list<Trivia>
+	 */
+	public function getLeadingComments(): array
+	{
+		return array_values(array_filter($this->getFirstToken()->leadingTrivia, fn(Trivia $t) => $t->kind === Trivia::Comment));
+	}
+
+
+	/**
+	 * The comments in the trailing trivia of the last token.
+	 * @return list<Trivia>
+	 */
+	public function getTrailingComments(): array
+	{
+		return array_values(array_filter($this->getLastToken()->trailingTrivia, fn(Trivia $t) => $t->kind === Trivia::Comment));
+	}
+
+
+	/**
+	 * The nearest ancestor of the class.
+	 * @template T of Node
+	 * @param  class-string<T>  $class
+	 * @return ?T
+	 */
+	public function findAncestor(string $class): ?Node
+	{
+		for ($node = $this->parent; $node; $node = $node->parent) {
+			if ($node instanceof $class) {
+				return $node;
+			}
+		}
+		return null;
+	}
+
+
+	public function getNextSibling(): ?Node
+	{
+		$siblings = $this->getSiblings();
+		return $siblings[array_search($this, $siblings, true) + 1] ?? null;
+	}
+
+
+	public function getPreviousSibling(): ?Node
+	{
+		$siblings = $this->getSiblings();
+		return $siblings[array_search($this, $siblings, true) - 1] ?? null;
+	}
+
+
+	/**
+	 * The descendants of the class in the order of the source.
+	 * @template T of Node
+	 * @param  class-string<T>  $class
+	 * @param  ?callable(T): bool  $filter
+	 * @return list<T>
+	 */
+	public function find(string $class, ?callable $filter = null): array
+	{
+		$res = [];
+		$this->walk(function (Node $node) use ($class, $filter, &$res): bool {
+			if ($node instanceof $class && (!$filter || $filter($node))) {
+				$res[] = $node;
+			}
+			return false;
+		});
+		return $res;
+	}
+
+
+	/**
+	 * The first descendant of the class in the order of the source.
+	 * @template T of Node
+	 * @param  class-string<T>  $class
+	 * @param  ?callable(T): bool  $filter
+	 * @return ?T
+	 */
+	public function findFirst(string $class, ?callable $filter = null): ?Node
+	{
+		$res = null;
+		$this->walk(function (Node $node) use ($class, $filter, &$res): bool {
+			if ($node instanceof $class && (!$filter || $filter($node))) {
+				$res = $node;
+				return true;
+			}
+			return false;
+		});
+		return $res;
 	}
 
 
@@ -117,6 +239,13 @@ abstract class Node implements \Stringable
 	}
 
 
+	/** @param  list<Trivia>  $trivia */
+	protected static function hasLineEnding(array $trivia): bool
+	{
+		return array_any($trivia, fn($t) => $t->kind === Trivia::LineEnding);
+	}
+
+
 	/** @param  list<Token>  $res */
 	private function collectTokens(array &$res): void
 	{
@@ -130,10 +259,29 @@ abstract class Node implements \Stringable
 	}
 
 
+	/** @return list<Node> */
+	private function getSiblings(): array
+	{
+		return $this->parent
+			? array_values(array_filter($this->parent->getChildren(), fn($child) => $child instanceof self))
+			: [];
+	}
+
+
 	private static function checkChild(mixed $child): Node|Token
 	{
 		return $child instanceof self || $child instanceof Token
 			? $child
 			: throw new \LogicException('A slot holds ' . get_debug_type($child) . '.');
+	}
+
+
+	/**
+	 * Visits the descendants in the order of the source until the visitor returns true.
+	 * @param  \Closure(Node): bool  $visitor
+	 */
+	private function walk(\Closure $visitor): bool
+	{
+		return array_any($this->getChildren(), fn($child) => $child instanceof self && ($visitor($child) || $child->walk($visitor)));
 	}
 }

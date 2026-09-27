@@ -10,6 +10,7 @@ namespace Nette\Neon\Nodes;
 use Nette\Neon\Node;
 use Nette\Neon\Scalars;
 use Nette\Neon\Token;
+use Nette\Neon\Trivia;
 
 
 /**
@@ -65,5 +66,21 @@ final class ArrayItemNode extends Node
 			$this->key instanceof LiteralNode => Scalars::literalKey($this->key->token->text),
 			default => null,
 		};
+	}
+
+
+	/** The value of the item, null without one. */
+	public function getValue(): mixed
+	{
+		return $this->value?->toValue();
+	}
+
+
+	/** The indentation of the line the item starts on. */
+	public function getIndentation(): string
+	{
+		$leading = $this->getFirstToken()->leadingTrivia;
+		$last = end($leading);
+		return $last && $last->kind === Trivia::Whitespace ? $last->text : '';
 	}
 }

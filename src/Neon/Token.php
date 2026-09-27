@@ -186,6 +186,28 @@ final class Token implements \Stringable
 	}
 
 
+	/** The current position, computed by a walk from the root; null in a subtree without a document. */
+	public function getPosition(): ?Position
+	{
+		$root = $this->findDocument();
+		if (!$root) {
+			return null;
+		}
+
+		$text = '';
+		foreach ($root->getTokens() as $token) {
+			if ($token === $this) {
+				foreach ($this->leadingTrivia as $trivia) {
+					$text .= $trivia->text;
+				}
+				return new Position()->advance($text);
+			}
+			$text .= $token;
+		}
+		return null;
+	}
+
+
 	/** The source text of the token with its trivia. */
 	public function __toString(): string
 	{
