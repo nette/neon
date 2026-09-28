@@ -91,6 +91,10 @@ final class Token implements \Stringable
 		if (self::scan($text)?->kind !== $this->kind) {
 			throw new \InvalidArgumentException(var_export($text, true) . " is not one token of kind {$this->kindName()}.");
 		}
+		if (Journal::isRecording()) {
+			$old = $this->text;
+			Journal::record(function () use ($old): void { $this->text = $old; });
+		}
 		$this->text = $text;
 		return $this;
 	}
@@ -157,11 +161,15 @@ final class Token implements \Stringable
 
 
 	/**
-	 * Writes the parent as it is.
+	 * Writes the parent as it is and notes in the journal how to undo it.
 	 * @internal only the tree writes it: the constructors of the nodes, the clone, the builder and the editor
 	 */
 	public function writeParent(?Node $parent): void
 	{
+		if (Journal::isRecording()) {
+			$old = $this->parent;
+			Journal::record(function () use ($old): void { $this->parent = $old; });
+		}
 		$this->parent = $parent;
 	}
 
@@ -246,6 +254,10 @@ final class Token implements \Stringable
 				$trivia[$i] = new Trivia($t->kind, $t->text);
 			}
 			$seen[$id] = true;
+		}
+		if (Journal::isRecording()) {
+			$old = $this->$side;
+			Journal::record(function () use ($side, $old): void { $this->$side = $old; });
 		}
 		$this->$side = $trivia;
 	}

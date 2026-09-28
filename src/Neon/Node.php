@@ -211,21 +211,30 @@ abstract class Node implements \Stringable
 
 
 	/**
-	 * Writes the parent as it is.
+	 * Writes the parent as it is and notes in the journal how to undo it.
 	 * @internal only the tree writes it: the constructors, the clone, the builder and the editor
 	 */
 	public function writeParent(?self $parent): void
 	{
+		if (Journal::isRecording()) {
+			$old = $this->parent;
+			Journal::record(function () use ($old): void { $this->parent = $old; });
+		}
 		$this->parent = $parent;
 	}
 
 
 	/**
-	 * Writes a slot as it is, without adopting the value or releasing the old one.
+	 * Writes a slot as it is, without adopting the value or releasing the old one, and notes in the journal how to
+	 * undo it.
 	 * @internal only the clone, the builder and the editor write through it, the parents seen to
 	 */
 	public function writeSlot(string $slot, mixed $value): void
 	{
+		if (Journal::isRecording()) {
+			$old = $this->$slot;
+			Journal::record(function () use ($slot, $old): void { $this->$slot = $old; });
+		}
 		$this->$slot = $value;
 	}
 

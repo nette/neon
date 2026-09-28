@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: nodes of the tree, built by hand: ownership and clone.
+ * Test: nodes of the tree, built by hand: ownership, clone and the journal.
  */
 
-use Nette\Neon\{Neon, Token, Trivia};
+use Nette\Neon\{Journal, Neon, Token, Trivia};
 use Nette\Neon\Nodes\{ArrayItemNode, DocumentNode, InlineArrayNode, LiteralNode};
 use Tester\Assert;
 
@@ -92,4 +92,29 @@ test('clone is deep and detached', function () {
 	$item = clone $document->value?->items[1];
 	Assert::null($item?->parent);
 	Assert::same('b: c', $item?->print());
+});
+
+
+test('the journal undoes the writes of a failed operation, a nested one to its savepoint', function () {
+	$token = Token::fromText('a');
+	$space = Trivia::fromText(' ');
+	Assert::exception(fn() => Journal::atomic(function () use ($token, $space) {
+		$token->setText('b');
+		$token->setTrailingTrivia([$space]);
+		Journal::atomic(fn() => $token->setText('c'));
+		try {
+			Journal::atomic(function () use ($token) {
+				$token->setText('d');
+				throw new RuntimeException('inner');
+			});
+		} catch (RuntimeException) {
+		}
+		Assert::same('c', $token->text);
+		throw new TypeError('outer');
+	}), TypeError::class, 'outer');
+	Assert::same('a', $token->text);
+	Assert::same([], $token->trailingTrivia);
+
+	Journal::atomic(fn() => $token->setText('e'));
+	Assert::same('e', $token->text);
 });
