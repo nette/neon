@@ -7,8 +7,11 @@
 
 namespace Nette\Neon\Nodes;
 
+use Nette\Neon\Builder;
+use Nette\Neon\Editor;
 use Nette\Neon\Evaluator;
 use Nette\Neon\Exception;
+use Nette\Neon\Journal;
 use Nette\Neon\Scalars;
 use function is_array;
 
@@ -63,6 +66,17 @@ abstract class ArrayNode extends ValueNode
 			$res[] = $key;
 		}
 		return $res;
+	}
+
+
+	/**
+	 * Adds an item built from the value, a value of PHP or a node, at the end or before the item at the position.
+	 * @throws Exception  for a key that is there already, or a value that cannot stand in the array
+	 */
+	public function addItem(mixed $value, ?string $key = null, ?int $position = null): ArrayItemNode
+	{
+		$value = Builder::materialize($value); // iterators run before the journal records
+		return Journal::atomic(fn() => Editor::addItem($this, $key, $value, $position));
 	}
 
 

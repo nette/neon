@@ -7,8 +7,10 @@
 
 namespace Nette\Neon\Nodes;
 
+use Nette\Neon\Editor;
 use Nette\Neon\Evaluator;
 use Nette\Neon\Exception;
+use Nette\Neon\Journal;
 use Nette\Neon\Node;
 
 
@@ -24,5 +26,24 @@ abstract class ValueNode extends Node
 	public function toValue(): mixed
 	{
 		return new Evaluator()->evaluate($this);
+	}
+
+
+	/**
+	 * Puts the node into the slot of this one, which decides what that means; the node gets the trivia at the edges
+	 * of this one in place of its own.
+	 * @throws Exception  for a node that cannot stand in the slot
+	 */
+	public function replaceWith(self $node): void
+	{
+		Journal::atomic(fn() => Editor::replaceNode($this, $node));
+	}
+
+
+	/** Takes the node out of the tree, with the trivia at its edges; the emptied slot gets null. */
+	public function detach(): static
+	{
+		Journal::atomic(fn() => Editor::detachNode($this));
+		return $this;
 	}
 }
