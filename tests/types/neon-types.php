@@ -36,6 +36,7 @@ function testNeonParse(string $input): void
 function testDocumentNode(Nodes\DocumentNode $node): void
 {
 	assertType('mixed', $node->toValue());
+	assertType('Nette\Neon\Nodes\ArrayItemNode|null', $node->findItem(['a']));
 }
 
 

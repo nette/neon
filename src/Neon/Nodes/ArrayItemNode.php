@@ -7,7 +7,7 @@
 
 namespace Nette\Neon\Nodes;
 
-use Nette\Neon\{Node, Scalars, Token, Trivia};
+use Nette\Neon\{Builder, Editor, Exception, Journal, Node, Scalars, Token, Trivia};
 
 
 /**
@@ -70,6 +70,28 @@ final class ArrayItemNode extends Node
 	public function getValue(): mixed
 	{
 		return $this->value?->toValue();
+	}
+
+
+	/**
+	 * Writes the value: a value of PHP or a node. Writing an equal value changes nothing; a new scalar keeps the
+	 * style of the old one where it can.
+	 * @throws Exception  for a value that cannot stand in the item
+	 */
+	public function setValue(mixed $value): void
+	{
+		$value = Builder::materialize($value); // iterators run before the journal records
+		Journal::atomic(fn() => Editor::setItemValue($this, $value));
+	}
+
+
+	/**
+	 * Renames the key.
+	 * @throws Exception  for an item without a key or a key that is there already
+	 */
+	public function setKey(string $key): void
+	{
+		Journal::atomic(fn() => Editor::setItemKey($this, $key));
 	}
 
 

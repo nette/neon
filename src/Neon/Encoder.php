@@ -36,6 +36,8 @@ final class Encoder
 		/** @var bool|\Closure(mixed, list<string>): bool */
 		private readonly bool|\Closure $blockMode = false,
 		private readonly string $indentation = "\t",
+		/** Writes multiline strings in """, for a document where ''' would close an earlier string. */
+		private readonly bool $doubleQuotedMultiline = false,
 	) {
 		if (!preg_match('~^[\t ]+$~D', $indentation)) {
 			throw new \InvalidArgumentException('The indentation is a non-empty run of spaces and tabs.');
@@ -181,7 +183,8 @@ final class Encoder
 		$content = $s;
 		$firstLine = preg_match('~^\n*([^\n]*)~', $s, $m) ? $m[1] : '';
 		if (
-			preg_match('~[\x00-\x08\x0B-\x1F]~', $s)
+			$this->doubleQuotedMultiline
+			|| preg_match('~[\x00-\x08\x0B-\x1F]~', $s)
 			|| preg_match("~(?:^|\n)[\t ]*'''~", $s)
 			|| preg_match('~^[\t ]~', $firstLine)
 		) {
@@ -243,6 +246,8 @@ final class Encoder
 			&& !$value instanceof Entity
 			&& !$value instanceof \DateTimeInterface
 			&& !$value instanceof \Closure
+			&& !$value instanceof Node
+			&& !$value instanceof Token
 		) {
 			$res = [];
 			foreach (get_object_vars($value) as $k => $v) {

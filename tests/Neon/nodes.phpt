@@ -56,12 +56,20 @@ test('arguments are given as lists', function () {
 		'Trivia are given as a list.',
 	);
 	Assert::same([], $token->leadingTrivia);
+
+	$document = Neon::parse("a: 1\n");
+	Assert::exception(
+		fn() => $document->setValue([1 => 'a'], 2),
+		InvalidArgumentException::class,
+		'A path is given as a list of segments.',
+	);
+	Assert::exception(fn() => $document->findItem([1 => 'a']), InvalidArgumentException::class, 'A path is given as a list of segments.');
 });
 
 
 test('an instance of trivia stands in a list once, so that replaceTrivia() replaces the one meant', function () {
 	$document = Neon::parse("a: 1\nb: 2\n");
-	$token = $document->value?->items[1]->key?->getFirstToken();
+	$token = $document->findItem(['b'])?->key?->getFirstToken();
 	$eol = Trivia::fromText("\n");
 	$token?->setLeadingTrivia([$eol, $eol]);
 	Assert::notSame($token?->leadingTrivia[0], $token?->leadingTrivia[1]);

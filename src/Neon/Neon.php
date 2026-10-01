@@ -9,7 +9,7 @@ namespace Nette\Neon;
 
 
 /**
- * Facade for parsing and encoding the NEON format.
+ * Facade for parsing, editing and encoding the NEON format.
  * @see https://neon.nette.org
  */
 final class Neon
