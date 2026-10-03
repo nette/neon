@@ -18,3 +18,14 @@ enum Place
 	case EntityHead;
 	case ChainLink;
 }
+
+
+/**
+ * What happens to the comments a removed item owns: the one on its line and those directly above it; the comments
+ * inside its value go with it.
+ */
+enum CommentPolicy
+{
+	case Drop;
+	case MoveToNextToken;
+}

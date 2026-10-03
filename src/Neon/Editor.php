@@ -644,6 +644,251 @@ final class Editor
 
 
 	/**
+	 * Removes the key at the path: the item found, and the items whose value it overwrote.
+	 * @param  list<PathSegment>  $path
+	 * @throws Exception  for a path that is not there
+	 */
+	public static function removeByPath(
+		DocumentNode $document,
+		array $path,
+		CommentPolicy $comments,
+		?bool $nullable = null,
+		bool $mergeBlankLines = false,
+	): void
+	{
+		$item = self::resolvePath($document, $path);
+		$array = $item->parent;
+		if (!$array instanceof ArrayNode) {
+			throw new \LogicException('An item outside an array.');
+		} elseif (is_array($path[count($path) - 1])) {
+			self::removeItem($item, $comments, $nullable, $mergeBlankLines);
+			return;
+		}
+		$keys = $array->getItemKeys();
+		$key = $keys[(int) array_search($item, $array->items, true)];
+		$victims = array_map(fn($i) => $array->items[$i], array_keys($keys, $key, true));
+		foreach (array_reverse($victims) as $victim) {
+			self::removeItem($victim, $comments, $nullable, $mergeBlankLines);
+		}
+	}
+
+
+	/**
+	 * Removes an item with the comments it owns.
+	 * @throws Exception  for an item that is not in an array
+	 */
+	public static function removeItem(
+		ArrayItemNode $item,
+		CommentPolicy $comments,
+		?bool $nullable = null,
+		bool $mergeBlankLines = false,
+	): void
+	{
+		$array = $item->parent;
+		if (!$array instanceof ArrayNode) {
+			throw new Exception('The item is not in an array.');
+		}
+
+		$items = $array->items;
+		$index = (int) array_search($item, $items, true);
+		$remaining = array_values(array_filter($items, fn($other) => $other !== $item));
+		$owner = $array->parent;
+		$leaveNull = $nullable ?? ($owner instanceof ArrayItemNode || $owner instanceof DocumentNode ? $owner->nullable : false);
+		$before = self::getKeysBefore($array);
+
+		if ($array instanceof BlockArrayNode && !$remaining && $owner instanceof DocumentNode) {
+			self::emptyDocument($owner, $item, $comments, $leaveNull);
+			return;
+		} elseif ($array instanceof BlockArrayNode) {
+			self::removeFromBlock($item, $comments, $mergeBlankLines);
+			if (!$remaining) {
+				self::emptyBlock($array, $item, $leaveNull);
+				return;
+			}
+		} else {
+			assert($array instanceof InlineArrayNode);
+			self::removeFromInline($array, $item, $index, $comments);
+			if (!$remaining && $leaveNull && $owner instanceof ArrayItemNode) {
+				self::setList($array, 'items', []);
+				self::replaceValue($owner, null);
+				return;
+			} elseif (!$remaining && $leaveNull && $owner instanceof DocumentNode) {
+				self::setList($array, 'items', []);
+				self::emptyRoot($owner);
+				return;
+			}
+		}
+		self::setList($array, 'items', $remaining);
+		self::keepKeys($array, $before, true); // an item removed from a list renumbers the rest, whatever its key
+		self::guardDashSubblocks($array);
+	}
+
+
+	private static function removeFromBlock(ArrayItemNode $item, CommentPolicy $comments, bool $mergeBlankLines): void
+	{
+		[$preamble, $owned] = self::splitLeading($item->getFirstToken()->leadingTrivia);
+		$next = self::getTokenAfter($item->getLastToken());
+		$kept = $comments === CommentPolicy::MoveToNextToken
+			? [...self::stripIndentation($owned), ...self::createCommentLine($item, Layout::getIndentation($item))]
+			: [];
+		$block = $item->parent;
+		assert($block instanceof BlockArrayNode);
+		if (!self::isAtLineStart($item)) { // the first item of a block opened on the line of a dash
+			$second = $block->items[1] ?? null;
+			$leading = $second?->getFirstToken()->leadingTrivia ?? [];
+			if ($second && ($kept || array_any($leading, fn(Trivia $t) => $t->kind === Trivia::Comment))) { // the dash ends its line, the comments stay below it
+				$owner = $block->parent;
+				assert($owner instanceof ArrayItemNode && $owner->bullet);
+				self::trail($owner->bullet, [new Trivia(Trivia::LineEnding, Layout::getLineEnding($item))]);
+				self::lead($second->getFirstToken(), self::joinTrivia($kept, $leading));
+			} elseif ($second) { // the next one moves up
+				self::lead($second->getFirstToken(), []);
+			}
+		} elseif ($next && $mergeBlankLines && !$kept) { // the narrower of the two gaps stays
+			$gap = min(self::countBlankLines($preamble), self::countBlankLines($next->leadingTrivia, atStart: true));
+			self::lead(
+				$next,
+				self::joinTrivia(self::stripBlankLines($preamble, $gap), self::stripBlankLines($next->leadingTrivia, 0, atStart: true)),
+			);
+		} elseif ($next) {
+			self::lead($next, self::joinTrivia([...$preamble, ...$kept], $next->leadingTrivia));
+		}
+		if (!self::hasLineEnding($item->getLastToken()->trailingTrivia) && $next?->kind === Token::EndOfFile && !$preamble && !$kept) {
+			$before = self::getTokenBefore($item->getFirstToken());
+			if ($before) {
+				self::trail($before, self::stripLineEnding($before->trailingTrivia)); // the file keeps ending without a line ending
+			}
+		}
+		self::lead($item->getFirstToken(), $owned); // the item goes with what it owns, for insert()
+	}
+
+
+	/**
+	 * The comment on the line of the item as a comment line of its own, for MoveToNextToken.
+	 * @return list<Trivia>
+	 */
+	private static function createCommentLine(ArrayItemNode $item, string $indent): array
+	{
+		foreach ($item->getTokens() as $token) {
+			foreach ($token->trailingTrivia as $t) {
+				if ($t->kind === Trivia::Comment) {
+					return [...self::createIndentation($indent), $t, new Trivia(Trivia::LineEnding, Layout::getLineEnding($item))];
+				}
+			}
+			if (self::hasLineEnding($token->trailingTrivia)) {
+				break;
+			}
+		}
+		return [];
+	}
+
+
+	/** The block lost its last item: an empty inline array takes its place, or null. */
+	private static function emptyBlock(BlockArrayNode $block, ArrayItemNode $last, bool $leaveNull): void
+	{
+		$owner = $block->parent;
+		$head = $owner instanceof ArrayItemNode ? $owner->colon ?? $owner->bullet : null;
+		assert($owner instanceof ArrayItemNode && $head);
+		$onDashLine = !self::hasLineEnding($head->trailingTrivia); // then the line ending was the item's
+		self::setList($block, 'items', []);
+		self::setSlots($owner, ['value' => null]); // the tokens of the block are gone, the head keeps its line ending
+		if ($onDashLine) {
+			self::trail($head, $last->getLastToken()->trailingTrivia);
+		}
+		if (!$leaveNull) {
+			self::replaceValue($owner, Builder::parse($last->key ? '{}' : '[]'));
+		}
+		self::guardDashSubblocks($owner->parent);
+	}
+
+
+	/** The document lost its last item: the empty array, or nothing, keeps what stood above the item. */
+	private static function emptyDocument(DocumentNode $document, ArrayItemNode $last, CommentPolicy $comments, bool $leaveNull): void
+	{
+		[$preamble, $owned] = self::splitLeading($last->getFirstToken()->leadingTrivia);
+		$kept = [
+			...$preamble,
+			...$comments === CommentPolicy::MoveToNextToken
+				? [...self::stripIndentation($owned), ...self::createCommentLine($last, '')]
+				: [],
+		];
+		$trailing = $last->getLastToken()->trailingTrivia;
+		$block = $document->value;
+		assert($block instanceof BlockArrayNode);
+		self::setList($block, 'items', []);
+		if ($leaveNull) {
+			self::setSlots($document, ['value' => null]);
+			self::lead($document->endOfFile, self::joinTrivia($kept, $document->endOfFile->leadingTrivia));
+			return;
+		}
+		$node = Builder::parse($last->key ? '{}' : '[]');
+		self::lead($node->getFirstToken(), $kept);
+		self::trail($node->getLastToken(), self::stripComment($trailing)); // the comment on the line of the item went with it, or was kept above
+		self::setSlots($document, ['value' => $node]);
+	}
+
+
+	/**
+	 * Removes an item of an inline array. The item goes with what it owns; the lines around it stay lines: an item
+	 * that started its line takes the line ending before itself along, one that did not leaves the line ending
+	 * after itself, and what stood above the next item stays there.
+	 */
+	private static function removeFromInline(InlineArrayNode $array, ArrayItemNode $item, int $index, CommentPolicy $comments): void
+	{
+		$next = $array->items[$index + 1] ?? null;
+		$prev = $array->items[$index - 1] ?? null;
+		$first = $item->getFirstToken();
+		$eol = Layout::getLineEnding($item);
+		[$preamble, $owned] = self::splitLeading($first->leadingTrivia);
+		$ownLine = self::isAtLineStart($item);
+		$endsLine = array_any($item->getTokens(), fn(Token $token) => self::hasLineEnding($token->trailingTrivia));
+		$kept = $comments === CommentPolicy::MoveToNextToken
+			? [...self::stripIndentation($owned), ...self::createCommentLine($item, '')]
+			: [];
+
+		$before = self::getTokenBefore($first) ?? throw new \LogicException; // the opening bracket, or the comma of the previous item
+		if (!$next && $prev?->separator && !$item->separator) { // the comma before the last item goes with it
+			$comma = $prev->separator;
+			self::setSlots($prev, ['separator' => null]);
+			$before = $prev->getLastToken();
+			$between = [...$before->trailingTrivia, ...($ownLine ? $comma->trailingTrivia : [])];
+		} else {
+			$between = $ownLine || ($next && !$endsLine) ? $before->trailingTrivia : self::stripTrailingSpace($before->trailingTrivia);
+		}
+		if (!$ownLine && $endsLine) {
+			$between = [...self::stripTrailingSpace($between), new Trivia(Trivia::LineEnding, $eol)];
+		}
+		$between = [...$between, ...$preamble, ...$kept];
+		if ($next && $ownLine && !$endsLine) { // the next item was on the line of the removed one
+			$between = [...$between, ...self::createIndentation(self::getIndentationOf($owned))];
+		}
+		$after = $next ? $next->getFirstToken() : $array->closeBracket;
+		self::reattach($before, $after, [...$between, ...$after->leadingTrivia]);
+		self::setSlots($item, ['separator' => null]); // the comma separated it in this array
+		self::lead($first, $owned); // the item goes with what it owns, for insert()
+	}
+
+
+	/**
+	 * Splits the trivia between two tokens by the convention: up to the first line ending trailing, the rest leading.
+	 * @param  list<Trivia>  $trivia
+	 */
+	private static function reattach(Token $before, Token $after, array $trivia): void
+	{
+		$merged = self::joinAll($trivia);
+		$split = count($merged);
+		foreach ($merged as $i => $t) {
+			if ($t->kind === Trivia::LineEnding) {
+				$split = $i + 1;
+				break;
+			}
+		}
+		self::trail($before, array_slice($merged, 0, $split));
+		self::lead($after, array_slice($merged, $split));
+	}
+
+
+	/**
 	 * Replaces the key of an item, in the quotes of the old one when it can be written in them; or by a key node.
 	 * @throws Exception  for an item without a key or a key that is there already
 	 */
@@ -1136,6 +1381,42 @@ final class Editor
 
 
 	/**
+	 * The number of blank lines at the end of the trivia, or at their start.
+	 * @param  list<Trivia>  $trivia
+	 */
+	private static function countBlankLines(array $trivia, bool $atStart = false): int
+	{
+		$lines = self::splitLines($trivia);
+		if (!$atStart) {
+			array_pop($lines); // the indentation of the line that follows
+			$lines = array_reverse($lines);
+		}
+		$count = 0;
+		while (isset($lines[$count])
+			&& !array_any($lines[$count], fn(Trivia $t) => $t->kind === Trivia::Comment)
+			&& self::hasLineEnding($lines[$count])
+		) {
+			$count++;
+		}
+		return $count;
+	}
+
+
+	/**
+	 * The trivia with only the given number of blank lines left at the end, or at the start.
+	 * @param  list<Trivia>  $trivia
+	 * @return list<Trivia>
+	 */
+	private static function stripBlankLines(array $trivia, int $keep, bool $atStart = false): array
+	{
+		$lines = self::splitLines($trivia);
+		$blank = self::countBlankLines($trivia, $atStart);
+		array_splice($lines, $atStart ? $keep : count($lines) - 1 - $blank + $keep, $blank - $keep);
+		return array_merge(...$lines);
+	}
+
+
+	/**
 	 * Groups trivia into lines, each ending with its line ending; the last group has none.
 	 * @param  list<Trivia>  $trivia
 	 * @return non-empty-list<list<Trivia>>
@@ -1178,6 +1459,23 @@ final class Editor
 	private static function stripTrailingSpace(array $trivia): array
 	{
 		return self::stripIndentation($trivia);
+	}
+
+
+	/**
+	 * The trivia without a comment and the space before it.
+	 * @param  list<Trivia>  $trivia
+	 * @return list<Trivia>
+	 */
+	private static function stripComment(array $trivia): array
+	{
+		foreach ($trivia as $i => $t) {
+			if ($t->kind === Trivia::Comment) {
+				$start = ($trivia[$i - 1] ?? null)?->kind === Trivia::Whitespace ? $i - 1 : $i;
+				return self::joinAll([...array_slice($trivia, 0, $start), ...array_slice($trivia, $i + 1)]);
+			}
+		}
+		return $trivia;
 	}
 
 
