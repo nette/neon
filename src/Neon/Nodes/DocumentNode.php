@@ -8,6 +8,7 @@
 namespace Nette\Neon\Nodes;
 
 use Nette\Neon\Builder;
+use Nette\Neon\CommentPolicy;
 use Nette\Neon\Editor;
 use Nette\Neon\Evaluator;
 use Nette\Neon\Exception;
@@ -22,6 +23,9 @@ use Nette\Neon\Token;
 final class DocumentNode extends Node
 {
 	public const Slots = ['value', 'endOfFile'];
+
+	/** Whether removing the last item leaves null instead of an empty collection. */
+	public bool $nullable = false;
 
 
 	/** @internal */
@@ -98,6 +102,23 @@ final class DocumentNode extends Node
 	{
 		$value = Builder::materialize($value); // iterators run before the journal records
 		return Journal::atomic(fn() => Editor::addByPath($this, $path, $key, $value, $position));
+	}
+
+
+	/**
+	 * Removes the item at the path with the comments it owns, and the items whose value it overwrote.
+	 * @param  list<string|int|array{item: int}>  $path
+	 * @param  ?bool  $nullable  whether an emptied array becomes null; the nullable of its owner by default
+	 * @throws Exception  for a path that is not there
+	 */
+	public function removeItem(
+		array $path,
+		CommentPolicy $comments = CommentPolicy::Drop,
+		?bool $nullable = null,
+		bool $mergeBlankLines = false,
+	): void
+	{
+		Journal::atomic(fn() => Editor::removeByPath($this, $path, $comments, $nullable, $mergeBlankLines));
 	}
 
 

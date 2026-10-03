@@ -8,6 +8,7 @@
 namespace Nette\Neon\Nodes;
 
 use Nette\Neon\Builder;
+use Nette\Neon\CommentPolicy;
 use Nette\Neon\Editor;
 use Nette\Neon\Exception;
 use Nette\Neon\Journal;
@@ -24,6 +25,9 @@ use Nette\Neon\Trivia;
 final class ArrayItemNode extends Node
 {
 	public const Slots = ['bullet', 'key', 'colon', 'value', 'separator'];
+
+	/** Whether removing the last item of the value leaves null instead of an empty collection. */
+	public bool $nullable = false;
 
 
 	/** @internal */
@@ -99,6 +103,16 @@ final class ArrayItemNode extends Node
 	public function setKey(string $key): void
 	{
 		Journal::atomic(fn() => Editor::setItemKey($this, $key));
+	}
+
+
+	/**
+	 * Removes the item from its array, with the comments it owns.
+	 * @throws Exception  for an item that is not in an array
+	 */
+	public function remove(CommentPolicy $comments = CommentPolicy::Drop, bool $mergeBlankLines = false): void
+	{
+		Journal::atomic(fn() => Editor::removeItem($this, $comments, null, $mergeBlankLines));
 	}
 
 

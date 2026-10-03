@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-
 /**
  * Test: targeted cases of the editing API: the slots, the root, the refused operations and the low level.
  */
+
+use Nette\Neon\CommentPolicy;
 use Nette\Neon\Entity;
 use Nette\Neon\Neon;
 use Nette\Neon\Nodes\BlockArrayNode;
@@ -146,6 +147,17 @@ test('an empty document', function () {
 });
 
 
+test('nullable removes the root of either style', function () {
+	foreach (["[a]\n", "- a\n"] as $input) {
+		$doc = Neon::parse($input);
+		$doc->nullable = true;
+		$doc->removeItem([0]);
+		Assert::null($doc->toValue());
+		Guarantees::checkTree($doc);
+	}
+});
+
+
 test('an implicit key out of range is refused', function () {
 	$add = Neon::parse('{9223372036854775807: a}');
 	expectRefused(fn() => inline($add)->addItem('b'), 'Implicit key overflow', $add);
@@ -232,6 +244,40 @@ test('a value the encoder refuses changes nothing', function () {
 });
 
 
+test('removing keeps the comments of others: a block opened on the line of a dash', function () {
+	$dropped = Neon::parse("- a: 1\n  # about b\n  b: 2\n");
+	$dropped->removeItem([0, 'a']);
+	Assert::same("-\n  # about b\n  b: 2\n", $dropped->print());
+	Guarantees::checkTree($dropped);
+
+	$moved = Neon::parse("- a: 1 # about a\n  b: 2\n");
+	$moved->removeItem([0, 'a'], CommentPolicy::MoveToNextToken);
+	Assert::same("-\n  # about a\n  b: 2\n", $moved->print());
+	Guarantees::checkTree($moved);
+
+	$plain = Neon::parse("- a: 1\n  b: 2\n");
+	$plain->removeItem([0, 'a']);
+	Assert::same("- b: 2\n", $plain->print());
+});
+
+
+test('removing keeps the comments of others: an inline array', function () {
+	foreach ([
+		['[a, b, c]', [1], '[a, c]'],
+		['[a, b]', [1], '[a]'],
+		['[a, b,]', [1], '[a,]'],
+		["[\n\ta,\n\tb\n]", [1], "[\n\ta\n]"],
+		["[\n\ta, b\n]", [0], "[\n\tb\n]"],
+		["[x, a # c\n, b]", [1], "[x,\nb]"],
+	] as [$input, $path, $output]) {
+		$doc = Neon::parse($input);
+		$doc->removeItem($path);
+		Assert::same($output, $doc->print(), $input);
+		Guarantees::checkTree($doc);
+	}
+});
+
+
 test('writing an equal value is a no-op', function () {
 	foreach ([
 		["a: 9007199254740993\n", 9_007_199_254_740_993],
@@ -305,6 +351,15 @@ test('a built token has no origin', function () {
 	Assert::null($doc->findItem(['a'])->value->getFirstToken()->origin);
 	Assert::true(array_all($doc->findItem(['c'])->getTokens(), fn(Token $token) => $token->origin === null));
 	Assert::same('2:4', $doc->findItem(['b'])->value->getFirstToken()->origin->line . ':' . $doc->findItem(['b'])->value->getFirstToken()->origin->column);
+});
+
+
+test('an item added before another in an inline array takes only its preamble', function () {
+	$document = Neon::parse("[\n\t# header\n\n\t# about b\n\tb\n]");
+	$document->value->addItem('a', position: 0);
+	Assert::same("[\n\t# header\n\n\ta,\n\t# about b\n\tb\n]", $document->print());
+	$document->value->items[0]->remove();
+	Assert::same("[\n\t# header\n\n\t# about b\n\tb\n]", $document->print());
 });
 
 

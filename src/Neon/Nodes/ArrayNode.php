@@ -8,6 +8,7 @@
 namespace Nette\Neon\Nodes;
 
 use Nette\Neon\Builder;
+use Nette\Neon\CommentPolicy;
 use Nette\Neon\Editor;
 use Nette\Neon\Evaluator;
 use Nette\Neon\Exception;
@@ -77,6 +78,16 @@ abstract class ArrayNode extends ValueNode
 	{
 		$value = Builder::materialize($value); // iterators run before the journal records
 		return Journal::atomic(fn() => Editor::addItem($this, $key, $value, $position));
+	}
+
+
+	/** Removes the item with the comments it owns. */
+	public function removeItem(ArrayItemNode $item, CommentPolicy $comments = CommentPolicy::Drop): void
+	{
+		if ($item->parent !== $this) {
+			throw new \InvalidArgumentException('The item is not in this array.');
+		}
+		Journal::atomic(fn() => Editor::removeItem($item, $comments));
 	}
 
 
