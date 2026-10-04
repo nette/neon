@@ -91,6 +91,16 @@ abstract class ArrayNode extends ValueNode
 	}
 
 
+	/**
+	 * Inserts an item taken out of a tree by remove(), reindented to its new place, with its comments.
+	 * @throws Exception  for an item that cannot stand in the array
+	 */
+	public function insert(int $position, ArrayItemNode $item): void
+	{
+		Journal::atomic(fn() => Editor::insertItem($this, $item, $position));
+	}
+
+
 	/** @param  list<ArrayItemNode>  $items */
 	protected function setItems(array $items): void
 	{
