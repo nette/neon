@@ -5,7 +5,7 @@
  */
 
 use Nette\Neon\{CommentPolicy, Entity, Neon, Token, Trivia};
-use Nette\Neon\Nodes\{BlockArrayNode, DocumentNode, EntityChainNode, EntityNode, InlineArrayNode, ValueNode};
+use Nette\Neon\Nodes\{ArrayItemNode, BlockArrayNode, DocumentNode, EntityChainNode, EntityNode, InlineArrayNode, ValueNode};
 use Tester\Assert;
 use Tests\Guarantees;
 
@@ -86,6 +86,23 @@ test('replaceWith() is decided by the slot', function () {
 	Assert::same("a()c(1)\n", $chain->print());
 	expectRefused(fn() => $links[0]->replaceWith(detached('d')), 'EntityNode', $chain);
 	expectRefused(fn() => $chain->value->entities[1]->value->replaceWith(detached("'q'")), 'literal', $chain);
+});
+
+
+test('a literal key gets a space after its colon, an inserted item its value on the line of the key', function () {
+	$doc = Neon::parse('{"a":b}');
+	inline($doc)->items[0]->key->replaceWith(detached('new'));
+	Assert::same('{new: b}', $doc->print());
+	Guarantees::checkTree($doc);
+
+	$source = Neon::parse("b:\n  two words\nc: 1\n");
+	$item = $source->findItem(['b']);
+	$item->remove();
+	$target = Neon::parse('E(a: 1)');
+	assert($target->value instanceof EntityNode);
+	$target->value->attributes->insert(0, $item);
+	Assert::same('E(b: two words, a: 1)', $target->print());
+	Guarantees::checkTree($target);
 });
 
 
@@ -338,6 +355,27 @@ test('trivia setters of an attached token check the place', function () {
 });
 
 
+test('a cloned item can be inserted elsewhere', function () {
+	$doc = Neon::parse("a: b(1, [2]) # c\n");
+	$item = clone $doc->findItem(['a']);
+	Assert::null($item->parent);
+	$target = Neon::parse("x: 1\n");
+	$target->value->insert(1, $item);
+	Assert::same("x: 1\na: b(1, [2]) # c\n", $target->print());
+	Guarantees::checkTree($target);
+	Assert::exception(
+		fn() => $target->value->insert(0, $target->findItem(['x'])),
+		InvalidArgumentException::class,
+		'%a%already has a parent%a%',
+	);
+
+	$inline = Neon::parse("x: [k: 1, l: 2]\n");
+	$target->value->insert(2, clone $inline->findItem(['x', 'k']));
+	Assert::same("x: 1\na: b(1, [2]) # c\nk: 1\n", $target->print());
+	Guarantees::checkTree($target);
+});
+
+
 test('a built token has no origin', function () {
 	$doc = Neon::parse("a: 1\nb: 2\n");
 	$doc->setValue(['a'], 'new');
@@ -348,6 +386,63 @@ test('a built token has no origin', function () {
 		'2:4',
 		$doc->findItem(['b'])->value->getFirstToken()->origin->line . ':' . $doc->findItem(['b'])->value->getFirstToken()->origin->column,
 	);
+});
+
+
+test('an item moves to another indentation with its comments and multiline strings', function () {
+	$document = Neon::parse(implode("\n", [
+		'a:', "\tkeep: 1", "\t# about db", "\tdb:", "\t\thost: x", "\t\tnote: '''", "\t\t\tfirst", "\t\t\t  second", "\t\t'''", 'b:',
+		'    x: 1', '',
+	]));
+	$db = $document->findItem(['a', 'db']);
+	$db->remove();
+	$target = $document->findItem(['b'])->value;
+	$target->insert(1, $db);
+	Assert::same(implode("\n", [
+		'a:', "\tkeep: 1", 'b:', '    x: 1', '    # about db', '    db:', "    \thost: x", "    \tnote: '''", "\t\t\tfirst",
+		"\t\t\t  second", "\t\t'''", '',
+	]), $document->print());
+	Guarantees::checkTree($document);
+	Assert::same(['a' => ['keep' => 1], 'b' => ['x' => 1, 'db' => ['host' => 'x', 'note' => "first\n  second"]]], $document->toValue());
+
+	$inline = Neon::parse("a: [x, y]\nb: [z]\n");
+	$y = $inline->findItem(['a', 1]);
+	$y->remove();
+	$inline->findItem(['b'])->value->insert(0, $y);
+	Assert::same("a: [x]\nb: [y, z]\n", $inline->print());
+});
+
+
+test('an item inserted into an inline array keeps its comments as lines above it, or is refused on one line', function () {
+	$take = function (string $source): ArrayItemNode {
+		$item = Neon::parse($source)->findItem(['x']);
+		$item->remove();
+		return $item;
+	};
+	$commented = "# belongs to x\nx: 1 # note\n";
+
+	$document = Neon::parse("{\n\ta: 1, b: 2\n}\n");
+	$document->value->insert(1, $take($commented));
+	Assert::same("{\n\ta: 1,\n\t# belongs to x\n\t# note\n\tx: 1,\n\tb: 2\n}\n", $document->print());
+
+	$document = Neon::parse("{\n\ta: 1\n}\n");
+	$document->value->insert(0, $take("x: # after colon\n\t# above the value\n\t1\n"));
+	Assert::same("{\n\t# after colon\n\t# above the value\n\tx: 1,\n\ta: 1\n}\n", $document->print());
+
+	foreach (['{}', '{a: 1}'] as $text) {
+		$document = Neon::parse($text);
+		$item = $take($commented);
+		$restore = Guarantees::snapshot($document, $item);
+		Assert::exception(
+			fn() => $document->value->insert(0, $item),
+			Nette\Neon\Exception::class,
+			'An item with comments cannot stand in an inline array on one line.',
+		);
+		$restore();
+	}
+	$document = Neon::parse('{a: 1}');
+	$document->value->insert(1, $take("x: 1\n"));
+	Assert::same('{a: 1, x: 1}', $document->print());
 });
 
 

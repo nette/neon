@@ -506,6 +506,108 @@ final class Editor
 	}
 
 
+	/**
+	 * Inserts an item taken out of a tree, with its comments, reindented to its new place: the common prefix
+	 * of the indentation of all its lines moves. The lines inside a multiline string are part of its token
+	 * and its value, so they stay.
+	 * @throws Exception  for an item that cannot stand in the array
+	 */
+	public static function insertItem(ArrayNode $array, ArrayItemNode $item, int $at): void
+	{
+		if ($item->parent) {
+			throw new \InvalidArgumentException('The item already has a parent, remove() it first.');
+		} elseif ($at < 0 || $at > count($array->items)) {
+			throw new \OutOfRangeException("Position $at is out of the array.");
+		} elseif ($array instanceof InlineArrayNode && ($item->bullet || $item->value instanceof BlockArrayNode)) {
+			throw new Exception('A block item cannot stand in an inline array.');
+		} elseif ($array instanceof BlockArrayNode && !$item->bullet && !$item->key) {
+			throw new Exception('An item without a key or a dash cannot stand in a block.');
+		}
+		self::checkPlaceable($array, $item);
+		$key = $item->getKeyValue();
+		if ($key !== null && $array->findItem($key)) {
+			throw new Exception("Duplicated key '$key'");
+		}
+		$comments = $array instanceof InlineArrayNode ? self::collectEdgeComments($item) : [];
+		if ($comments && !self::isSpread($array)) {
+			throw new Exception('An item with comments cannot stand in an inline array on one line.');
+		}
+
+		$before = self::getKeysBefore($array);
+		if ($array instanceof BlockArrayNode) {
+			$sibling = $array->items[min($at, count($array->items) - 1)];
+			$indent = Layout::getIndentation($sibling);
+			$eol = Layout::getLineEnding($sibling);
+			self::reindent($item, $item->getIndentation(), $indent);
+			if ($item->separator) { // a clone of an item of an inline array, with its comma
+				$trailing = self::stripTrailingSpace(self::stripLineEnding($item->separator->trailingTrivia));
+				self::setSlots($item, ['separator' => null]);
+				self::trail($item->getLastToken(), $trailing);
+			}
+			self::trail(
+				$item->getLastToken(),
+				[...self::stripLineEnding($item->getLastToken()->trailingTrivia), new Trivia(Trivia::LineEnding, $eol)],
+			);
+			self::placeInBlock($array, $item, $at, $indent, $eol);
+		} else {
+			self::lead($item->getFirstToken(), []);
+			self::trail($item->getLastToken(), []);
+			if ($item->colon && $item->value && self::hasLineEnding($item->colon->trailingTrivia)) { // in brackets, a line ending after the colon means null
+				self::trail($item->colon, [new Trivia(Trivia::Whitespace, ' ')]);
+				self::lead($item->value->getFirstToken(), []);
+			}
+			self::setSlots($item, ['separator' => null]);
+			assert($array instanceof InlineArrayNode);
+			self::addToInline($array, null, $item, $at);
+			if ($comments) {
+				self::placeCommentsAbove($item, $comments);
+			}
+		}
+		self::keepKeys($array, $before, $key === null);
+		self::guardDashSubblocks($array);
+	}
+
+
+	/**
+	 * The comments an item owns at its edges, which an inline array cannot keep in place: the comment lines
+	 * directly above it, the comments between its key and a value on a later line, and the comment on its line.
+	 * @return list<Trivia>
+	 */
+	private static function collectEdgeComments(ArrayItemNode $item): array
+	{
+		$comments = self::stripIndentation(self::splitLeading($item->getFirstToken()->leadingTrivia)[1]);
+		if ($item->colon && $item->value && self::hasLineEnding($item->colon->trailingTrivia)) {
+			$comments = [...$comments, ...$item->colon->trailingTrivia, ...$item->value->getFirstToken()->leadingTrivia];
+		}
+		$comments = [...$comments, ...$item->getLastToken()->trailingTrivia];
+		return array_values(array_filter($comments, fn(Trivia $t) => $t->kind === Trivia::Comment));
+	}
+
+
+	/**
+	 * Writes the comments as lines of their own above the item, which an inline array spread over lines holds.
+	 * @param  list<Trivia>  $comments
+	 */
+	private static function placeCommentsAbove(ArrayItemNode $item, array $comments): void
+	{
+		$first = $item->getFirstToken();
+		$eol = Layout::getLineEnding($item);
+		$before = self::getTokenBefore($first) ?? throw new \LogicException; // the opening bracket, or a comma
+		if (!self::hasLineEnding($before->trailingTrivia)) {
+			$indentation = $item->parent instanceof InlineArrayNode ? self::getItemIndentation($item->parent) : '';
+			self::trail($before, [...self::stripTrailingSpace($before->trailingTrivia), new Trivia(Trivia::LineEnding, $eol)]);
+			self::lead($first, self::createIndentation($indentation));
+		}
+		[$preamble, $owned] = self::splitLeading($first->leadingTrivia);
+		$indent = self::getIndentationOf($owned);
+		$lines = [];
+		foreach ($comments as $comment) {
+			$lines = [...$lines, ...self::createIndentation($indent), $comment, new Trivia(Trivia::LineEnding, $eol)];
+		}
+		self::lead($first, [...$preamble, ...self::stripIndentation($owned), ...$lines, ...self::createIndentation($indent)]);
+	}
+
+
 	/** Replaces the indentation prefix of every line of the node, its comment lines included. */
 	private static function reindent(Node $node, string $from, string $to): void
 	{
