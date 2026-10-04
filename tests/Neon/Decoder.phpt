@@ -246,7 +246,7 @@ foreach (array_merge($dataSet['RFC JSON'], $dataSet['PHP JSON'], $dataSet['NEON'
 
 foreach ($dataSet['deprecated syntax'] as $set) {
 	echo "$set[0]\n";
-	Assert::same($set[1], @Neon::decode($set[0])); // @ is deprecated
+	Assert::same($set[1], @Neon::decode($set[0])); // @ the syntax is deprecated
 }
 
 foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) as $set) {
