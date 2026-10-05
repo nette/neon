@@ -21,6 +21,17 @@ enum Place
 
 
 /**
+ * What a visitor of the Traverser returns to steer the walk.
+ */
+enum TraverseAction
+{
+	case SkipChildren;
+	case Stop;
+	case Remove;
+}
+
+
+/**
  * What happens to the comments a removed item owns: the one on its line and those directly above it; the comments
  * inside its value go with it.
  */
