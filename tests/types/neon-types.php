@@ -4,7 +4,7 @@
  * PHPStan type tests.
  */
 
-use Nette\Neon\{Neon, Node, Nodes};
+use Nette\Neon\{Neon, Node, Nodes, Traverser};
 use function PHPStan\Testing\assertType;
 
 
@@ -88,4 +88,10 @@ function testFind(Node $node): void
 	assertType('list<Nette\Neon\Nodes\StringNode>', $node->find(Nodes\StringNode::class));
 	assertType('Nette\Neon\Nodes\StringNode|null', $node->findFirst(Nodes\StringNode::class));
 	assertType('Nette\Neon\Nodes\ArrayItemNode|null', $node->findAncestor(Nodes\ArrayItemNode::class));
+}
+
+
+function testTraverser(Node $node): void
+{
+	assertType('Nette\Neon\Node|null', Traverser::traverse($node));
 }
