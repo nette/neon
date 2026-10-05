@@ -60,11 +60,25 @@ final class LiteralNode extends Node
 			return self::baseConvert(substr($value, 2), 2);
 
 		} elseif (!$isKey && preg_match(self::PatternDatetime, $value)) {
-			return new \DateTimeImmutable($value);
+			return self::parseDate($value) ?? $value;
 
 		} else {
 			return $value;
 		}
+	}
+
+
+	/** The date, or null if PHP finds it invalid, with an error or a warning such as a day the month does not have. */
+	private static function parseDate(string $value): ?\DateTimeImmutable
+	{
+		try {
+			$date = new \DateTimeImmutable($value);
+		} catch (\Throwable) {
+			return null;
+		}
+
+		$errors = \DateTimeImmutable::getLastErrors();
+		return $errors && ($errors['warning_count'] || $errors['error_count']) ? null : $date;
 	}
 
 

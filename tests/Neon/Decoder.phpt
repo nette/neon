@@ -274,3 +274,9 @@ Assert::equal(
 	new DateTimeImmutable('2016-06-03T00:00:00'),
 	Neon::decode('2016-06-03'),
 );
+Assert::equal(new DateTimeImmutable('2024-02-29'), Neon::decode('2024-02-29'));
+
+// an invalid date is a string
+foreach (['2024-02-30', '2023-02-29', '2024-04-31', '2024-00-10', '2024-13-01', '2024-01-32', '2024-01-01 24:00:00', '2024-01-01 23:60:00'] as $date) {
+	Assert::same($date, Neon::decode($date), $date);
+}
