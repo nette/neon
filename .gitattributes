@@ -11,3 +11,4 @@ tests/          export-ignore
 *.php*          diff=php
 *.sh            text eol=lf
 bin/neon-lint   text eol=lf
+examples/**     text eol=lf
