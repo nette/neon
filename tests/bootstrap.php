@@ -10,4 +10,5 @@ if (@!include __DIR__ . '/../vendor/autoload.php') { // @ dependencies may not b
 
 
 Tester\Environment::setup();
+Tester\Environment::setupFunctions();
 date_default_timezone_set('Europe/Prague');
