@@ -8,14 +8,42 @@
 
  <!---->
 
-Introduction
-============
+<h3>
 
-NEON is a human-readable structured data format. In Nette, it is used for configuration files. It is also used for structured data such as settings, language translations, etc. [Try it on the sandbox](https://fiddle.nette.org/neon/).
+✅ A NEON parser that keeps [every comment and space](#the-tree-nodes-slots-tokens-trivia)<br>
+✅ [Edit a configuration file](#format-preserving-editing) and the diff is only your change<br>
+✅ [Your own values](#your-own-values-the-evaluator) for entities, constants or parameters<br>
+✅ [`neon-lint`](#for-editors-ci-and-ai-agents) for editors, CI and AI agents
 
-NEON stands for *Nette Object Notation*. It is less complex and ungainly than XML or JSON, but provides similar capabilities. It is very similar to YAML. The main advantage is that NEON has so-called [entities](#entities), thanks to which the configuration of DI services is so sexy. And allows tabs for indentation.
+</h3>
 
-NEON is built from the ground up to be simple to use.
+ <!---->
+
+**NEON parser, encoder and lossless editor for PHP.** NEON is the human-friendly configuration
+format of the Nette framework, a YAML alternative with entities. This library parses it into a
+concrete syntax tree in which every character of the file has its place, so printing the tree
+gives the file back byte for byte:
+
+```php
+$document = Nette\Neon\Neon::parse($text);
+$document->print() === $text; // true, for any input NEON accepts
+```
+
+That is what makes editing safe. Change a value, add a key, remove an item, and the rest of the
+file stays as its author wrote it:
+
+```php
+$document->setValue(['database', 'host'], 'db.example.com');
+```
+
+```
+- 	host: localhost   # the server
++ 	host: db.example.com   # the server
+```
+
+On that you build configuration editors and admin panels, installers that register an extension
+in `config.neon`, migrations that rename a service, and AI agents that change configuration
+without wrecking it.
 
  <!---->
 
@@ -30,492 +58,211 @@ Thank you!
 
  <!---->
 
-Usage
-=====
+NEON in one minute
+==================
 
-Install via Composer:
+```neon
+# mappings and sequences, indented by tabs or spaces
+database:
+	host: localhost
+	port: 3306
 
+roles: [guest, member, admin]   # inline arrays
+
+# entities: a value with attributes, the way Nette writes services
+mailer: App\Mailer(@smtp, timeout: 30)
+
+note: '''
+	multiline strings
+	without escaping
+'''
 ```
+
+JSON is a subset of NEON. The format is described in the [manual](https://doc.nette.org/en/neon/format),
+and you can [try it in the sandbox](https://fiddle.nette.org/neon/).
+
+▶ Runnable examples: [examples/edge-cases](examples/edge-cases/)
+
+ <!---->
+
+Installation
+============
+
+```shell
 composer require nette/neon
 ```
 
-It requires PHP version 8.4 up to 8.6. Documentation can be found on the [website](https://doc.nette.org/neon).
+It requires PHP 8.4 up to 8.6 with the `json` and `mbstring` extensions.
 
-`Neon::encode()` returns `$value` converted to NEON. As the second parameter `$blockMode` you can pass true, which will create multiline output. The third parameter `$indentation` specifies the characters used for indentation (default is tab).
+ <!---->
+
+Decoding and encoding
+=====================
 
 ```php
 use Nette\Neon\Neon;
 
-$neon = Neon::encode($value); // Returns $value converted to NEON
-$neon = Neon::encode($value, true); // Returns $value converted to multiline NEON
-```
-
-`Neon::decode()` converts given NEON to PHP value:
-
-```php
-$value = Neon::decode('hello: world'); // Returns an array ['hello' => 'world']
-```
-
-`Neon::decodeFile()` converts given NEON file to PHP value:
-
-```php
+$value = Neon::decode('hello: world');       // ['hello' => 'world']
 $value = Neon::decodeFile('config.neon');
+$neon = Neon::encode(['a' => [1, 2]]);       // '{a: [1, 2]}'
+$neon = Neon::encode(['a' => [1, 2]], true); // "a:\n\t- 1\n\t- 2\n\n"
+$neon = Neon::encode($config, fn($v, $path) => !$path); // blocks for the first level only
 ```
 
-All methods throw `Nette\Neon\Exception` on error.
+| NEON | PHP |
+|---|---|
+| `null`, `true`, `yes` ... | `null`, `bool` |
+| integer | `int`, beyond the 64-bit range a string of its digits |
+| float | `float` |
+| string | `string` |
+| date | `DateTimeImmutable`; an invalid date such as `2024-02-30` stays a string |
+| entity, chain | `Nette\Neon\Entity` |
+| list, map | `array` |
+
+Errors throw `Nette\Neon\Exception` with the position of the problem. What `encode()` cannot write
+without loss, such as invalid UTF-8, `INF` or a cycle, is an error that names the path to the value.
+
+▶ Runnable examples: [examples/parsing](examples/parsing/), [examples/encoding](examples/encoding/)
 
  <!---->
 
-Integration
-===========
+Format-preserving editing
+=========================
 
-- NetBeans (has built-in support)
-- PhpStorm ([plugin](https://plugins.jetbrains.com/plugin/28338-neon))
-- Visual Studio Code ([plugin](https://marketplace.visualstudio.com/items?itemName=Kasik96.latte))
-- Sublime Text 3 ([plugin](https://github.com/FilipStryk/Nette-Latte-Neon-for-Sublime-Text-3))
-- Sublime Text 2 ([plugin](https://github.com/Michal-Mikolas/Nette-package-for-Sublime-Text-2))
+Every edit changes the tokens it edits and nothing else, and the guarantees of the specification
+(the file reads back as the same tree, with the expected value, with the change only where it was
+made) are checked after every operation of a large corpus of edits.
 
+```php
+use Nette\Neon\CommentPolicy;
+use Nette\Neon\Neon;
 
-- [NEON for PHP](https://doc.nette.org/neon)
-- [NEON for JavaScript](https://github.com/matej21/neon-js)
-- [NEON for Python](https://github.com/paveldedik/neon-py).
+$document = Neon::parse($text);
+$document->setValue(['database', 'port'], 3307);          // 0x0CEA stays hexadecimal: 0x0CEB
+$document->setValue(['database', 'debug'], false);        // yes becomes no, not false
+$document->setValue(['timeout'], 30);                     // the same value: no change at all
+$document->setValue(['parameters', 'admin'], 'a@b.cz');   // a new key, indented like its siblings
+$document->addItem(['services'], 'App\OrderFacade');      // a new item of a list
+$document->removeItem(['database', 'driver']);            // with the comment that describes it
+$document->removeItem(['mail'], CommentPolicy::MoveToNextToken);
+file_put_contents('config.neon', $document->print());
+```
 
+A missing key in the middle of a path is an error, so a typo does not create a new section.
+Removing the last item of a collection leaves it empty (`services: []`), because in a
+configuration empty and missing often mean different things; an item marked `nullable` loses its
+value instead. A refused edit changes nothing, not even half of itself.
 
-You can check for syntax errors in Neon files using the `neon-lint` console command:
+▶ Runnable examples: [examples/editing](examples/editing/), [examples/config-editor](examples/config-editor/)
+
+ <!---->
+
+The tree: nodes, slots, tokens, trivia
+======================================
+
+```php
+$item = $document->findItem(['database', 'user']);
+$item->getValue();                      // 'root'
+$item->getTrailingComments();           // the comment on its line
+$item->value->getFirstToken()->text;    // the text exactly as written
+$item->getPosition();                   // line, column and offset, computed from the current tree
+```
+
+Eight node classes (`DocumentNode`, `BlockArrayNode`, `InlineArrayNode`, `ArrayItemNode`,
+`EntityNode`, `EntityChainNode`, `StringNode`, `LiteralNode`) with named slots, tokens with their
+trivia (whitespace, line endings, comments), `find()`, `findAncestor()`, siblings, and
+`Traverser` for a walk with replacements.
+
+▶ Runnable examples: [examples/tree](examples/tree/)
+
+ <!---->
+
+Your own values: the Evaluator
+==============================
+
+`Neon::decode()` is the tree projected onto PHP values by `Nette\Neon\Evaluator`. A subclass
+changes how literals, strings, entities and items become values, while the keys and the order of
+the arrays stay those of the document; that is how the DI container of Nette reads its
+configuration.
+
+```php
+final class ConstantEvaluator extends Nette\Neon\Evaluator
+{
+	protected function evaluateLiteral(Nette\Neon\Nodes\LiteralNode $node, Nette\Neon\Place $place): mixed
+	{
+		$value = parent::evaluateLiteral($node, $place);
+		return is_string($value) && defined($value) ? constant($value) : $value;
+	}
+}
+
+$config = new ConstantEvaluator()->evaluate(Nette\Neon\Neon::parse($text)->value);
+```
+
+▶ Runnable examples: [examples/evaluator](examples/evaluator/)
+
+ <!---->
+
+For editors, CI and AI agents
+=============================
 
 ```shell
-vendor/bin/neon-lint <path>
+vendor/bin/neon-lint config/
 ```
+
+```
+config/local.neon:3:2: Duplicated key 'user'
+```
+
+One line per finding, the exit code as the verdict (0 valid, 1 findings, 2 a failure of the tool),
+`--json` for tools, `--check` to verify that the file reads back byte for byte. An AI agent that
+runs it after it saves a `.neon` file fixes a broken one before it goes on.
+
+▶ Runnable examples: [examples/linting](examples/linting/)
 
  <!---->
 
-Syntax
+One format, one specification
+=============================
+
+The format, the value model, the tree and the semantics of editing are written down in a
+language-neutral [specification](https://github.com/nette/neon-specification) with a conformance corpus,
+and every implementation runs that corpus in its tests. The same specification is implemented
+for JavaScript and TypeScript by [@nette/neon](https://github.com/nette/neon-js); the two
+implementations were checked against each other and against nette/neon 3.4 over tens of
+thousands of real-world files.
+
+ <!---->
+
+Upgrading from 3.x
+==================
+
+`Neon::decode()`, `decodeFile()` and `encode()` work as before and give the same values. What
+changed:
+
+- it requires PHP 8.4 or newer with the `mbstring` extension;
+- some error messages are more precise, so code that matches their text may need a change;
+- the tree is new: `Neon::parse()` gives a lossless `DocumentNode`; `Decoder`,
+  `Node\*` and the old `Traverser` are gone; the constants `Neon::BLOCK` and `Neon::CHAIN` are
+  deprecated (use `blockMode: true` and `Neon::Chain`);
+- `encode()` refuses invalid UTF-8 instead of replacing it, and writes floats and dates without
+  loss;
+- a subclass of `Evaluator` that projects two different keys of one array onto the same key gets
+  an error, not a silently overwritten value.
+
+ <!---->
+
+Limits
 ======
 
-A file written in NEON usually consists of a sequence or mapping.
+- No formatter: the library keeps your formatting, it does not impose one.
+- No schema or validation of values.
+- No error recovery: an invalid file is reported, not partially parsed.
+- Positions are computed on request, from the current tree.
 
+ <!---->
 
-Mappings
---------
-Mapping is a set of key-value pairs, in PHP it would be called an associative array. Each pair is written as `key: value`, a space after `:` is required. The value can be anything: string, number, boolean, null, sequence, or other mapping.
+Documentation
+=============
 
-```neon
-street: 742 Evergreen Terrace
-city: Springfield
-country: USA
-```
-
-In PHP, the same structure would be written as:
-
-```php
-[ // PHP
-	'street' => '742 Evergreen Terrace',
-	'city' => 'Springfield',
-	'country' => 'USA',
-]
-```
-
-This notation is called a block notation because all items are on a separate line and have the same indentation (none in this case). NEON also supports inline representation for mapping, which is enclosed in brackets, indentation plays no role, and the separator of each element is either a comma or a newline:
-
-```neon
-{street: 742 Evergreen Terrace, city: Springfield, country: USA}
-```
-
-This is the same written on multiple lines (indentation does not matter):
-
-```neon
-{
-	street: 742 Evergreen Terrace
-		city: Springfield, country: USA
-}
-```
-
-Alternatively, `=` can be used instead of <code>: </code>, both in block and inline notation:
-
-```neon
-{street=742 Evergreen Terrace, city=Springfield, country=USA}
-```
-
-
-Sequences
----------
-Sequences are indexed arrays in PHP. They are written as lines starting with the hyphen `-` followed by a space. Again, the value can be anything: string, number, boolean, null, sequence, or other mapping.
-
-```neon
-- Cat
-- Dog
-- Goldfish
-```
-
-In PHP, the same structure would be written as:
-
-```php
-[ // PHP
-	'Cat',
-	'Dog',
-	'Goldfish',
-]
-```
-
-This notation is called a block notation because all items are on a separate line and have the same indentation (none in this case). NEON also supports inline representation for sequences, which is enclosed in brackets, indentation plays no role, and the separator of each element is either a comma or a newline:
-
-```neon
-[Cat, Dog, Goldfish]
-```
-
-This is the same written on multiple lines (indentation does not matter):
-
-```neon
-[
-	Cat, Dog
-		Goldfish
-]
-```
-
-Hyphens cannot be used in an inline representation.
-
-
-Combination
------------
-Values of mappings and sequences may be other mappings and sequences. The level of indentation plays a major role. In the following example, the hyphen used to indicate sequence items has a greater indent than the `pets` key, so the items become the value of the first line:
-
-```neon
-pets:
-   - Cat
-   - Dog
-cars:
-   - Volvo
-   - Skoda
-```
-
-In PHP, the same structure would be written as:
-
-```php
-[ // PHP
-	'pets' => [
-		'Cat',
-		'Dog',
-	],
-	'cars' => [
-		'Volvo',
-		'Skoda',
-	],
-]
-```
-
-It is possible to combine block and inline notation:
-
-```neon
-pets: [Cat, Dog]
-cars: [
-	Volvo,
-	Skoda,
-]
-```
-
-Block notation can no longer be used inside an inline notation, this does not work:
-
-```neon
-item: [
-	pets:
-	 - Cat     # THIS IS NOT POSSIBLE!!!
-	 - Dog
-]
-```
-
-In the previous case, we wrote a mapping whose elements were sequences. Now, let's try it the other way around and create a sequence containing mappings:
-
-```neon
--
-	name: John
-	age: 35
--
-	name: Peter
-	age: 28
-```
-
-It's not necessary for the bullet points to be on separate lines; they can also be placed in this manner:
-
-```neon
-- name: John
-  age: 35
-- name: Peter
-  age: 28
-```
-
-It's up to you whether you align the keys in a column using spaces or a tab.
-
-Because PHP uses the same structure for mapping and sequences, that is, arrays, both can be merged. The indentation is the same this time:
-
-```neon
-- Cat
-street: 742 Evergreen Terrace
-- Goldfish
-```
-
-In PHP, the same structure would be written as:
-
-```php
-[ // PHP
-	'Cat',
-	'street' => '742 Evergreen Terrace',
-	'Goldfish',
-]
-```
-
-
-Strings
--------
-Strings in NEON can be enclosed in single or double quotes. But as you can see, they can also be without quotes.
-
-```neon
-- A unquoted string in NEON
-- 'A singled-quoted string in NEON'
-- "A double-quoted string in NEON"
-```
-
-If the string contains characters `# " ' , : = - [ ] { } ( )` that can be confused with NEON syntax, it must be enclosed in quotation marks. We recommend using single quotes because they do not use escaping. If you need to enclose a quotation mark in such a string, double it:
-
-```neon
-'A single quote '' inside a single-quoted string'
-```
-
-Double quotes allow you to use escape sequences to write special characters using backslashes `\`. All escape sequences as in the JSON format are supported, plus `\_`, which is an non-breaking space, ie `\u00A0`.
-
-```neon
-- "\t \n \r \f \b \" \\ \/ \_"
-- "\u00A9"
-```
-
-There are other cases where you need to enclose strings in quotation marks:
-- they begin or end with spaces
-- look like numbers, booleans, or null
-- NEON would understand them as [dates](#dates)
-
-
-Multiline Strings
------------------
-
-A multiline string begins and ends with a triple quotation mark on separate lines. The indent of the first line is ignored for all lines:
-
-```neon
-'''
-	first line
-		second line
-	third line
-	'''
-```
-
-In PHP we would write the same as:
-
-```php
-"first line\n\tsecond line\nthird line" // PHP
-```
-
-Escaping sequences only work for strings enclosed in double quotes instead of apostrophes:
-
-```neon
-"""
-	Copyright \u00A9
-"""
-```
-
-
-Numbers
--------
-NEON understands numbers written in so-called scientific notation and also numbers in binary, octal and hexadecimal:
-
-```neon
-- 12         # an integer
-- 12.3       # a float
-- +1.2e-34   # an exponential number
-
-- 0b11010    # binary number
-- 0o666      # octal number
-- 0x7A       # hexa number
-```
-
-
-Nulls
------
-Null can be expressed in NEON by using `null` or by not specifying a value. Variants with a capital first or all uppercase letters are also allowed.
-
-```neon
-a: null
-b:
-```
-
-
-Booleans
---------
-Boolean values are expressed in NEON using `true` / `false` or `yes` / `no`. Variants with a capital first or all uppercase letters are also allowed.
-
-```neon
-[true, TRUE, True, false, yes, no]
-```
-
-
-Dates
------
-NEON uses the following formats to express data and automatically converts them to `DateTimeImmutable` objects:
-
-```neon
-- 2016-06-03                  # date
-- 2016-06-03 19:00:00         # date & time
-- 2016-06-03 19:00:00.1234    # date & microtime
-- 2016-06-03 19:00:00 +0200   # date & time & timezone
-- 2016-06-03 19:00:00 +02:00  # date & time & timezone
-```
-
-
-Entities
---------
-An entity is a structure that resembles a function call:
-
-```neon
-Column(type: int, nulls: yes)
-```
-
-In PHP, it is parsed as an object [Nette\Neon\Entity](https://api.nette.org/3.4/Nette/Neon/Entity.html):
-
-```php
-// PHP
-new Nette\Neon\Entity('Column', ['type' => 'int', 'nulls' => true])
-```
-
-Entities can also be chained:
-
-```neon
-Column(type: int, nulls: yes) Field(id: 1)
-```
-
-Which is parsed in PHP as follows:
-
-```php
-// PHP
-new Nette\Neon\Entity(Nette\Neon\Neon::Chain, [
-	new Nette\Neon\Entity('Column', ['type' => 'int', 'nulls' => true]),
-	new Nette\Neon\Entity('Field', ['id' => 1]),
-])
-```
-
-Inside the parentheses, the rules for inline notation used for mapping and sequences apply, so it can be divided into several lines and it is not necessary to add commas:
-
-```neon
-Column(
-	type: int
-	nulls: yes
-)
-```
-
-
-Comments
---------
-Comments start with `#` and all of the following characters on the right are ignored:
-
-```neon
-# this line will be ignored by the interpreter
-street: 742 Evergreen Terrace
-city: Springfield  # this is ignored too
-country: USA
-```
-
-
-NEON Versus JSON
-================
-JSON is a subset of NEON. Each JSON can therefore be parsed as NEON:
-
-```neon
-{
-"php": {
-	"date.timezone": "Europe\/Prague",
-	"zlib.output_compression": true
-},
-"database": {
-	"driver": "mysql",
-	"username": "root",
-	"password": "beruska92"
-},
-"users": [
-	"Dave", "Kryten", "Rimmer"
-]
-}
-```
-
-What if we could omit quotes?
-
-```neon
-{
-php: {
-	date.timezone: Europe/Prague,
-	zlib.output_compression: true
-},
-database: {
-	driver: mysql,
-	username: root,
-	password: beruska92
-},
-users: [
-	Dave, Kryten, Rimmer
-]
-}
-```
-
-How about braces and commas?
-
-```neon
-php:
-	date.timezone: Europe/Prague
-	zlib.output_compression: true
-
-database:
-	driver: mysql
-	username: root
-	password: beruska92
-
-users: [
-	Dave, Kryten, Rimmer
-]
-```
-
-Are bullets more legible?
-
-```neon
-php:
-	date.timezone: Europe/Prague
-	zlib.output_compression: true
-
-database:
-	driver: mysql
-	username: root
-	password: beruska92
-
-users:
-	- Dave
-	- Kryten
-	- Rimmer
-```
-
-How about comments?
-
-```neon
-# my web application config
-
-php:
-	date.timezone: Europe/Prague
-	zlib.output_compression: true  # use gzip
-
-database:
-	driver: mysql
-	username: root
-	password: beruska92
-
-users:
-	- Dave
-	- Kryten
-	- Rimmer
-```
-
-You found NEON syntax!
-
-If you like NEON, **[please make a donation now](https://github.com/sponsors/dg)**. Thank you!
+The [examples](examples/) are the documentation of the API, each chapter with the real output of
+its programs. The format itself is documented in the [Nette manual](https://doc.nette.org/en/neon).
