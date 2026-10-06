@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function count, is_array, is_int, is_object, is_string;
+use function is_array, is_int, is_object, is_string;
 
 
 /**
@@ -55,7 +55,7 @@ final class Encoder
 			if ($blockMode) {
 				$node = new Node\BlockArrayNode;
 			} else {
-				$isList = is_array($val) && (!$val || array_keys($val) === range(0, count($val) - 1));
+				$isList = is_array($val) && array_is_list($val);
 				$node = new Node\InlineArrayNode($isList ? '[' : '{');
 			}
 

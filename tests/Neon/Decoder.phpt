@@ -239,7 +239,7 @@ $dataSet = [
 ];
 
 
-foreach (array_merge($dataSet['RFC JSON'], $dataSet['PHP JSON'], $dataSet['NEON']) as $set) {
+foreach ([...$dataSet['RFC JSON'], ...$dataSet['PHP JSON'], ...$dataSet['NEON']] as $set) {
 	echo "$set[0]\n";
 	Assert::same($set[1], Neon::decode($set[0]));
 }
@@ -249,7 +249,7 @@ foreach ($dataSet['deprecated syntax'] as $set) {
 	Assert::same($set[1], @Neon::decode($set[0])); // @ the syntax is deprecated
 }
 
-foreach (array_merge($dataSet['invalid syntax'], $dataSet['invalid encoding']) as $set) {
+foreach ([...$dataSet['invalid syntax'], ...$dataSet['invalid encoding']] as $set) {
 	echo "$set[0]\n";
 	Assert::exception(
 		fn() => Neon::decode($set[0]),
