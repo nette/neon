@@ -7,8 +7,7 @@
 
 namespace Nette\Neon\Node;
 
-use Nette\Neon\Exception;
-use Nette\Neon\Node;
+use Nette\Neon\{Exception, Node};
 use function array_key_exists, extension_loaded, is_bool, is_float, is_int, is_string, strlen;
 
 

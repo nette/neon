@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
 use Nette\Neon;
-use Nette\Neon\Node;
-use Nette\Neon\Traverser;
+use Nette\Neon\{Node, Traverser};
 use Tester\Assert;
 use Tracy\Dumper;
 

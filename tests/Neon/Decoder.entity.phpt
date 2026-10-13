@@ -4,8 +4,7 @@
  * Test: decode entity
  */
 
-use Nette\Neon\Entity;
-use Nette\Neon\Neon;
+use Nette\Neon\{Entity, Neon};
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';

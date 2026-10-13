@@ -7,8 +7,7 @@
 
 namespace Nette\Neon\Node;
 
-use Nette\Neon\Entity;
-use Nette\Neon\Node;
+use Nette\Neon\{Entity, Node};
 
 
 /** @internal */
