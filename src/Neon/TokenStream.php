@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function in_array, str_replace, strlen, strrpos, substr, substr_count;
+use function strlen;
 
 
 /** @internal */
@@ -48,12 +48,12 @@ final class TokenStream
 	 */
 	public function isNext(int|string ...$types): bool
 	{
-		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], strict: true)) {
+		while (in_array($this->tokens[$this->pos]->type ?? null, [Token::Comment, Token::Whitespace], true)) {
 			$this->pos++;
 		}
 
 		return $types
-			? in_array($this->tokens[$this->pos]->type ?? null, $types, strict: true)
+			? in_array($this->tokens[$this->pos]->type ?? null, $types, true)
 			: isset($this->tokens[$this->pos]);
 	}
 
@@ -76,7 +76,7 @@ final class TokenStream
 	 */
 	public function getIndentation(): string
 	{
-		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], strict: true)
+		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], true)
 			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::Whitespace
 			? $this->tokens[$this->pos - 1]->value
 			: '';

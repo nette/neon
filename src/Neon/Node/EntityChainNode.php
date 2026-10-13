@@ -9,7 +9,6 @@ namespace Nette\Neon\Node;
 
 use Nette\Neon;
 use Nette\Neon\Node;
-use function array_map, implode;
 
 
 /** @internal */
