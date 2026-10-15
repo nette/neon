@@ -7,7 +7,6 @@
 use Nette\Neon\{Entity, Neon};
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 
@@ -170,12 +169,12 @@ Assert::exception(
 
 Assert::same(
 	'"special \u0000 chars"',
-	Neon::encode("special \x00 chars", true),
+	Neon::encode("special \x00 chars", blockMode: true),
 );
 
 Assert::same(
 	"\"\"\"\n\tspecial\\r\n\tchars\n\"\"\"",
-	Neon::encode("special\r\nchars", true),
+	Neon::encode("special\r\nchars", blockMode: true),
 );
 
 Assert::same(

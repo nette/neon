@@ -167,7 +167,11 @@ final class Parser
 			$this->injectPos($valueNode, $this->tokens->getPos() - 1);
 			if ($this->tokens->isNext('(')) {
 				$attributes = $this->parseBraces();
-				$entities[] = $this->injectPos(new Node\EntityNode($valueNode, $attributes->items), $valueNode->startTokenPos, $attributes->endTokenPos);
+				$entities[] = $this->injectPos(
+					new Node\EntityNode($valueNode, $attributes->items),
+					$valueNode->startTokenPos,
+					$attributes->endTokenPos,
+				);
 			} else {
 				$entities[] = $this->injectPos(new Node\EntityNode($valueNode), $valueNode->startTokenPos);
 				break;

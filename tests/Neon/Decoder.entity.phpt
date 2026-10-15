@@ -32,7 +32,7 @@ Assert::equal(
 
 
 Assert::equal(
-	new Entity([], []),
+	new Entity([]),
 	Neon::decode('[]()'),
 );
 
@@ -56,8 +56,8 @@ Assert::equal(
 
 Assert::equal(
 	new Entity(Neon::Chain, [
-		new Entity(1, []),
-		new Entity(2, []),
+		new Entity(1),
+		new Entity(2),
 	]),
 	Neon::decode('1() 2()'),
 );

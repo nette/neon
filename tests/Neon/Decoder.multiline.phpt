@@ -7,7 +7,6 @@
 use Nette\Neon\Neon;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 
@@ -134,7 +133,7 @@ Assert::same(
 		XX),
 );
 
-//no content
+// no content
 Assert::same(
 	'',
 	Neon::decode(<<<'XX'

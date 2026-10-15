@@ -4,7 +4,6 @@ use Nette\Neon;
 use Nette\Neon\Node;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 $traverser = new Neon\Traverser;
