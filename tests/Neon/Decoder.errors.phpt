@@ -175,3 +175,27 @@ Assert::exception(
 	Nette\Neon\Exception::class,
 	"Unexpected '-' on line 1 at column 3",
 );
+
+
+// nesting up to the limit is fine
+$expected = [];
+for ($i = 1; $i < 500; $i++) {
+	$expected = [$expected];
+}
+
+Assert::same($expected, Neon::decode(str_repeat('[', 500) . str_repeat(']', 500)));
+
+
+Assert::exception(
+	fn() => Neon::decode(str_repeat('[', 501) . str_repeat(']', 501)),
+	Nette\Neon\Exception::class,
+	'Too deep nesting on line 1 at column 501',
+);
+
+
+// a block counts as a level too
+Assert::exception(
+	fn() => Neon::decode('a: ' . str_repeat('[', 1000)),
+	Nette\Neon\Exception::class,
+	'Too deep nesting on line 1 at column 503',
+);

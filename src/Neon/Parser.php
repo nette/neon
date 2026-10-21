@@ -13,7 +13,11 @@ use function array_key_exists, count, is_scalar, strlen;
 /** @internal */
 final class Parser
 {
+	/** prevents stack overflow on deeply nested input */
+	private const MaxDepth = 500;
+
 	private TokenStream $tokens;
+	private int $depth = 0;
 
 	/** @var list<int> */
 	private array $posToLine = [];
@@ -23,6 +27,7 @@ final class Parser
 	public function parse(TokenStream $tokens): Node
 	{
 		$this->tokens = $tokens;
+		$this->depth = 0;
 		$this->initLines();
 
 		while ($this->tokens->consume(Token::Newline));
@@ -38,6 +43,17 @@ final class Parser
 
 
 	private function parseBlock(string $indent, bool $onlyBullets = false): Node
+	{
+		$depth = $this->depth;
+		try {
+			return $this->parseBlockItems($indent, $onlyBullets);
+		} finally {
+			$this->depth = $depth;
+		}
+	}
+
+
+	private function parseBlockItems(string $indent, bool $onlyBullets): Node
 	{
 		$res = new Node\BlockArrayNode($indent);
 		$this->injectPos($res);
@@ -65,6 +81,10 @@ final class Parser
 
 					return $value;
 				}
+			}
+
+			if (!$res->items) {
+				$this->enter($item->key->startTokenPos ?? $this->tokens->getPos() - 1);
 			}
 
 			$res->items[] = $item;
@@ -185,6 +205,27 @@ final class Parser
 
 
 	private function parseBraces(): Node\InlineArrayNode
+	{
+		$depth = $this->depth;
+		$this->enter($this->tokens->getPos());
+		try {
+			return $this->parseBracesItems();
+		} finally {
+			$this->depth = $depth;
+		}
+	}
+
+
+	/** One level deeper into arrays. */
+	private function enter(int $pos): void
+	{
+		if (++$this->depth > self::MaxDepth) {
+			$this->tokens->error('Too deep nesting', $pos);
+		}
+	}
+
+
+	private function parseBracesItems(): Node\InlineArrayNode
 	{
 		$token = $this->tokens->consume();
 		$endBrace = ['[' => ']', '{' => '}', '(' => ')'][$token->value];
