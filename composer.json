@@ -1,17 +1,13 @@
 {
 	"name": "nette/neon",
-	"description": "🍸 Nette NEON: encodes and decodes NEON file format.",
-	"keywords": ["nette", "neon", "import", "export", "yaml"],
+	"description": "🍸 Nette NEON: a human-friendly data format, simpler than YAML and with entities for objects. Comes with a fast encoder and decoder.",
+	"keywords": ["neon", "nette", "configuration", "config", "yaml", "data format", "parser"],
 	"homepage": "https://neon.nette.org",
 	"license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
 	"authors": [
 		{
 			"name": "David Grudl",
 			"homepage": "https://davidgrudl.com"
-		},
-		{
-			"name": "Nette Community",
-			"homepage": "https://nette.org/contributors"
 		}
 	],
 	"require": {
