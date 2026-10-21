@@ -36,7 +36,7 @@ Assert::same(
 );
 
 Assert::same(
-	"'''\n\taaa\n\t'''bbb\n'''",
+	"\"\"\"\n\taaa\n\t'''bbb\n\"\"\"",
 	Neon::encode("aaa\n'''bbb"),
 );
 
@@ -59,6 +59,11 @@ Assert::same(
 	"{multi: ['''\n\tone\n\ttwo\n\tthree\\ne \"'\t\n''']}",
 	Neon::encode(['multi' => ["one\ntwo\nthree\\ne \"'\t"]]),
 );
+
+// strings with lines beginning with ''' must survive a round-trip
+foreach (["aaa\n'''bbb", "a\n'''\nb", "'''\nfoo", "aaa\n'''", "aaa\n \t'''bbb"] as $s) {
+	Assert::same($s, Neon::decode(Neon::encode($s)));
+}
 
 Assert::same(
 	"['[', ']', '{', '}', ':', ': ', '=', '#']",
