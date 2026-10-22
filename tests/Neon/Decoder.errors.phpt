@@ -199,3 +199,18 @@ Assert::exception(
 	Nette\Neon\Exception::class,
 	'Too deep nesting on line 1 at column 503',
 );
+
+
+// column is counted in characters, not bytes
+Assert::exception(
+	fn() => Neon::decode('žluťoučký: ]'),
+	Nette\Neon\Exception::class,
+	"Unexpected ']' on line 1 at column 12",
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("žluť: '''\n\tžluťoučký\n''' ]"),
+	Nette\Neon\Exception::class,
+	"Unexpected ']' on line 3 at column 5",
+);

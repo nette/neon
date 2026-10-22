@@ -97,11 +97,18 @@ final class TokenStream
 		}
 
 		$line = substr_count($input, "\n") + 1;
-		$col = strlen($input) - strrpos("\n" . $input, "\n") + 1;
+		$col = self::charLength(substr($input, strrpos("\n" . $input, "\n"))) + 1;
 		$token = $this->tokens[$pos] ?? null;
 		$message ??= 'Unexpected ' . ($token === null
 			? 'end'
 			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
 		throw new Exception("$message on line $line at column $col");
+	}
+
+
+	/** Counts UTF-8 characters without requiring the mbstring extension; expects valid UTF-8. */
+	private static function charLength(string $s): int
+	{
+		return strlen($s) - (int) preg_match_all('~[\x80-\xBF]~', $s);
 	}
 }
