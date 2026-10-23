@@ -181,6 +181,52 @@ Assert::same(
 );
 
 
+// newlines inside inline structures do not confuse the detection of the block after dash
+Assert::same(
+	[['a' => [1], 'b' => 2]],
+	Neon::decode("- a: [\n1]\n  b: 2"),
+);
+
+Assert::same(
+	[['a' => [1], 'b' => 3]],
+	Neon::decode("- a: [\n\t1\n]\n  b: 3"),
+);
+
+Assert::same(
+	[['a' => ['x' => 1], 'b' => 2]],
+	Neon::decode("- a: {\n\tx: 1\n}\n  b: 2"),
+);
+
+Assert::equal(
+	[['a' => new Nette\Neon\Entity('Foo', ['x' => 1]), 'b' => 2]],
+	Neon::decode("- a: Foo(\nx: 1\n)\n  b: 2"),
+);
+
+
+// nested dashes take linear time, trying the tab and then the spaces would take hours here
+$expected = ['a' => 1, 'b' => 2];
+for ($i = 1; $i < 30; $i++) {
+	$expected = [$expected];
+}
+
+Assert::same(
+	[$expected],
+	Neon::decode(str_repeat('- ', 30) . "a: 1\n" . str_repeat('  ', 30) . 'b: 2'),
+);
+
+
+// trailing whitespace-only line is not indentation
+Assert::same(
+	[[null]],
+	Neon::decode("- - #x\n    "),
+);
+
+Assert::same(
+	[['x' => null]],
+	Neon::decode("- x:\n  "),
+);
+
+
 Assert::same(
 	[
 		[

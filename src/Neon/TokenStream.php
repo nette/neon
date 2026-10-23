@@ -71,14 +71,15 @@ final class TokenStream
 
 
 	/**
-	 * Returns the whitespace indentation of the token at the current position,
+	 * Returns the whitespace indentation of the token at the current or given position,
 	 * i.e. the whitespace token immediately following a newline (or at the start).
 	 */
-	public function getIndentation(): string
+	public function getIndentation(?int $pos = null): string
 	{
-		return in_array($this->tokens[$this->pos - 2]->type ?? null, [Token::Newline, null], true)
-			&& ($this->tokens[$this->pos - 1]->type ?? null) === Token::Whitespace
-			? $this->tokens[$this->pos - 1]->value
+		$pos ??= $this->pos;
+		return in_array($this->tokens[$pos - 2]->type ?? null, [Token::Newline, null], true)
+			&& ($this->tokens[$pos - 1]->type ?? null) === Token::Whitespace
+			? $this->tokens[$pos - 1]->value
 			: '';
 	}
 

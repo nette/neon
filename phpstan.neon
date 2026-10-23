@@ -45,7 +45,7 @@ parameters:
 		# Parser state machine — loops and conditions whose runtime behavior PHPStan can't track
 		-   # while loops driven by Lexer position mutations
 			message: '#^While loop condition is always (false|true)\.$#'
-			count: 2
+			count: 3
 			path: src/Neon/Parser.php
 		-   # `throw` after `break` — safety net inside while(true) state machine
 			identifier: deadCode.unreachable

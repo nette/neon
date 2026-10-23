@@ -125,6 +125,28 @@ Assert::exception(
 );
 
 
+// a block after dash indented by a tab fails as the two spaces would
+Assert::exception(
+	fn() => Neon::decode("- a: 1\n\t\tb: 2"),
+	Nette\Neon\Exception::class,
+	'Invalid combination of tabs and spaces on line 2 at column 3',
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("- a: 1\n\tb: 2\n\tc"),
+	Nette\Neon\Exception::class,
+	'Invalid combination of tabs and spaces on line 2 at column 2',
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("- a: 1\n    b: 2"),
+	Nette\Neon\Exception::class,
+	'Bad indentation on line 2 at column 5',
+);
+
+
 Assert::exception(
 	fn() => Neon::decode('- x: y:'),
 	Nette\Neon\Exception::class,

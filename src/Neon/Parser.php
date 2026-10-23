@@ -7,7 +7,7 @@
 
 namespace Nette\Neon;
 
-use function array_key_exists, count, is_scalar, strlen;
+use function array_key_exists, count, in_array, is_scalar, strlen;
 
 
 /** @internal */
@@ -18,6 +18,7 @@ final class Parser
 
 	private TokenStream $tokens;
 	private int $depth = 0;
+	private bool $tooDeep = false;
 
 	/** @var list<int> */
 	private array $posToLine = [];
@@ -28,6 +29,7 @@ final class Parser
 	{
 		$this->tokens = $tokens;
 		$this->depth = 0;
+		$this->tooDeep = false;
 		$this->initLines();
 
 		while ($this->tokens->consume(Token::Newline));
@@ -95,7 +97,10 @@ final class Parser
 				while ($this->tokens->consume(Token::Newline));
 				$nextIndent = $this->tokens->getIndentation();
 
-				if (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
+				if (!$this->tokens->isNext()) {
+					// trailing whitespace before the end of input is not indentation
+
+				} elseif (strncmp($nextIndent, $indent, min(strlen($nextIndent), strlen($indent)))) {
 					$this->tokens->error('Invalid combination of tabs and spaces');
 
 				} elseif (strlen($nextIndent) > strlen($indent)) { // open new block
@@ -108,13 +113,8 @@ final class Parser
 					$item->value = $this->parseBlock($indent, onlyBullets: true);
 				}
 			} elseif ($item->key === null) {  // open new block after dash
-				$save = $this->tokens->getPos();
-				try {
-					$item->value = $this->parseBlock($indent . "\t");
-				} catch (Exception) {
-					$this->tokens->seek($save);
-					$item->value = $this->parseBlock($indent . '  ');
-				}
+				$item->value = $this->parseDashBlock($indent);
+
 			} elseif ($this->tokens->isNext()) {
 				$item->value = $this->parseValue();
 				if ($this->tokens->isNext() && !$this->tokens->isNext(Token::Newline)) {
@@ -145,6 +145,52 @@ final class Parser
 				return $res;
 			}
 		}
+	}
+
+
+	/** Opens the block after a dash: two spaces if the next line extends the indentation by a space, a tab otherwise. */
+	private function parseDashBlock(string $indent): Node
+	{
+		$line = $this->findNextLine();
+		if ($line !== null && str_starts_with($this->tokens->getIndentation($line), $indent . ' ')) {
+			return $this->parseBlock($indent . '  ');
+		}
+
+		try {
+			return $this->parseBlock($indent . "\t");
+		} catch (Exception $e) {
+			if ($line === null || $this->tokens->getPos() < $line || $this->tooDeep) {
+				throw $e;
+			}
+
+			$this->tokens->error('Invalid combination of tabs and spaces', $line);
+		}
+	}
+
+
+	/** Returns the position of the first token of the next line outside inline structures, or null. */
+	private function findNextLine(): ?int
+	{
+		$tokens = $this->tokens->getTokens();
+		$i = $this->tokens->getPos();
+		$depth = 0;
+		while (($tokens[$i]->type ?? null) !== Token::Newline || $depth > 0) {
+			if (!isset($tokens[$i])) {
+				return null;
+			} elseif (in_array($tokens[$i]->type, ['[', '{', '('], true)) {
+				$depth++;
+			} elseif (in_array($tokens[$i]->type, [']', '}', ')'], true)) {
+				$depth--;
+			}
+
+			$i++;
+		}
+
+		while (in_array($tokens[$i]->type ?? null, [Token::Newline, Token::Whitespace, Token::Comment], true)) {
+			$i++;
+		}
+
+		return isset($tokens[$i]) ? $i : null;
 	}
 
 
@@ -220,6 +266,7 @@ final class Parser
 	private function enter(int $pos): void
 	{
 		if (++$this->depth > self::MaxDepth) {
+			$this->tooDeep = true;
 			$this->tokens->error('Too deep nesting', $pos);
 		}
 	}
