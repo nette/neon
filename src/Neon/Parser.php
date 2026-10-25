@@ -107,6 +107,7 @@ final class Parser
 					$item->value = $this->parseBlock($nextIndent);
 
 				} elseif (strlen($nextIndent) < strlen($indent)) { // close block
+					$this->checkImplicitKey($item, $keyCheck);
 					return $res;
 
 				} elseif ($item->key !== null && $this->tokens->isNext('-')) { // special dash subblock
@@ -122,6 +123,7 @@ final class Parser
 				}
 			}
 
+			$this->checkImplicitKey($item, $keyCheck);
 			if ($item->value instanceof Node\BlockArrayNode) {
 				$item->value->indentation = substr($item->value->indentation, strlen($indent));
 			}
@@ -299,6 +301,7 @@ final class Parser
 					: $this->parseValue();
 			} else {
 				$item->value = $value;
+				$this->checkImplicitKey($item, $keyCheck);
 			}
 
 			$this->injectPos($item, $item->startTokenPos, $item->value->endTokenPos);
@@ -315,7 +318,7 @@ final class Parser
 	}
 
 
-	/** @param  array<string, true>  $arr */
+	/** @param  array<bool>  $arr  explicit keys are true */
 	private function checkArrayKey(Node $key, array &$arr): void
 	{
 		if ((!$key instanceof Node\StringNode && !$key instanceof Node\LiteralNode) || !is_scalar($key->value)) {
@@ -323,11 +326,32 @@ final class Parser
 		}
 
 		$k = (string) $key->value;
-		if (array_key_exists($k, $arr)) {
+		if ($arr[$k] ?? false) {
 			$this->tokens->error("Duplicated key '$k'", $key->startTokenPos);
 		}
 
 		$arr[$k] = true;
+	}
+
+
+	/**
+	 * Gives an item without a key the next implicit key; an overflow is reported at its value, or at the item without one.
+	 * @param  array<bool>  $arr
+	 */
+	private function checkImplicitKey(Node\ArrayItemNode $item, array &$arr): void
+	{
+		if ($item->key !== null) {
+			return;
+		} elseif (array_key_exists(PHP_INT_MAX, $arr)) {
+			$pos = $item->value->startTokenPos;
+			$type = $this->tokens->getTokens()[$pos]->type ?? null;
+			$this->tokens->error(
+				'Implicit key overflow',
+				in_array($type, [null, Token::Whitespace, Token::Newline, Token::Comment], true) ? $item->startTokenPos : $pos,
+			);
+		}
+
+		$arr[] = false;
 	}
 
 

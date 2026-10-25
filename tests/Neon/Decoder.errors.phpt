@@ -179,6 +179,27 @@ Assert::exception(
 
 
 Assert::exception(
+	fn() => Neon::decode('{9223372036854775807: a, b}'),
+	Nette\Neon\Exception::class,
+	'Implicit key overflow on line 1 at column 26',
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("9223372036854775806: a\n- b\n- c"),
+	Nette\Neon\Exception::class,
+	'Implicit key overflow on line 3 at column 3',
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("9223372036854775806: a\n- b\n-"),
+	Nette\Neon\Exception::class,
+	'Implicit key overflow on line 3 at column 1',
+);
+
+
+Assert::exception(
 	fn() => Neon::decode('{ []: foo }'),
 	Nette\Neon\Exception::class,
 	'Unacceptable key on line 1 at column 3',
