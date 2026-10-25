@@ -80,7 +80,7 @@ final class Lexer
 	/** Checks whether the string must be quoted when encoding to NEON. */
 	public static function requiresDelimiters(string $s): bool
 	{
-		return preg_match('~[\x00-\x1F]|^[+-.]?\d|^(true|false|yes|no|on|off|null)$~Di', $s)
+		return preg_match('~[\x00-\x1F]|^[+-]?\.?\d|^(true|false|yes|no|on|off|null)$~Di', $s)
 			|| !preg_match('~^' . self::Patterns[Token::Literal] . '$~Dx', $s);
 	}
 }
