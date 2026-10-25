@@ -15,17 +15,19 @@ NEON linter
 -----------
 ';
 
-if ($argc < 2) {
+$args = array_slice((array) ($_SERVER['argv'] ?? []), 1);
+$debug = in_array('--debug', $args, true);
+$args = array_values(array_diff($args, ['--debug']));
+if (count($args) !== 1) {
 	echo "Usage: neon-lint [--debug] <path>\n";
 	exit(1);
 }
 
-$debug = in_array('--debug', $argv, true);
 if ($debug) {
 	echo "Debug mode\n";
 }
 
-$path = end($argv);
+$path = (string) $args[0];
 
 try {
 	$linter = new NeonLinter(debug: $debug);
