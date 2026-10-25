@@ -68,7 +68,8 @@ final class Lexer
 
 		$stream = new TokenStream($tokens);
 		if ($offset !== strlen($input)) {
-			$s = str_replace("\n", '\n', substr($input, $offset, 40));
+			preg_match('~.{0,40}~Asu', $input, $m, offset: $offset); // truncating at a character boundary keeps the message valid UTF-8
+			$s = str_replace("\n", '\n', $m[0] ?? '');
 			$stream->error("Unexpected '$s'", count($tokens));
 		}
 

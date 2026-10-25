@@ -236,3 +236,18 @@ Assert::exception(
 	Nette\Neon\Exception::class,
 	"Unexpected ']' on line 3 at column 5",
 );
+
+
+// long excerpts in error messages are truncated at character boundaries, so they stay valid UTF-8
+Assert::exception(
+	fn() => Neon::decode('`' . str_repeat('ž', 50)),
+	Nette\Neon\Exception::class,
+	"Unexpected '`" . str_repeat('ž', 39) . "' on line 1 at column 1",
+);
+
+
+Assert::exception(
+	fn() => Neon::decode("a: 'v' '" . str_repeat('ž', 50) . "'"),
+	Nette\Neon\Exception::class,
+	"Unexpected ''" . str_repeat('ž', 39) . "' on line 1 at column 8",
+);

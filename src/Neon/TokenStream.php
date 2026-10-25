@@ -100,9 +100,15 @@ final class TokenStream
 		$line = substr_count($input, "\n") + 1;
 		$col = self::charLength(substr($input, strrpos("\n" . $input, "\n"))) + 1;
 		$token = $this->tokens[$pos] ?? null;
-		$message ??= 'Unexpected ' . ($token === null
-			? 'end'
-			: "'" . str_replace("\n", '<new line>', substr($this->tokens[$pos]->value, 0, 40)) . "'");
+		if ($message === null) {
+			if ($token === null) {
+				$message = 'Unexpected end';
+			} else {
+				preg_match('~.{0,40}~Asu', $token->value, $m); // truncating at a character boundary keeps the message valid UTF-8
+				$message = "Unexpected '" . str_replace("\n", '<new line>', $m[0] ?? '') . "'";
+			}
+		}
+
 		throw new Exception("$message on line $line at column $col");
 	}
 
