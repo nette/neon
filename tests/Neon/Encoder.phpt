@@ -61,8 +61,13 @@ Assert::same(
 	Neon::encode(['multi' => ["one\ntwo\nthree\\ne \"'\t"]]),
 );
 
-// strings with lines beginning with ''' must survive a round-trip
-foreach (["aaa\n'''bbb", "a\n'''\nb", "'''\nfoo", "aaa\n'''", "aaa\n \t'''bbb"] as $s) {
+Assert::same(
+	"\"\"\"\n\n\t\\u0020\\t\\u0020x\n\t y\n\"\"\"",
+	Neon::encode("\n \t x\n y"),
+);
+
+// strings with lines beginning with ''' or a first line beginning with whitespace must survive a round-trip
+foreach (["aaa\n'''bbb", "a\n'''\nb", "'''\nfoo", "aaa\n'''", "aaa\n \t'''bbb", "  x\ny", "  \nx", "\n  x\ny", "\tx\n\ty"] as $s) {
 	Assert::same($s, Neon::decode(Neon::encode($s)));
 }
 

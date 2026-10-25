@@ -76,7 +76,9 @@ final class StringNode extends Node
 				? json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
 				: "'" . str_replace("'", "''", $this->value) . "'";
 
-		} elseif (preg_match('~[\x00-\x08\x0B-\x1F]|\n[\t ]*+\'{3}~', $this->value)) { // ''' at line start would collide with the closing delimiter after indentation is added
+		} elseif (preg_match('~[\x00-\x08\x0B-\x1F]|\n[\t ]*+\'{3}|^\n*+[\t ]~', $this->value)) {
+			// ''' at line start would collide with the closing delimiter after indentation is added,
+			// whitespace starting the first line would be read as indentation
 			$s = substr(json_encode($this->value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 1, -1);
 			$s = preg_replace_callback(
 				'#[^\\\]|\\\(.)#s',
@@ -84,6 +86,7 @@ final class StringNode extends Node
 				$s,
 			);
 			$s = str_replace('"""', '""\"', $s);
+			$s = preg_replace_callback('#^(\n*+)([\t ]++)#', fn($m) => $m[1] . strtr($m[2], [' ' => '\u0020', "\t" => '\t']), $s);
 			$delim = '"""';
 
 		} else {
