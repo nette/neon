@@ -1,5 +1,9 @@
 # Upgrading nette/neon
 
+## 3.4.10
+
+- **Changed** `Nette\Neon\Neon::decode()` throws `Nette\Neon\Exception` with the message `Too deep nesting` for input nested deeper than 500 levels; previously such input was parsed or overflowed the stack (5414bf69)
+
 ## 3.4.7
 
 - **Changed** `Nette\Neon\Neon::encode()` replaces an invalid UTF-8 sequence in a string with U+FFFD and triggers `E_USER_WARNING`; previously the bytes were written out unchanged (cc96bf52)
