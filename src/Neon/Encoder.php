@@ -85,8 +85,8 @@ final class Encoder
 		$hide = true;
 		foreach ($val as $k => $v) {
 			$res[] = $item = new Node\ArrayItemNode;
-			$item->key = $hide && $k === $counter ? null : self::valueToNode($k);
-			$item->value = self::valueToNode($v, $blockMode);
+			$item->key = $hide && $k === $counter ? null : $this->valueToNode($k);
+			$item->value = $this->valueToNode($v, $blockMode);
 			if ($item->value instanceof Node\BlockArrayNode) {
 				$item->value->indentation = $this->indentation;
 			}
