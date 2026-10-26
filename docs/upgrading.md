@@ -1,5 +1,13 @@
 # Upgrading nette/neon
 
+## 4.0.0
+
+- **Deprecated** `Nette\Neon\Neon::BLOCK` (deprecated since 3.4.0): pass `true` as `$blockMode` of `Nette\Neon\Neon::encode()`; using the old name triggers `E_USER_DEPRECATED` (d973c1bb)
+- **Deprecated** `Nette\Neon\Neon::CHAIN` (deprecated since 3.4.0): use `Nette\Neon\Neon::Chain`; using the old name triggers `E_USER_DEPRECATED` (d973c1bb)
+- **Changed** `Nette\Neon\Neon::encode()` throws `Nette\Neon\Exception` for a string containing an invalid UTF-8 sequence; previously the sequence was replaced with U+FFFD and `E_USER_WARNING` was triggered (1da1e870)
+- **Changed** `Nette\Neon\Neon::encode()` throws `Nette\Neon\Exception` for a value that cannot be written as NEON, such as a resource, a `Closure` or a cyclic structure; previously a resource threw `LogicException` and a `Closure` was written as `{}`; affects code catching `LogicException` (1da1e870)
+- **Changed** `Nette\Neon\Node` cannot be serialized, `serialize()` throws `LogicException`; serialize the text of the document instead (302c66a6)
+
 ## 3.4.10
 
 - **Changed** `Nette\Neon\Neon::decode()` throws `Nette\Neon\Exception` with the message `Too deep nesting` for input nested deeper than 500 levels; previously such input was parsed or overflowed the stack (5414bf69)
