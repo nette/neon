@@ -52,6 +52,19 @@ test('errors carry the position, a line break included', function () {
 });
 
 
+test('a value on the line after its key raises a notice for documents written for 3.x', function () {
+	Assert::error(
+		fn() => Assert::same(['a' => 'b'], Neon::decode("{\n\ta:\n\t\tb\n}")),
+		E_USER_NOTICE,
+		"Neon: the value on line 3 after key 'a' is the value of that key since nette/neon 4.0.1; nette/neon 3 read the key as null and the value as an item of its own.",
+	);
+	Assert::noError(fn() => Neon::decode("{\n\ta:\n\tb: 1\n}"));
+	Assert::noError(fn() => Neon::decode("{\n\ta:\n\t, b\n}"));
+	Assert::noError(fn() => Neon::decode('{a: b}'));
+	Assert::noError(fn() => Neon::parse("x: {\n\tf: 1\n\th\n}\n")->setValue(['x', 'f'], null));
+});
+
+
 test('500 levels of nesting are allowed, 501 are too deep', function () {
 	Assert::noError(fn() => Neon::parse(str_repeat('[', 500) . str_repeat(']', 500)));
 	Assert::exception(
