@@ -254,30 +254,60 @@ final class Parser
 		$end = self::Pairs[$open->kind];
 		$items = [];
 		$keys = self::createKeys();
+		$next = null; // the key and the colon of the next item, read on the line after a key without a value
 
 		while (true) {
-			while ($stream->tryConsumeNewline());
-			if ($close = $stream->tryConsume($end)) {
-				return new InlineArrayNode($open, $items, $close);
+			if ($next) {
+				[$head, $colon] = $next;
+				$next = null;
+			} else {
+				while ($stream->tryConsumeNewline());
+				if ($close = $stream->tryConsume($end)) {
+					return new InlineArrayNode($open, $items, $close);
+				}
+				$head = $this->parseValue();
+				$colon = $this->tryConsumeColon();
 			}
 
-			$head = $this->parseValue();
-			if ($colon = $stream->tryConsume(Token::Colon, Token::Equals)) {
+			$value = $comma = null;
+			if ($colon) {
 				$key = $this->addKey($keys, $head);
-				$value = $stream->is(TokenStream::Newline, Token::Comma, $end) ? null : $this->parseValue();
+				$lineEnd = $stream->tryConsumeNewline();
+				if (!$stream->is(Token::Comma, $end)) {
+					$value = $this->parseValue();
+					if ($lineEnd && ($nextColon = $this->tryConsumeColon())) {
+						$next = [$value, $nextColon];
+						$value = null;
+					}
+				}
 			} else {
 				$key = null;
 				$value = $head;
 			}
 
 			$before = $stream->mark();
-			while ($stream->tryConsumeNewline());
-			$comma = $stream->tryConsume(Token::Comma);
+			if (!$next) {
+				while ($stream->tryConsumeNewline());
+				$comma = $stream->tryConsume(Token::Comma);
+			}
 			$items[] = $this->createItem($keys, null, $key, $colon, $value, $comma);
-			if ($before === $stream->mark() && !$stream->is($end)) {
+			if (!$next && $before === $stream->mark() && !$stream->is($end)) {
 				$stream->throwUnexpected();
 			}
 		}
+	}
+
+
+	/** The colon or the equals sign after a key in an inline array, which may stand on a later line. */
+	private function tryConsumeColon(): ?Token
+	{
+		$mark = $this->stream->mark();
+		while ($this->stream->tryConsumeNewline());
+		$colon = $this->stream->tryConsume(Token::Colon, Token::Equals);
+		if (!$colon) {
+			$this->stream->reset($mark);
+		}
+		return $colon;
 	}
 
 

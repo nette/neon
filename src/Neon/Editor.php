@@ -48,7 +48,7 @@ final class Editor
 			$node = self::createLiteral('null'); // an inline item without a key cannot lose its value
 		}
 		self::replaceValue($item, $node);
-		self::guardDashSubblocks($item->parent);
+		self::guardGrammar($item->parent);
 	}
 
 
@@ -56,17 +56,25 @@ final class Editor
 	public static function setItemNode(ArrayItemNode $item, ?ValueNode $node): void
 	{
 		self::replaceValue($item, $node);
-		self::guardDashSubblocks($item->parent);
+		self::guardGrammar($item->parent);
+	}
+
+
+	/** Repairs what the grammar would read differently in the array after an edit. */
+	private static function guardGrammar(?Node $array): void
+	{
+		if ($array instanceof BlockArrayNode) {
+			self::guardEnd($array);
+			self::guardDashSubblocks($array);
+		} elseif ($array instanceof InlineArrayNode) {
+			self::guardKeysWithoutValue($array);
+		}
 	}
 
 
 	/** Keeps a dash from reading as a dash subblock: a key without a value gets null, a dash after a subblock its key. */
-	private static function guardDashSubblocks(?Node $block): void
+	private static function guardDashSubblocks(BlockArrayNode $block): void
 	{
-		if (!$block instanceof BlockArrayNode) {
-			return;
-		}
-		self::guardEnd($block);
 		foreach ($block->items as $i => $item) {
 			$next = $block->items[$i + 1] ?? null;
 			if (!$item->key || !$next?->bullet) {
@@ -78,6 +86,18 @@ final class Editor
 				&& Layout::getIndentation($item->value->items[0]) === Layout::getIndentation($item)
 			) {
 				self::giveKey($next, $block->getItemKeys()[$i + 1]);
+			}
+		}
+	}
+
+
+	/** Keeps an item without a key from reading as the value of a key without a value on the line above. */
+	private static function guardKeysWithoutValue(InlineArrayNode $array): void
+	{
+		foreach ($array->items as $i => $item) {
+			$next = $array->items[$i + 1] ?? null;
+			if ($item->key && $item->value === null && !$item->separator && $next && !$next->key) {
+				self::replaceValue($item, self::createLiteral('null'));
 			}
 		}
 	}
@@ -371,7 +391,7 @@ final class Editor
 			default => throw new \LogicException('Unknown array ' . $array::class),
 		};
 		self::keepKeys($array, $before, $key === null);
-		self::guardDashSubblocks($array);
+		self::guardGrammar($array);
 		return $item;
 	}
 
@@ -564,7 +584,7 @@ final class Editor
 			}
 		}
 		self::keepKeys($array, $before, $key === null);
-		self::guardDashSubblocks($array);
+		self::guardGrammar($array);
 	}
 
 
@@ -822,7 +842,7 @@ final class Editor
 		}
 		self::setList($array, 'items', $remaining);
 		self::keepKeys($array, $before, true); // an item removed from a list renumbers the rest, whatever its key
-		self::guardDashSubblocks($array);
+		self::guardGrammar($array);
 	}
 
 
@@ -900,7 +920,7 @@ final class Editor
 		if (!$leaveNull) {
 			self::replaceValue($owner, Builder::parse($last->key ? '{}' : '[]'));
 		}
-		self::guardDashSubblocks($owner->parent);
+		self::guardGrammar($owner->parent);
 	}
 
 
@@ -1036,7 +1056,7 @@ final class Editor
 		if ($array && $before) {
 			$before['keys'][spl_object_id($item)] = $value;
 			self::keepKeys($array, $before, false);
-			self::guardDashSubblocks($array);
+			self::guardGrammar($array);
 		}
 	}
 

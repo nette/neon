@@ -107,10 +107,14 @@ meaning: token properties are `public private(set)`, slots of nodes `public prot
 - `TokenStream` presents line endings as a **virtual `Newline`** before a token whose leading trivia
   hold one; it is consumed once and never enters the tree. `getIndentation()` reads the whitespace
   right after the line ending.
-- `Parser` is the algorithm of 3.x over that stream. A block opened on the line of a dash has its
-  indentation decided lazily, by the line where it is first compared (a tab if that line starts with
-  one, two spaces otherwise). 3.x tried the tab and then the spaces, which is exponential in nested
-  dashes; do not reintroduce backtracking.
+- `Parser` is the algorithm of 3.x over that stream, apart from the inline values of the
+  specification 1.1 (below). A block opened on the line of a dash has its indentation decided
+  lazily, by the line where it is first compared (a tab if that line starts with one, two spaces
+  otherwise). 3.x tried the tab and then the spaces, which is exponential in nested dashes; do not
+  reintroduce backtracking.
+- In an inline array, a value on the line after a key is the value of that key, unlike in 3.x. It
+  is read once; when a colon follows it, it is handed over as the key of the next item instead of
+  being parsed again.
 - A key followed by a dash at the same indentation opens a dash subblock of that key (`onlyBullets`).
   The editor has to keep this from happening by accident (`Editor::guardDashSubblocks()`).
 - Duplicate keys are found while parsing, explicit and implicit alike, against the canonical keys of
@@ -168,9 +172,11 @@ The node methods (`DocumentNode::setValue()`, `addItem()`, `removeItem()`, `setK
 - **Edits must not change other keys.** Adding or removing a keyless item in a list could renumber
   its neighbours, and a key beyond the implicit counter could change the implicit key of the next
   item; `keepKeys()` writes out the keys that would otherwise change.
-- **Repairs of the grammar** after a structural change: a key without a value before a dash gets an
-  explicit `null`, a dash after a dash subblock gets its key written out
-  (`guardDashSubblocks()`), whitespace on the last line is stripped (`guardEnd()`).
+- **Repairs of the grammar** after a structural change (`guardGrammar()`): a key without a value
+  before a dash gets an explicit `null`, a dash after a dash subblock gets its key written out
+  (`guardDashSubblocks()`), a key without a value before a keyless item on the next line of an
+  inline array gets an explicit `null` (`guardKeysWithoutValue()`), whitespace on the last line is
+  stripped (`guardEnd()`).
 - **Comment ownership:** an item owns the comment on its line and the block of comment lines right
   above it with no blank line between. A comment block separated by a blank line is a preamble (a
   file header, a section heading) and stays under every `CommentPolicy`. `Drop` (the default) drops

@@ -43,7 +43,7 @@ test('errors carry the position, a line break included', function () {
 	Assert::exception(fn() => Neon::parse("a: b\n  c: d"), Exception::class, 'Bad indentation on line 2 at column 3');
 	Assert::exception(fn() => Neon::parse("- a\nb"), Exception::class, 'Unexpected end on line 2 at column 2');
 	Assert::exception(fn() => Neon::parse("a: 1\nfoo\n\n"), Exception::class, "Unexpected '<new line><new line>' on line 2 at column 4");
-	Assert::exception(fn() => Neon::parse("[a\n\n\n:]"), Exception::class, "Unexpected ':' on line 4 at column 1");
+	Assert::exception(fn() => Neon::parse("[a: b\n\n\n:]"), Exception::class, "Unexpected ':' on line 4 at column 1");
 	Assert::exception(fn() => Neon::parse('a: "\x"'), Exception::class, 'Invalid escaping sequence \x on line 1 at column 4');
 	Assert::exception(fn() => Neon::parse("a: 1\na: 2"), Exception::class, "Duplicated key 'a' on line 2 at column 1");
 	Assert::exception(fn() => Neon::parse('[a](b): c'), Exception::class, 'Unacceptable key on line 1 at column 1');
