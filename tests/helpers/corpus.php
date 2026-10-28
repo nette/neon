@@ -36,7 +36,7 @@ final readonly class CorpusCase
 final class Corpus
 {
 	/** The version of the specification this implementation follows. */
-	private const SpecVersion = '1.0.0';
+	private const SpecVersion = '1.1.0';
 
 	/** The files of a case in each category: the input, the required expectations, all allowed ones. */
 	private const Categories = [
