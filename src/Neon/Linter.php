@@ -147,7 +147,7 @@ final readonly class Linter
 		}
 
 		try {
-			$document = Neon::parse($input);
+			$document = @Neon::parse($input); // @ the transitional notice for documents written for 3.x is not a finding
 			if ($check && ($printed = $document->print()) !== $input) {
 				$i = strspn($printed ^ $input, "\0");
 				$position = new Position()->advance(mb_strcut($input, 0, $i, 'UTF-8'));

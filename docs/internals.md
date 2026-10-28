@@ -114,7 +114,8 @@ meaning: token properties are `public private(set)`, slots of nodes `public prot
   reintroduce backtracking.
 - In an inline array, a value on the line after a key is the value of that key, unlike in 3.x. It
   is read once; when a colon follows it, it is handed over as the key of the next item instead of
-  being parsed again.
+  being parsed again. Such a value in a source text raises a transitional `E_USER_NOTICE` for
+  documents written for 3.x; the linter silences it and `tests/bootstrap.php` lets it pass.
 - A key followed by a dash at the same indentation opens a dash subblock of that key (`onlyBullets`).
   The editor has to keep this from happening by accident (`Editor::guardDashSubblocks()`).
 - Duplicate keys are found while parsing, explicit and implicit alike, against the canonical keys of

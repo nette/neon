@@ -58,6 +58,7 @@ test('findings in a directory, sorted, skipping vendor and hidden directories', 
 test('standard input', function () use ($run) {
 	Assert::same([1, "-:1:5: Unexpected end\n", ''], $run(['-'], 'a: ['));
 	Assert::same(0, $run(['-'], 'a: 1')[0]);
+	Assert::noError(fn() => Assert::same([0, '', ''], $run(['-'], "{a:\n\tb}")));
 });
 
 

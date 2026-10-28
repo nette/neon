@@ -278,6 +278,12 @@ final class Parser
 					if ($lineEnd && ($nextColon = $this->tryConsumeColon())) {
 						$next = [$value, $nextColon];
 						$value = null;
+					} elseif ($lineEnd && ($origin = $value->getFirstToken()->origin)) { // a transitional notice for documents written for 3.x
+						$name = $head->getFirstToken()->text;
+						trigger_error(
+							"Neon: the value on line $origin->line after key '$name' is the value of that key since nette/neon 4.0.1; nette/neon 3 read the key as null and the value as an item of its own.",
+							E_USER_NOTICE,
+						);
 					}
 				}
 			} else {
