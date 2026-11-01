@@ -290,8 +290,7 @@ for ($seed = $first; $seed <= $last; $seed++) {
 			$key = $item->getKeyValue();
 			$targetModel = containerAt($model, $targetPath);
 			if ($key === null || (is_array($parent) && array_is_list($parent)) || !$targetArray instanceof ArrayNode || isInside(
-				$targetItem,
-				$item,
+				$targetItem, $item,
 			)
 				|| !((is_array($targetModel) && $targetModel && !array_is_list($targetModel)) || isEmptyMap($targetModel))
 				|| array_key_exists($key, (array) $targetModel) || count($item->parent->items) === 1
