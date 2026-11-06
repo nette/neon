@@ -1,5 +1,9 @@
 # Upgrading nette/neon
 
+## 4.0.1
+
+- **Changed** a value on the line after a key in a NEON inline array or in entity arguments is now the value of that key, `{a:` + new line + `b}` reads as `{a: b}`; previously the key was `null` and the value an item of its own, `{a: null, 0: b}`; decoding such a document triggers `E_USER_NOTICE`; to keep the previous meaning write `null` or a comma after the key (88f32459, 5de79d8c)
+
 ## 4.0.0
 
 - **Deprecated** `Nette\Neon\Neon::BLOCK` (deprecated since 3.4.0): pass `true` as `$blockMode` of `Nette\Neon\Neon::encode()`; using the old name triggers `E_USER_DEPRECATED` (d973c1bb)
